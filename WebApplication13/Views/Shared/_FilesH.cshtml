@@ -1,0 +1,31 @@
+﻿@model List<myFiles>
+
+@*@Url.Content(file.Path.Replace(" ", "%20"))*@
+
+@{
+    ViewFiles(@Model);
+
+    void ViewFiles(List<myFiles> SL)
+    {
+        @foreach (var file in SL.OrderBy(x => x.Name))
+        {
+            <div class="px-2 mt-1 mb-1">
+                <span class='fa-stack fa-lg'>
+                    <i class='fas fa-square fa-stack-2x text-secondary'></i>
+                    <i class='@Html.Partial("_FileIcon", file.Path) fa-stack-1x fa-inverse'></i>
+                </span>
+                <a class="" target="_blank" href=@Html.Partial("_requestPathBase", file.Path.Replace(" ", "%20")) )>
+                    <!--<i class="Html.Partial("_FileIcon", file.Split(";").First()) fa-1x align-middle text-secondary"></i>-->
+                    @if (String.IsNullOrEmpty(@file.Description))
+                    {
+                        @file.Name
+                    }
+                    else
+                    {
+                        @file.Description
+                    }
+                </a>
+            </div>
+        }
+    }
+}

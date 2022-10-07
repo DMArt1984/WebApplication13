@@ -1,0 +1,51 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="card-body p-5 ">
+    <div class="">
+        <partial name="_minLogo" />
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h4>Регистрация нового пользователя</h4>
+            <!--
+        <hr />
+    -->
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <!--
+    <div class="form-group">
+        <label asp-for="Input.Login"></label>
+        <input asp-for="Input.Login" class="form-control" />
+        <span asp-validation-for="Input.Login" class="text-danger"></span>
+    </div>
+    -->
+            <div class="form-group mb-3">
+                <input asp-for="Input.Email" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Input.Email)"/>
+                <span asp-validation-for="Input.Email"   class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input asp-for="Input.Company" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Input.Company)"/>
+                <span asp-validation-for="Input.Company"   class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input asp-for="Input.Password" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Input.Password)"/>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input asp-for="Input.ConfirmPassword" required="" placeholder="@Html.DisplayNameFor(m => m.Input.ConfirmPassword)" class="form-control" />
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn btn-block">Регистрация</button>
+            </div>
+            <div class="form-group mt-4">
+                <a id="forgot-password" asp-page="/Login"> Назад</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

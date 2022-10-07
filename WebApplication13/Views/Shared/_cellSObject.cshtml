@@ -1,0 +1,24 @@
+﻿@model ServiceObject
+
+    <a asp-controller="Business" asp-action="SOInfo" asp-route-id="@Model.Id">
+       
+        @if (!String.IsNullOrEmpty(Model.ObjectTitle))
+        {
+
+            @Model.ObjectTitle
+            @if (!String.IsNullOrEmpty(Model.ObjectCode))
+            {
+                <small>(Код: @Model.ObjectCode)</small>
+            }
+            else
+            {
+                <small>(ID: @Model.Id)</small>
+            }
+
+        }
+        else
+        {
+            <span class="text-danger me-2">ID: @Model.Id</span>
+        }
+
+    </a>

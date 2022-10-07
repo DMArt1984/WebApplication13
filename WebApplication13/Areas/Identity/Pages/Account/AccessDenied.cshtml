@@ -1,0 +1,16 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Доступ запрещен";
+}
+
+
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h1 class="text-white"><i class="mdi mdi-home-lock"></i>@ViewData["Title"]</h1>
+                <p class="card-text">У вас нет доступа к этому ресурсу.</p>
+            </div>
+        </div>
+        <div class="d-grid m-1">
+            <a class="btn btn-light btn btn-block" asp-action="Index" asp-controller="Home">Главная страница</a>
+        </div>

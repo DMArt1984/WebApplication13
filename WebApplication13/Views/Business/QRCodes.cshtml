@@ -1,0 +1,54 @@
+﻿@model IEnumerable<FactPortal.Models.ServiceObject>
+@using QRCoder;
+
+@{
+    ViewData["Title"] = "QR коды для объектов обслуживания";
+
+    byte[] QRCode(string Text)
+    {
+        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode(Text, QRCodeGenerator.ECCLevel.Q);
+        BitmapByteQRCode qrCode2 = new BitmapByteQRCode(qrCodeData);
+        byte[] qrCodeAsBitmapByteArr = qrCode2.GetGraphic(3);
+        return qrCodeAsBitmapByteArr;
+    }
+}
+
+<div class="m-3 p-3 border">
+
+    @if (ViewData["ERR"] != null)
+    {
+        <h2 class="alert alert-danger mb-0" role="alert">
+            <strong>@ViewData["ERR"]</strong>
+        </h2>
+        <div class="text-center">
+            Обратитесь к администратору или напишите в службу поддержки на <a href="mailto:support@mail.com" class="alert-link">support@mail.com</a>
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-wrap">
+            @foreach (var f in Model)
+            {
+                <div class="card m-1">
+                    <div class="card-body m-1">
+                        <div class="card-title text-primary">
+                            @f.ObjectTitle <span class="badge bg-light"> @f.ObjectCode</span>
+                        </div>
+                        <img class="card-img-top img-fluid" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@f.ObjectCode)))" style="max-height:200px; min-width:150px; min-height:150px; max-width:300px; text-align: center;" />
+
+                        <div class="card-text">
+                            <a href="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@f.ObjectCode)))" class="btn btn-outline-secondary btn-sm edit" download>Скачать файл</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+
+<script type="text/javascript">
+    
+</script>

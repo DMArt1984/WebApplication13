@@ -1,0 +1,21 @@
+﻿@page
+@model LockoutModel
+@{
+    ViewData["Title"] = "Учетная запись заблокирована";
+}
+
+<header>
+</header>
+<div class="card-body p-5 ">
+    <div class="">
+        <div class="text-center mb-2">
+            <a href="index.html" class="">
+                <img src="~/assets/images/logo-dark.png" alt="" height="48" class="auth-logo logo-dark mx-auto">
+                <img src="~/assets/images/logo-light.png" alt="" height="48" class="auth-logo logo-light mx-auto">
+            </a>
+        </div>
+        <h2 class="text-danger">@ViewData["Title"]</h2>
+        <p class="text-danger">Эта учетная запись заблокирована, повторите попытку позже или обратитель к администратору.</p>
+    </div>
+</div>
+

@@ -1,0 +1,395 @@
+﻿@model IEnumerable<Level>
+@{
+    ViewData["Title"] = "Структура позиций";
+
+    var uid = 0;
+    var maxUID = 0;
+
+    List<SelectListItem> TextLinkID = new List<SelectListItem>();
+    TextLinkID.Add(new SelectListItem { Value = "0", Text = "Завод [0]" });
+    foreach (var item in Model.OrderBy(x => x.Id))
+        TextLinkID.Add(new SelectListItem { Value = item.Id.ToString(), Text = GetParent(item.Name, item.LinkId) + " [" + item.Id.ToString() + "]" });
+
+    List<SelectListItem> TextLinkID2 = new List<SelectListItem>();
+    foreach (var item in TextLinkID.OrderBy(x => x.Text))
+    {
+        var L = item.Text.Split('>');
+        string Text2 = ""; // new String('-',L.Count() - 1);
+        for (int i = 1; i < L.Count(); i++)
+            Text2 += " - ";
+
+        Text2 += L.Last();
+        TextLinkID2.Add(new SelectListItem { Value = item.Value, Text = Text2 });
+    }
+
+    // Получить позиции для выпадающего списка
+    string GetParent(string Text, int ID)
+    {
+        var Parent = Model.FirstOrDefault(x => x.Id == ID);
+        if (Parent == null)
+            return Text;
+
+        return GetParent(Parent.Name, Parent.LinkId) + ">" + Text;
+    }
+
+
+    // Получить вложенные позиции для дерева
+    void GetObjPos(IEnumerable<Level> Levels)
+    {
+        Dictionary<int, string> IdName = new Dictionary<int, string>(); // список
+        foreach (var item in Levels)
+            IdName.Add(item.Id, item.LinkId + ":" + item.Name);
+
+        <li>
+            <a href="javascript:SetLink(0, 'Завод');">Завод</a> (id:<code>0</code>) [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
+            @{ExpPos(IdName, 0);
+                maxUID = uid;}
+        </li>
+        foreach (var item in Levels.OrderBy(x => x.Id))
+        {
+            if (Levels.FirstOrDefault(x => x.Id == item.LinkId || item.LinkId == 0) == null)
+            {
+                <li>
+                    @item.Name (id: <code>@item.Id</code> ) <span class="badge bg-danger"> @item.LinkId</span>
+                </li>
+            }
+        }
+        <div class="pt-2">
+            <small id="a_Text" class="mx-1">Завод</small><small> (id: <code id="a_ID" class="mx-1">0</code>) > </small><a href="javascript:AddNew();">Добавить новую позицию</a>
+        </div>
+
+    }
+
+    // Рекурсивное получение позиций для дерева
+    void ExpPos(Dictionary<int, string> IdName, int Link)
+    {
+        var MyList = IdName.Where(x => GetLinkID(x.Value) == Link && x.Key != Link);
+        if (MyList.Count() == 0)
+            return;
+
+        <ul id="@uid">
+            @foreach (var item in MyList.OrderBy(y => GetName(y.Value)))
+            {
+                uid++;
+                <li>
+                    @{ // Свернуть и развернуть
+                        var Next = IdName.Where(x => GetLinkID(x.Value) == item.Key && x.Key != item.Key);
+                        if (Next.Count() > 0) // Позиция содержит дочерние объекты
+                        {
+                            <small class="badge bg-light d-none"><a id="m @uid" href="javascript:flipflop('@uid');">свернуть</a></small>
+                            <a href="javascript:flipflopClass('@uid');"><i id="s @uid" class="fas fa-angle-up"></i></a>
+                        }
+                        else
+                        {
+                            <i class="fas fa-angle-right"></i>
+                        }
+
+                    }
+
+                    <a href="#title" onclick="Edit(@item.Key, '@GetName(item.Value)', @GetLinkID(item.Value))">@GetName(item.Value)</a> (id: <code>@item.Key</code>)
+
+                    @{ // дочерние объекты...
+                        ExpPos(IdName, item.Key);
+                    }
+                </li>
+            }
+        </ul>
+    }
+
+    // Рекурсивное получение позиций для таблицы
+    void ExpPosTable(int ID, string bg = "bg-light")
+    {
+        var L = Model.FirstOrDefault(x => x.Id == ID);
+        if (L != null)
+        {
+            ExpPosTable(L.LinkId);
+            <a href="#title" onclick="Link(@ID);"><span class="badge @bg">@L.Name</span></a>
+        }
+        else
+        {
+            if (ID == 0)
+            {
+                <a href="#title" onclick="Link(0);"><strong class="badge @bg">Завод</strong></a>
+            }
+            else
+            {
+                <a href="#title" onclick="Link(@ID);"><strong class="badge bg-danger">@ID</strong></a>
+            }
+        }
+    }
+
+    // >>>
+    int GetLinkID(string Value)
+    {
+        return Convert.ToInt32(Value.Split(':')[0]);
+    }
+
+    string GetName(string Value)
+    {
+        return Value.Split(':')[1];
+    }
+
+}
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+<style>
+    ul li {
+        /*list-style: none;  убираем дефолтные маркеры */
+        list-style: none;
+    }
+</style>
+
+<!-- sample modal content -->
+<div id="myModal_Delete" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Удалить пользователя ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>После этого действия вы не сможете востановить его профиль</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="d-none alert alert-light border-primary alert-dismissible fade show" role="alert">
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    Нажмите на <strong class="text-primary">позицию</strong> для того, чтобы <code>изменить</code> или <code>удалить</code> ее. Нажмите <i id="s @uid" class="fas fa-angle-up"></i> для того, чтобы <code>свернуть</code> дочерние позиции и <i id="s @uid" class="fas fa-angle-double-right"></i> - <code>развернуть</code>.
+</div>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs mx-3" role="tablist">
+    <li class="nav-item">
+        <a id="tab1" class="nav-link active" data-bs-toggle="tab" href="#view-profile" role="tab" aria-selected="true">
+            <i class="mdi mdi-file-tree me-1 align-middle"></i> <span class="d-none d-md-inline-block">Дерево</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a id="tab2" class="nav-link" data-bs-toggle="tab" href="#edit-profile" role="tab" aria-selected="false">
+            <i class="mdi mdi-table me-1 align-middle"></i> <span class="d-none d-md-inline-block">Таблица</span>
+        </a>
+    </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content pt-0">
+    <!-- 1: Tree -->
+    <div class="tab-pane active" id="view-profile" role="tabpanel">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    @{
+                        GetObjPos(Model);
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2: Table -->
+    <div class="tab-pane" id="edit-profile" role="tabpanel">
+        <div class="card">
+            <div class="card-body">
+                <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Позиция</th>
+                            <th>ID ссылки</th>
+                            <th>Путь</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(x => x.Name))
+                        {
+                            <tr>
+                                <th scope="row">@item.Id</th>
+                                <td>
+                                    <a href="#title" onclick="Edit(@item.Id, '@item.Name', @item.LinkId);">@item.Name</a>
+                                </td>
+                                <td class="text-secondary">@item.LinkId</td>
+                                <td style="white-space: nowrap">
+                                    @{
+                                        ExpPosTable(@item.LinkId, "bg-dark");
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td></td>
+                            <td><a href="#title" onclick="Edit(0, '', 0);">Добавить новую позицию ...</a></td>
+                            <td></td>
+                            <td><a href="javascript:void(0)" onclick="Link(0);"><strong class="badge bg-dark">Завод</strong></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form -->
+<div class="card border-primary p-2">
+    <div id="title" class="d-flex flex-row align-items-end">
+        <form class="row row-cols-md-auto g-3 align-items-end" asp-action="EditLevel_Tree" method="post">
+
+            <div class="col-12">
+                <small>ID:</small>
+                <input class="form-control" required="" readonly="" type="text" id="e_Id" name="Id" placeholder="" value="0">
+                <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+            </div>
+            <div class="col-12">
+                <small>Название:</small>
+                <input class="form-control" required="" type="text" id="e_Name" name="Name" placeholder="" value="Name">
+                <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+            </div>
+            <!--<div class="col-12">
+                <small>ID ссылки:</small>
+                <input class="form-control" required="" type="text" id="e_LinkId" name="LinkId" placeholder="" value="0">
+                <span class="text-danger field-validation-valid" data-valmsg-for="LinkId" data-valmsg-replace="true"></span>
+            </div>-->
+            <div class="col-12">
+                <small>ID ссылки:</small>
+                <select class="form-select" id="e_LinkId" name="LinkId" value="0" asp-items="TextLinkID2"></select>
+            </div>
+
+            <div class="col-12">
+                <button id="but_edit" type="submit" class="btn btn-primary">Добавить / изменить</button>
+            </div>
+        </form>
+        <form id="del" class="row row-cols-lg-auto g-3 align-items-center mx-2" asp-action="DelLevel_Tree" method="post">
+            <div class="col d-none">
+                <input class="form-control" required="" readonly="" type="text" id="e_Id2" name="Id" placeholder="" value="0">
+                <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+            </div>
+            <div class="col">
+                <button id="but_edit" type="submit" class="btn btn-danger">Удалить</button>
+            </div>
+        </form>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+</div>
+
+
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+}
+<script type="text/javascript">
+
+    HideId('myModal_Delete');
+
+    Edit(0, "", 0);
+    HideAll();
+
+    // Форма редактирования позиции
+    function Edit(Id, Name, LinkId) {
+        if (Id == 0) {
+            //document.getElementById("title").textContent = "Добавить позицию";
+            document.getElementById("but_edit").textContent = "Добавить";
+            document.getElementById("del").style.display = 'none'; // скрыть
+        } else {
+            //document.getElementById("title").textContent = "Изменить позицию";
+            document.getElementById("but_edit").textContent = "Изменить";
+            document.getElementById("del").style.display = ''; // показать
+        }
+        document.getElementById("e_Id").value = Id;
+        document.getElementById("e_Id2").value = Id;
+        document.getElementById("e_Name").value = Name;
+        document.getElementById("e_LinkId").value = LinkId;
+
+        if (Name != "")
+            SetLink(Id, Name);
+    }
+
+    // Установить пересенные для ссылки к новой позиции
+    function SetLink(Id, Text) {
+        document.getElementById("a_ID").textContent = Id;;
+        document.getElementById("a_Text").textContent = Text;
+    }
+
+    // Установить ссылку в форме
+    function Link(LinkId) {
+        document.getElementById("e_LinkId").value = LinkId;
+    }
+
+    // Форма добавления новой позиции
+    function AddNew() {
+            Edit(0, "", document.getElementById("a_ID").textContent);
+    }
+
+    function HideAll() {
+        for (var i = 1; i <=@maxUID; i++) {
+            element = document.getElementById(i);
+            link = document.getElementById("s " + i);
+            if (element) {
+                element.style.display = "none";
+            }
+            if (link)
+                link.className = "fas fa-angle-double-right";
+        }
+    }
+
+    function ShowAll() {
+        for (var i = 1; i <=@maxUID; i++) {
+            element = document.getElementById(i);
+            link = document.getElementById("s " + i);
+            if (element)
+                element.style.display = "";
+             if (link)
+                link.className = "fas fa-angle-up";
+        }
+    }
+
+    // Показывает скрытое, скрывает видимое
+    function flipflop(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("m " + id);
+
+        // если таковой в документе существует
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+
+        if (link)
+            link.textContent = link.textContent == "свернуть" ? "развернуть" : "свернуть";
+    }
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("s " + id);
+
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-angle-up" ? "fas fa-angle-double-right" : "fas fa-angle-up";
+    }
+
+    // Show Hide for ID
+    function HideId(id) {
+            document.getElementById(id).style.display = 'none'; // скрыть
+        }
+    function ShowId(id) {
+            document.getElementById(id).style.display = ''; // показать
+        }
+
+</script>
+

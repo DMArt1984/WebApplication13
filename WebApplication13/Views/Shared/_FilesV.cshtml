@@ -1,0 +1,56 @@
+﻿@model List<myFiles>
+
+
+@{
+
+    //string webRootPath = _webHostEnvironment.WebRootPath;
+    //string contentRootPath = _webHostEnvironment.ContentRootPath;
+
+    @*@Url.Content(file.Path.Replace(" ", "%20"))*@
+
+
+    ViewFiles(@Model);
+
+    void ViewFiles(List<myFiles> SL)
+    {
+        @if (SL != null)
+        {
+            @if (SL.Count() > 1)
+            {
+
+                @foreach (var file in SL.OrderBy(x => x.Name))
+                {
+
+                    <a class="" target="_blank" href=@Html.Partial("_requestPathBase", file.Path.Replace(" ", "%20"))>
+                        <!--<i class="Html.Partial("_FileIcon", file.Split(";").First()) fa-1x align-middle text-secondary"></i> -->
+                        <i class='@Html.Partial("_FileIcon", file.Path) text-secondary px-1'></i>
+                        @if (String.IsNullOrEmpty(@file.Description))
+                        {
+                            @file.Name
+                        }
+                        else
+                        {
+                            @file.Description
+                        }
+                    </a>
+                    <br />
+                }
+
+            }
+            else if (SL.Count() == 1)
+            {
+                <a class="" target="_blank" href=@Html.Partial("_requestPathBase", SL.First().Path.Replace(" ","%20"))>
+                    <i class='@Html.Partial("_FileIcon", @SL.First().Path) text-secondary px-1'></i>
+                    @if (String.IsNullOrEmpty(@SL.First().Description))
+                    {
+                        @SL.First().Name
+                    }
+                    else
+                    {
+                        @SL.First().Description
+                    }
+                </a>
+            }
+        }
+    }
+}

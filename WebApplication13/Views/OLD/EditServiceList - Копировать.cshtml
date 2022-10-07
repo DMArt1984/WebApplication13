@@ -1,0 +1,264 @@
+﻿@model ServiceObjectEdit
+@using System.Text.RegularExpressions;
+@{
+    ViewData["Title"] = "Редактирование объекта обслуживания"+" "+ Model.ObjectTitle;
+
+
+}
+
+<style>
+    ul li {
+        /*list-style: none;  убираем дефолтные маркеры */
+        list-style: none;
+    }
+</style>
+
+@{
+   var uid = 0;
+   var maxUID = 0;
+
+    List<SelectListItem> TextLinkID = new List<SelectListItem>();
+    TextLinkID.Add(new SelectListItem { Value = "0", Text = "ЗАВОД" });
+    foreach (var item in Model.Levels.OrderBy(x => x.Name))
+        TextLinkID.Add(new SelectListItem { Value = item.Id.ToString(), Text = GetParent(item.Name, item.LinkId) });
+
+    List<SelectListItem> TextLinkID2 = new List<SelectListItem>();
+    foreach (var item in TextLinkID.OrderBy(x => x.Text))
+    {
+        var L = item.Text.Split('>');
+        string Text2 = ""; // new String('-',L.Count() - 1);
+        if (item.Value != "0")
+        {
+            for (int i = 1; i <= L.Count(); i++)
+                Text2 += " - ";
+        }
+
+        Text2 += L.Last().Trim();
+        TextLinkID2.Add(new SelectListItem { Value = item.Value, Text = Text2 });
+    }
+
+    // Получить позиции для выпадающего списка
+    string GetParent(string Text, int ID)
+    {
+        var Parent = Model.Levels.FirstOrDefault(x => x.Id == ID);
+        if (Parent == null)
+            return Text;
+
+        return GetParent(Parent.Name, Parent.LinkId) + " > " + Text;
+    }
+
+
+    // Получить вложенные позиции
+    void GetObjPos(IEnumerable<Level> Levels)
+    {
+        Dictionary<int, string> IdName = new Dictionary<int, string>(); // список
+        foreach (var item in Levels)
+            IdName.Add(item.Id, item.LinkId + ":" + item.Name);
+        <li>
+               <a href="javascript:SetLink(0, 'Завод');">Завод</a> (id:<code>0</code>) [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
+               @{ExpPos(IdName, 0);
+               maxUID = uid;}
+        </li>
+    }
+
+    int GetLinkID(string Value)
+    {
+        return Convert.ToInt32(Value.Split(':')[0]);
+    }
+
+    string GetName(string Value)
+    {
+        return Value.Split(':')[1];
+    }
+
+    // Рекурсивное получение вложенных позиций
+    void ExpPos(Dictionary<int, string> IdName, int Link)
+    {
+        var MyList = IdName.Where(x => GetLinkID(x.Value) == Link && x.Key != Link);
+        if (MyList.Count() == 0)
+            return;
+
+        <ul id="@uid">
+            @foreach (var item in MyList.OrderBy(y => GetName(y.Value)))
+             {
+                uid++;
+                <li>
+                @{ // Свернуть и развернуть
+                    var Next = IdName.Where(x => GetLinkID(x.Value) == item.Key && x.Key != item.Key);
+                    if (Next.Count() > 0) // Позиция содержит дочерние объекты
+                    {
+                                        <small class="badge bg-light d-none"><a id="m @uid" href="javascript:flipflop('@uid');">свернуть</a></small>
+                                        <a href="javascript:flipflopClass('@uid');"><i id="s @uid" class="fas fa-angle-up"></i></a>
+                    }
+                    else
+                    {
+                                        <i class="fas fa-angle-right"></i>
+                    }
+                }
+                   <a href="#title" onclick="Edit(@item.Key, '@GetName(item.Value)', @GetLinkID(item.Value))">@GetName(item.Value)</a> (id: <code>@item.Key)</code> @if(@Model.Position == @item.Key){  <input type="radio" name="position_id" value="@item.Key" checked class="form-check-input" style="align-content:center;"/>} else{ <input type="radio" name="position_id" value="@item.Key"  class="form-check-input" style="align-content:center;"/>}
+                    @{ // дочерние объекты...
+                     ExpPos(IdName, item.Key);
+                    }
+                </li>
+             }
+        </ul>
+    }
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form id="myform" asp-action="Edit_So" asp-controller="Business">
+
+                    <input type="number" name="id" value="@Model.Id" readonly class="btn btn-default" style="display: none" />
+                    <div class="col-12">
+                        <small>Название:</small>
+                        <input type="text" name="ObjectTitle" value="@Model.ObjectTitle" class="form-control" />
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Код:</small>
+                        <input type="text" name="ObjectCode" value="@Model.ObjectCode" class="form-control" />
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Описание:</small>
+                        <br />
+                        <!--<input type="text" name="Description" value="Model.Description" class="form-control" />-->
+                        <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Позиция:</small>
+                        <select class="form-select" name="Position" value="@Model.Position" asp-items="TextLinkID2"></select>
+                        <!--<input type="text" name="Position" value="Model.Position" class="form-control" />-->
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Структура позиций:</small>
+                        @{
+                            GetObjPos(Model.Levels);
+                        }
+                        <br />
+                    </div>
+
+                    <input type="submit" class="form-control" value="Сохранить" style="max-width:100px" />
+
+                </form>
+
+                <br>
+                <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <i class="ri-delete-bin-2-fill"></i>
+                </a>
+
+                <!-- sample modal content -->
+                <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="myModalLabel">Удалить Объект @Model.ObjectTitle?</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>После этого действия вы не сможете востановить объект с именем @Model.ObjectTitle</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                                            <form asp-controller="Business" asp-action="Delete" method="post"><input type="number" name="id" value="@Model.Id" style="display: none" readonly /> <div class="form-group"><input type="submit" class="btn btn-danger waves-effect waves-light" value="Удалить" /></div> </form>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+                <!-- /.modal -->
+            </div> <!-- end col -->
+        </div> <!-- end row -->
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    HideAll();
+    Edit(0, "", 0);
+   
+
+    // Форма редактирования позиции
+    function Edit(Id, Name, LinkId) {
+        if (Id == 0) {
+            //document.getElementById("title").textContent = "Добавить позицию";
+            document.getElementById("but_edit").textContent = "Добавить";
+            document.getElementById("del").style.display = 'none'; // скрыть
+        } else {
+            //document.getElementById("title").textContent = "Изменить позицию";
+            document.getElementById("but_edit").textContent = "Изменить";
+            document.getElementById("del").style.display = ''; // показать
+        }
+        document.getElementById("e_Id").value = Id;
+        document.getElementById("e_Id2").value = Id;
+        document.getElementById("e_Name").value = Name;
+        document.getElementById("e_LinkId").value = LinkId;
+
+        if (Name != "")
+            SetLink(Id, Name);
+    }
+
+    // Установить пересенные для ссылки к новой позиции
+    function SetLink(Id, Text) {
+        document.getElementById("a_ID").textContent = Id;;
+        document.getElementById("a_Text").textContent = Text;
+    }
+
+    // Форма добавления новой позиции
+    function AddNew() {
+            Edit(0, "", document.getElementById("a_ID").textContent);
+    }
+
+    function HideAll() {
+        for (var i = 1; i <=@maxUID; i++) {
+            element = document.getElementById(i);
+            link = document.getElementById("s " + i);
+            if (element) {
+                element.style.display = "none";
+            }
+            if (link)
+                link.className = "fas fa-angle-double-right";
+        }
+    }
+
+    function ShowAll() {
+        for (var i = 1; i <=@maxUID; i++) {
+            element = document.getElementById(i);
+            link = document.getElementById("s " + i);
+            if (element)
+                element.style.display = "";
+             if (link)
+                link.className = "fas fa-angle-up";
+        }
+    }
+
+    // Показывает скрытое, скрывает видимое
+    function flipflop(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("m " + id);
+
+        // если таковой в документе существует
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+
+        if (link)
+            link.textContent = link.textContent == "свернуть" ? "развернуть" : "свернуть";
+    }
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("s " + id);
+
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-angle-up" ? "fas fa-angle-double-right" : "fas fa-angle-up";
+    }
+
+</script>

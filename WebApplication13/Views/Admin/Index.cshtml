@@ -1,0 +1,167 @@
+﻿@model IEnumerable<UserInfo>
+@{
+    ViewData["Title"] = "Пользователи";
+}
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+
+<div class="card">
+    <div class="card-body">
+        <h3 class="d-none card-title text-center text-secondary">Список пользователей</h3>
+        <div class="">
+            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th class="d-none">ID</th>
+                        <th>Email</th>
+                        <th>Фото</th>
+                        <th>ФИО</th>
+                        <th>Роли</th>
+                        <th>Телефон</th>
+                        <th>Должность</th>
+                        <th class="d-none">Компания</th>
+                        <th class="d-none">Дополнительно</th>
+                        <th class="d-none">Редактировать</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="d-none" style="font-size:80%" valign="middle">@item.User.Id</td>
+
+                            <td valign="middle" scope="row">
+
+                                <a asp-action="Profile" asp-route-Email="@item.User.Email" asp-route-ViewEditor="true">
+                                    <!--href="mailto:item.User.Email"-->
+                                    @if (item.User.EmailConfirmed)
+                                    {
+                                        <i class="ri-checkbox-fill align-middle"></i>
+                                    }
+                                    @item.User.Email
+                                </a>
+                            </td>
+                            <td style="align-content:center">
+                                @try
+                                {
+                                    @if (@item.User.Photo != null)
+                                    {
+                                        <img style="width:50px;height:50px; object-fit:cover; border-radius:3px" src="data:image/*;base64,@(Convert.ToBase64String(@item.User.Photo))" alt="Header Avatar">
+                                    }
+                                }
+                                catch
+                                {
+
+                                }
+                            </td>
+                            <td valign="middle">@item.User.FullName</td>
+                            <td valign="middle">
+                                @{
+                                    foreach (var role in @item.Roles.Distinct())
+                                    {
+                                        var rusname = item.User.getRoleName(@role);
+                                        switch (role.ToLower())
+                                        {
+                                            case "superadmin":
+                                                <span class="badge bg-dark">@rusname</span>
+                                                break;
+                                            case "admin":
+                                                <span class="badge bg-info">@rusname</span>
+                                                break;
+                                            case "moderator":
+                                                <span class="badge bg-soft-primary text-primary">@rusname</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-light">@rusname</span>
+                                                break;
+                                        }
+
+                                    }
+                                }
+                            </td>
+                            <td valign="middle">
+                                
+                                    @if (item.User.PhoneNumberConfirmed)
+                                    {
+                                        <i class="ri-checkbox-fill align-middle"></i>
+                                    }
+                                    @item.User.PhoneNumber
+
+                            </td>
+                            <td valign="middle">@String.Join(", ", @item.Claims.Where(x => x.Type.ToLower() == "job").Select(y => y.Value))</td>
+                            <td valign="middle" class="d-none">@String.Join(", ", @item.Claims.Where(x => x.Type.ToLower() == "company").Select(y => y.Value).Distinct())</td>
+
+
+                            <td valign="middle" class="d-none" style="font-size:80%">
+                                <!--String.Join(", ", item.Claims.Where(x => x.Type.ToLower() != "company").Select(x => x.Type + "=" + x.Value))-->
+                                <ul class="card-text">
+                                    @foreach (var cl in item.Claims.Where(x => x.Type.ToLower() != "company"))
+                                    {
+                                        <li>@cl.Type = @cl.Value</li>
+                                    }
+                                </ul>
+                            </td>
+
+
+
+                            <td class="d-none" valign="middle">
+                                <!--
+                                <a href="Url.ActionLink("Profile","Admin", new {Email = item.User.Email})" class="btn btn-outline-secondary" title="Профиль">
+                                    <i class="mdi mdi-face" style="font-size:120%"></i>
+                                </a>
+
+                                Html.ActionLink("войти", "Profile", "Admin", new { Email = item.User.Email, ViewEditor = true })
+                                     -->
+                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="Profile" asp-route-Email="@item.User.Email" asp-route-ViewEditor="true">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="pb-3">
+    <form method="get">
+        <button class="btn btn-primary waves-effect waves-light" asp-controller="Admin" asp-action="Register"><i class="mdi mdi-account-plus"></i> Регистрация нового пользователя</button>
+    </form>
+</div>
+
+
+
+
+        @section Scripts {
+            <!-- Required datatable js -->
+            <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+            <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+            <!-- Responsive examples
+            <script src="~/assets/libs/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+            <script src="~/assets/libs/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+                -->
+            <!-- Buttons examples
+            <script src="~/assets/libs/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+            <script src="~/assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
+            <script src="~/assets/libs/jszip/jszip.min.js"></script>
+            <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+            <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+            <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+            <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+            <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+                -->
+            <!-- Datatable init js -->
+            <script src="~/assets/js/pages/datatables.init.js"></script>
+        }

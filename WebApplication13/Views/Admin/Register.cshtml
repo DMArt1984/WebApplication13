@@ -1,0 +1,149 @@
+﻿
+@model FactPortal.Controllers.AdminController.InputModel
+@{
+    ViewData["Title"] = "Регистрация нового пользователя";
+    var viewCompany = (!ViewContext.HttpContext.User.IsInRole("SuperAdmin")) ? "d-none" : "";
+}
+
+<style>
+    .showing_stealth{
+      position: relative;
+    }
+    .showing_stealth input {
+      width: 100%;
+      padding-left: 14px;
+    }
+
+    .showing_stealth span {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #0a2346;
+      cursor: pointer;
+      display: block;
+    }
+
+    .showing_stealth span i.conceal-btn::before{
+      content: "\f070";
+    }
+</style>
+
+
+<div class="card">
+    <!--col-12 col-md-7 col-lg-6 col-xl-5 p-1-->
+    <h4 class="card-header d-none"><i class="mdi mdi-account-plus"></i> Новый пользователь</h4>
+    <div class="card-body col-12 col-md-7 col-lg-6 col-xl-5 p-3">
+        <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
+        <form method="post">
+
+            <!-- Company -->
+            @if (String.IsNullOrEmpty(Model.Company))
+            {
+                <div class="form-group mb-3 @viewCompany">
+                    <input asp-for="@Model.Company" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Company)" />
+                    <span asp-validation-for="@Model.Company" class="text-danger"></span>
+                </div>
+            }
+            else
+            {
+                var Companies = Model.Company.Split(';');
+                if (Companies.Count() > 1)
+                {
+                    <select class="form-select mb-3 @viewCompany" asp-for="@Model.Company">
+                        @foreach (var item in Companies)
+                        {
+                            <option>@item</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <div class="form-group mb-3 d-none">
+                        <input asp-for="@Model.Company" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Company)" />
+                    </div>
+                }
+            }
+
+            <!-- Email -->
+            <div class="form-group mb-3">
+                <input asp-for="@Model.Email" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Email)" />
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+            </div>
+
+            <!-- Send for Email -->
+            <div class="form-group mb-1 form-check form-check-inline">
+                <div class="checkbox" data-bs-toggle="collapse" href="#collapseEmail" aria-expanded="false" aria-controls="collapseEmail">
+                    <label asp-for="@Model.SendMail">
+                        <input asp-for="@Model.SendMail" class="form-check-input" />
+                        @Html.DisplayNameFor(m => m.SendMail)
+                    </label>
+                </div>
+            </div>
+            <div class="collapse mb-3" id="collapseEmail" style="">
+                <div class="alert alert-warning">
+                    Письмо на указанный Email отправлено не будет. После регистрации потребуется подтверждение Email администратором.
+                </div>
+            </div>
+
+            <!-- Password 1 -->
+            <span asp-validation-for="@Model.Password" class="text-danger"></span>
+            <div class="form-group mb-3 showing_stealth">
+                <input asp-for="@Model.Password" id="password-input1" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Password)" />
+                <span class="cumancen"><i class="fas fa-eye"></i></span>
+            </div>
+
+            <!-- Password 2 -->
+            <span asp-validation-for="@Model.ConfirmPassword" class="text-danger"></span>
+            <div class="form-group mb-3">
+                <input asp-for="@Model.ConfirmPassword" id="password-input2" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.ConfirmPassword)" />
+            </div>
+
+            <!-- Profile -->
+            <div class="form-group mb-1 form-check form-check-inline">
+                <div class="checkbox" data-bs-toggle="collapse" href="#collapseProfile" aria-expanded="false" aria-controls="collapseProfile">
+                    <label asp-for="@Model.Profile">
+                        <input asp-for="@Model.Profile" class="form-check-input" />
+                        @Html.DisplayNameFor(m => m.Profile)
+                    </label>
+                </div>
+            </div>
+            <div class="collapse mb-3" id="collapseProfile" style="">
+                <div class="alert alert-warning">
+                    Заполнить профиль можно будет позже в любое время
+                </div>
+            </div>
+
+            <!-- Register -->
+            <div class="form-group d-grid mb-3">
+                <button type="submit" class="btn btn-primary btn btn-block">Продолжить</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    <partial name="_ShowHidePassword" />
+
+    <script>
+        const passField = document.getElementById('password-input1');
+        const passField2 = document.getElementById('password-input2');
+          const showBtn = document.querySelector("span i");
+          showBtn.onclick = (()=>{
+              if(passField.type === "password"){
+                  passField.type = "text";
+                  passField2.style.display = 'none';
+                  passField2.value = "success";
+                 showBtn.classList.add("conceal-btn");
+              }else{
+                  passField.type = "password";
+                  passField2.style.display = '';
+                  passField2.value = "";
+                  showBtn.classList.remove("conceal-btn");
+              }
+          });
+    </script>
+}

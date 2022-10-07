@@ -1,0 +1,27 @@
+﻿@model ApplicationUser
+
+
+@if (!String.IsNullOrEmpty(Model.Email))
+{
+    <a asp-controller="Admin" asp-action="Profile" asp-route-Email="@Model.Email">
+        @if (!String.IsNullOrEmpty(Model.UserName))
+        {
+            @Model.UserName <small>(@Model.Email)</small>
+        }
+        else
+        {
+            @Model.Email
+        }
+    </a>
+}
+else
+{
+    if (!String.IsNullOrEmpty(Model.UserName))
+    {
+        @Model.UserName
+    }
+    else
+    {
+        <small class="text-danger">Пользователь</small>
+    }
+}

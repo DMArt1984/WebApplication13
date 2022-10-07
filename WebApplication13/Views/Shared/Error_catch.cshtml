@@ -1,0 +1,29 @@
+﻿@model FactPortal.Models.ErrorCatch
+    @{
+        ViewData["Title"] = "Ошибка";
+    }
+
+    <h2 class="alert alert-danger mb-0" role="alert">
+        <i class="mdi mdi-alert"></i><strong>Ошибка № @Model.Result.ToString("X")</strong> : @Model.Message
+    </h2>
+    <div class="card mb-0">
+        <div class="card-header" id="headingTwo">
+            <h5 class="m-0 font-size-14">
+                <a class="collapsed text-primary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                    Дополнительная информация >>>
+                </a>
+            </h5>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+            <div class="m-2">
+                @Model.Info2
+            </div>
+            <div class="card-body alert alert-warning" style="font-size:90%">
+                @Model.Info1
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center m-2">
+        Обратитесь к администратору или напишите в службу технической поддержки на <a href="mailto:support@mail.com" class="alert-link">support@mail.com</a>
+    </div>

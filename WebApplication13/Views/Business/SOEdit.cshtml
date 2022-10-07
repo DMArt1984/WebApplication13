@@ -1,0 +1,197 @@
+﻿@model ServiceObjectEdit
+@using System.Text.RegularExpressions;
+@{
+    if (Model.Id > 0)
+    {
+        ViewData["Title"] = "Объект обслуживания" + " " + Model.ObjectTitle;
+    }
+    else
+    {
+        ViewData["Title"] = "Новый объект обслуживания";
+    }
+}
+
+<style>
+    ul li {
+        /*list-style: none;  убираем дефолтные маркеры */
+        list-style: none;
+    }
+</style>
+
+@{
+    var maxUID = 0;
+
+    List<SelectListItem> TextLinkID = new List<SelectListItem>();
+    TextLinkID.Add(new SelectListItem { Value = "0", Text = "Не задана" });
+    foreach (var item in Model.Levels.OrderBy(x => x.Name))
+        TextLinkID.Add(new SelectListItem { Value = item.Id.ToString(), Text = GetParent(item.Name, item.LinkId) });
+
+    List<SelectListItem> TextLinkID2 = new List<SelectListItem>();
+    foreach (var item in TextLinkID.OrderBy(x => x.Text))
+    {
+        var L = item.Text.Split('>');
+        string Text2 = ""; // new String('-',L.Count() - 1);
+        if (item.Value != "0")
+        {
+            for (int i = 1; i <= L.Count(); i++)
+                Text2 += " - ";
+        }
+
+        Text2 += L.Last().Trim();
+        TextLinkID2.Add(new SelectListItem { Value = item.Value, Text = Text2 });
+    }
+
+    // Получить позиции для выпадающего списка
+    string GetParent(string Text, int ID)
+    {
+        var Parent = Model.Levels.FirstOrDefault(x => x.Id == ID);
+        if (Parent == null)
+            return Text;
+
+        return GetParent(Parent.Name, Parent.LinkId) + " > " + Text;
+    }
+
+}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <form id="myform" method="post" enctype="multipart/form-data">
+                <div class="card-body">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="number" name="id" value="@Model.Id" readonly class="btn btn-default" style="display: none" />
+                    <div class="col-12">
+                        <small>Название:</small>
+                        <input type="text" name="ObjectTitle" value="@Model.ObjectTitle" class="form-control" required="" placeholder="Введите название" />
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Код:</small>
+                        <input type="text" name="ObjectCode" value="@Model.ObjectCode" class="form-control" required="" placeholder="Введите код" />
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Описание:</small>
+                        <br />
+                        <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
+                        <br />
+                    </div>
+                    <div class="col-12">
+                        <small>Позиция:</small>
+                        <select id="e_Pos" class="form-select" name="Position" value="0" asp-items="TextLinkID2" onchange="document.getElementById('e_PosInfo').value = this.value;"></select>
+                    </div>
+                    <div class="pt-1">
+                        <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
+                    </div>
+                    <!--Файлы-->
+                    <div class="col-12 pt-2">
+                        <small>Выберите файлы для загрузки:</small>
+                        <br />
+                        <div>
+                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(2);" />
+                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #1" /><br>
+                        </div>
+                        <div id="upload2" style="display:none">
+                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(3);" />
+                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #2" /><br>
+                        </div>
+                        <div id="upload3" style="display:none">
+                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(4);" />
+                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #3" /><br>
+                        </div>
+                        <div id="upload4" style="display:none">
+                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(5);" />
+                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #4" /><br>
+                        </div>
+                        <div id="upload5" style="display:none">
+                            <input class="form-control" type="file" name="uploadedFile" />
+                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #5" /><br>
+                        </div>
+                    </div>
+                    <div class="col-12 pt-2">
+                        @if (Model.FileLinks.Count > 0)
+                        {
+                            <small>Выберите файлы для удаления:</small>
+                            <br />
+                        }
+                        <div>
+                            @foreach (var item in Model.FileLinks)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" name="DelFileId" type="checkbox" value="@item.Id">
+                                    <label class="form-check-label">
+                                        @Html.Partial("_File", item)
+                                    </label>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                    <!---->
+                </div>
+                <div class="card-footer">
+                    <div class="row g-0 d-flex justify-content-start">
+                        @if (Model.Id != 0)
+                        {
+                            <!-- удалить -->
+                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                        }
+                        <!-- сохранить -->
+                        <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+                        <!-- отмена -->
+                        <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- sample modal content -->
+<div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form class="" asp-controller="Business" asp-action="Delete" method="post">
+                <div class="modal-header bg-dark">
+                    <h5 class="modal-title text-white" id="myModalLabel">Удалить объект</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
+                    <p>После этого действия вы не сможете востановить объект с именем @Model.ObjectTitle</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<script type="text/javascript">
+
+    Edit();
+
+    // Форма редактирования позиции
+    function Edit() {
+        document.getElementById("e_Pos").value = @Model.Position;
+        document.getElementById("e_PosInfo").value = document.getElementById("e_Pos").value;
+    }
+
+
+    function Next(Index) {
+        ShowId('upload' + Index);
+    }
+
+    // Show Hide for ID
+    function HideId(id) {
+        document.getElementById(id).style.display = 'none'; // скрыть
+    }
+    function ShowId(id) {
+        document.getElementById(id).style.display = ''; // показать
+    }
+
+</script>
+
+

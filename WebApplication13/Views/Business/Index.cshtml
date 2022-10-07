@@ -1,0 +1,139 @@
+﻿@model List<ServiceObjectShort>
+@using System.Text.RegularExpressions;
+@{
+    ViewData["Title"] = "Объекты обслуживания";
+}
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+
+<style>
+    .block:target {
+        display: block;
+    }
+
+    .block {
+        display: none;
+    }
+</style>
+
+
+<!-- Table -->
+<div class="card">
+    <div class="card-body">
+        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <!--<th>ID</th>-->
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Код</th>
+                    <th>Позиция</th>
+                    <th>Последнее обслуживание</th>
+                    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+                    {
+                        <th>Редактор</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <a title="Обзор" asp-action="SOInfo" asp-route-id="@item.Id">
+                                @item.ObjectTitle
+                            </a>
+                            @if (@item.CountAlerts > 0)
+                            {
+                                <h3 class="badge bg-danger">@item.CountAlerts</h3>
+                            }
+                        </td>
+                        <td style="max-width:300px; word-break: break-all">
+                            @if (item.Description != null && item.Description.Length > 50)
+                            {
+                                <small>
+                                    @if (item.Description.Length > 200)
+                                    {
+                                        @item.Description.Substring(0, 197)
+                                        <span>...</span>
+                                    }
+                                    else
+                                    {
+                                        @item.Description
+                                    }
+
+                                </small>
+                            }
+                            else
+                            {
+                                @item.Description
+                            }
+                        </td>
+                        <td>@item.ObjectCode</td>
+                        <td>
+                            @{
+                                if (item.Position != null)
+                                {
+                                    foreach (var pos in item.Position.Split(">"))
+                                    {
+                                        if (pos == item.Position.Split(">").Last())
+                                        {
+                                            <span class="badge bg-primary">@pos</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light">@pos</span>
+                                        }
+                                    }
+                                }
+                            }
+                        </td>
+                        <td>
+                            @if (item.LastWork != null)
+                            {
+                                @item.LastWork.DT
+                                <span> - </span>
+                                @item.LastWork.StatusRus()
+                            }
+                        </td>
+                        @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+                        {
+                            <td>
+                                <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
+                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div> <!-- end col -->
+    <!-- Добавить -->
+    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+    {
+        <div class="card-footer">
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="SOEdit" asp-route-id="0"><i class="fas fa-plus"></i> Добавить новый объект</a>
+        </div>
+    }
+</div>
+
+
+
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+}

@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Level>
+@{
+    ViewData["Title"] = "Позиции";
+
+    // Получить вложенные позиции
+    void GetObjPos(IEnumerable<Level> Levels)
+    {
+        Dictionary<int, string> IdName = new Dictionary<int, string>(); // список
+        foreach (var item in Levels)
+            IdName.Add(item.Id, item.LinkId + ":" + item.Name);
+
+        ExpPos(IdName, 0);
+    }
+
+    // Рекурсивное получение вложенных позиций
+    void ExpPos(Dictionary<int, string> IdName, int Link)
+    {
+        var CI = (Link == 0) ? "list" : "";
+        <ul class="@CI" id="@CI">
+            @foreach (var item in IdName.Where(x => Convert.ToInt32(x.Value.Split(':')[0]) == Link && x.Key != Link))
+            {
+            <li>
+                @item.Value.Split(':')[1] (ID: @item.Value.Split(':')[0])
+                @{
+                    ExpPos(IdName, item.Key);
+                }
+            </li>
+            }
+        </ul>
+    }
+
+
+}
+
+<style>
+    body {
+        font-size: 14px;
+        font-weight: 500;
+        font-family: sans-serif;
+    }
+
+    ul li {
+        /*list-style: none;  убираем дефолтные маркеры */
+        list-style: circle;
+    }
+
+    .list span {
+        cursor: pointer;
+    }
+
+    .hide::before {
+        content: "+"; /* украшательство вместо маркера */
+    }
+
+    .show::before {
+        content: "-"; /* украшательство вместо маркера */
+    }    
+</style>
+
+<h1>Levels_Tree</h1>
+
+@{ 
+    GetObjPos(Model);
+}
+
+<script type="text/javascript">
+
+    for (let li of list.querySelectorAll('li')) {
+        let span = document.createElement('span'); /* создание span */
+        span.classList.add('show'); /* добавление класса для span */
+        li.prepend(span); /* вставить span внутри li */
+        span.append(span.nextSibling) /* присоединить к span следующий узел */
+    }
+
+    list.onclick = function(event) {
+        if (event.target.tagName != 'SPAN') return;
+
+        let childrenList = event.target.parentNode.querySelector('ul');
+        if (!childrenList) return;
+        childrenList.hidden = !childrenList.hidden;
+
+        if (childrenList.hidden) {
+            event.target.classList.add('hide');
+            event.target.classList.remove('show');
+        }
+
+        else {
+            event.target.classList.add('show');
+            event.target.classList.remove('hide');
+        }
+    }    
+</script>

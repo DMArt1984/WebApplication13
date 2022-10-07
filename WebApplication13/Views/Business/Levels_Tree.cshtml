@@ -1,0 +1,487 @@
+﻿@model IEnumerable<Level>
+@{
+    ViewData["Title"] = "Структура позиций";
+
+    var uid = 0;
+    var maxUID = 0;
+
+    List<SelectListItem> TextLinkID = new List<SelectListItem>();
+    TextLinkID.Add(new SelectListItem { Value = "0", Text = "ЗАВОД" });
+    foreach (var item in Model.OrderBy(x => x.Name))
+        TextLinkID.Add(new SelectListItem { Value = item.Id.ToString(), Text = GetParent(item.Name, item.LinkId) });
+
+    List<SelectListItem> TextLinkID2 = new List<SelectListItem>();
+    foreach (var item in TextLinkID.OrderBy(x => x.Text))
+    {
+        var L = item.Text.Split('>');
+        string Text2 = ""; // new String('-',L.Count() - 1);
+        if (item.Value != "0")
+        {
+            for (int i = 1; i <= L.Count(); i++)
+                Text2 += " - ";
+        }
+
+        Text2 += L.Last().Trim();
+        TextLinkID2.Add(new SelectListItem { Value = item.Value, Text = Text2 });
+    }
+
+    // Получить позиции для выпадающего списка
+    string GetParent(string Text, int ID)
+    {
+        var Parent = Model.FirstOrDefault(x => x.Id == ID);
+        if (Parent == null)
+            return Text;
+
+        return GetParent(Parent.Name, Parent.LinkId) + " > " + Text;
+    }
+
+
+    // Получить вложенные позиции для дерева
+    void GetObjPos(IEnumerable<Level> Levels)
+    {
+        Dictionary<int, string> IdName = new Dictionary<int, string>(); // список
+        foreach (var item in Levels)
+            IdName.Add(item.Id, item.LinkId + ":" + item.Name);
+
+        <li>
+            Завод [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
+            @{ExpPos(IdName, 0);
+                maxUID = uid;}
+        </li>
+        <!-- Позиции с ошибками -->
+        foreach (var item in Levels.OrderBy(x => x.Id))
+        {
+            if (Levels.FirstOrDefault(x => x.Id == item.LinkId || item.LinkId == 0) == null)
+            {
+                <li>
+                    <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Id, '@item.Name', @item.LinkId)">@item.Name</a>
+                    <span class="badge bg-danger"> @item.LinkId</span>
+                </li>
+            }
+        }
+        <div class="pt-2 d-none">
+            <small id="a_Text" class="mx-1">Завод</small><small> (id: <code id="a_ID" class="mx-1">0</code>) </small>
+        </div>
+
+    }
+
+    // Рекурсивное получение позиций для дерева
+    void ExpPos(Dictionary<int, string> IdName, int Link)
+    {
+        var MyList = IdName.Where(x => GetLinkID(x.Value) == Link && x.Key != Link);
+        if (MyList.Count() == 0)
+            return;
+
+        <ul id="@uid">
+            @foreach (var item in MyList.OrderBy(y => GetName(y.Value)))
+            {
+                uid++;
+                <li>
+                    @{ // Свернуть и развернуть
+                        var Next = IdName.Where(x => GetLinkID(x.Value) == item.Key && x.Key != item.Key);
+                        if (Next.Count() > 0) // Позиция содержит дочерние объекты
+                        {
+                            <small class="badge bg-light d-none"><a id="m @uid" href="javascript:flipflop('@uid');">свернуть</a></small>
+                            <a href="javascript:flipflopClass('@uid');"><i id="s @uid" class="fas fa-angle-up"></i></a>
+                        }
+                        else
+                        {
+                            <i class="fas fa-angle-right"></i>
+                        }
+
+                    }
+
+                    <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Key, '@GetName(item.Value)', @GetLinkID(item.Value))">@GetName(item.Value)</a>
+
+                    @{ // дочерние объекты...
+                        ExpPos(IdName, item.Key);
+                    }
+                </li>
+            }
+        </ul>
+    }
+
+    // Рекурсивное получение позиций для таблицы
+    void ExpPosTable(int ID, string bg = "bg-light")
+    {
+        var L = Model.FirstOrDefault(x => x.Id == ID);
+        if (L != null)
+        {
+            ExpPosTable(L.LinkId);
+            <span class="badge @bg">@L.Name</span>
+        }
+        else
+        {
+            if (ID == 0)
+            {
+                <strong class="badge @bg">Завод</strong>
+            }
+            else
+            {
+                <strong class="badge bg-danger">@ID</strong>
+            }
+        }
+    }
+
+    // >>>
+    int GetLinkID(string Value)
+    {
+        return Convert.ToInt32(Value.Split(':')[0]);
+    }
+
+    string GetName(string Value)
+    {
+        return Value.Split(':')[1];
+    }
+
+}
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+<style>
+    ul li {
+        /*list-style: none;  убираем дефолтные маркеры */
+        list-style: none;
+    }
+</style>
+
+<!-- Добавить новую позицию -->
+<div id="myModal_Add" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form class="" asp-action="EditLevel_Tree" method="post">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="myModalLabel">Добавить новую позицию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="d-none">
+                        <small>ID:</small>
+                        <input class="form-control" id="n_Id" required="" readonly="" type="text" name="Id" placeholder="" value="0">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                    </div>
+                    <div class="">
+                        <small>Привязка:</small>
+                        <select class="form-select" id="n_LinkId" name="LinkId" value="0" asp-items="TextLinkID2" onchange="document.getElementById('n_LinkIdInfo').value = this.value;"></select>
+                    </div>
+                    <div class="pt-1">
+                        <select class="form-control-sm border-0" style="appearance: none" disabled id="n_LinkIdInfo" value="0" asp-items="TextLinkID"></select>
+                    </div>
+                    <div class="pt-2">
+                        <small>Название:</small>
+                        <input class="form-control" id="n_Name" required="" type="text" name="Name" placeholder="" value="Name">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary px-2"><i class="fas fa-plus"></i> Добавить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Редактировать позицию -->
+<div id="myModal_Edit" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- edit -->
+            <form class="" asp-action="EditLevel_Tree" method="post">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="myModalLabel">Редактировать позицию</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="d-none">
+                        <small>ID:</small>
+                        <input class="form-control" id="e_Id" required="" readonly="" type="text" name="Id" placeholder="" value="0">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                    </div>
+                    <div class="">
+                        <small>Привязка:</small>
+                        <select class="form-select" id="e_LinkId" name="LinkId" value="0" asp-items="TextLinkID2" onchange="document.getElementById('e_LinkIdInfo').value = this.value;"></select>
+                    </div>
+                    <div class="pt-1">
+                        <select class="form-control-sm border-0" style="appearance: none" disabled id="e_LinkIdInfo" value="0" asp-items="TextLinkID"></select>
+                    </div>
+                    <div class="pt-2">
+                        <small>Название:</small>
+                        <input class="form-control" id="e_Name" required="" type="text" name="Name" placeholder="" value="Name">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                    </div>
+                    <p><a href="#title" class="px-3" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="javascript:AddNew();"><small><i class="fas fa-plus-square"></i> Добавить новую позицию</small></a></p>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex">
+                        <div class="mr-auto px-4">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#myModal_Del" onclick="ChildLevels(document.getElementById('e_Id').value);"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                        </div>
+                        <div class="">
+                            <button type="submit" class="btn btn-primary px-2"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Удалить позицию -->
+<div id="myModal_Del" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- delete -->
+            <form class="" asp-action="DelLevel_Tree" method="post">
+                <div class="modal-header bg-dark">
+                    <h5 class="modal-title text-white" id="myModalLabel">Удалить позицию</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-none">
+                        <input class="form-control" required="" readonly="" type="text" id="e_Id2" name="Id" placeholder="" value="0">
+                        <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                    </div>
+                    <div class="pt-2">
+                        <small>Привязка:</small>
+                        <select class="form-control-sm border-0" style="appearance: none" disabled id="e_LinkIdInfo2" value="0" asp-items="TextLinkID"></select>
+                        <small>Название:</small>
+                        <input class="form-control" id="e_Name2" disabled required="" type="text" name="Name" placeholder="" value="Name">
+                    </div>
+                    <div class="pt-3">
+                        <div id="a_alert" class="alert alert-warning" role="alert">
+                            Удаление выбранной позиции приведет к удалению всех ее дочерних позиций! 
+                            <code id="a_child">...</code>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="but_edit" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<!-- Info from form -->
+<div class="p-1">
+    <div asp-validation-summary="All" class="text-danger"></div>
+</div>
+
+<!-- Nav tabs -->
+<ul class="nav nav-tabs mx-3" role="tablist">
+    <li class="nav-item">
+        <a id="tab1" class="nav-link active" data-bs-toggle="tab" href="#view-profile" role="tab" aria-selected="true">
+            <i class="mdi mdi-file-tree me-1 align-middle"></i> <span class="d-none d-md-inline-block">Дерево</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a id="tab2" class="nav-link" data-bs-toggle="tab" href="#edit-profile" role="tab" aria-selected="false">
+            <i class="mdi mdi-table me-1 align-middle"></i> <span class="d-none d-md-inline-block">Таблица</span>
+        </a>
+    </li>
+    <li class="nav-item px-5">
+        <!-- КНОПКА: Добавить новую позицию -->
+        <button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="javascript:AddNew();"><i class="fas fa-plus"></i> Добавить новую позицию</button>
+    </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content pt-0">
+
+    <!-- 1: Tree -->
+    <div class="tab-pane active" id="view-profile" role="tabpanel">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    @{
+                        GetObjPos(Model);
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2: Table -->
+    <div class="tab-pane" id="edit-profile" role="tabpanel">
+        <div class="card">
+            <div class="card-body">
+                <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="d-none">ID</th>
+                            <th>Позиция</th>
+                            <th class="d-none">ID привязки</th>
+                            <th>Путь</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(x => x.Name))
+                        {
+                            <tr>
+                                <th scope="row" class="d-none">@item.Id</th>
+                                <td>
+                                    <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Id, '@item.Name', @item.LinkId)">@item.Name</a>
+                                </td>
+                                <td class="text-secondary d-none">@item.LinkId</td>
+                                <td style="white-space: nowrap">
+                                    @{
+                                        ExpPosTable(@item.LinkId, "bg-dark");
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+}
+<script type="text/javascript">
+
+    //HideId('myModal_Delete');
+
+    //Edit(0, "", 0);
+    HideAll();
+
+    // Форма редактирования позиции
+    function Edit(Id, Name, LinkId) {
+        document.getElementById("e_Id").value = Id;
+        document.getElementById("e_Name").value = Name;
+        document.getElementById("e_LinkId").value = LinkId;
+        document.getElementById("e_LinkIdInfo").value = document.getElementById("e_LinkId").value;
+
+        document.getElementById("e_Id2").value = Id;
+        document.getElementById("e_Name2").value = Name;
+        document.getElementById("e_LinkIdInfo2").value = document.getElementById("e_LinkId").value;
+
+        if (Name != "")
+            SetLink(Id, Name);
+
+        //ShowId("myModal_Edit");
+    }
+
+    // Установить пересенные для ссылки к новой позиции
+    function SetLink(Id, Text) {
+        document.getElementById("a_ID").textContent = Id;;
+        document.getElementById("a_Text").textContent = Text;
+    }
+
+    // Установить ссылку в форме
+    function Link(LinkId) {
+        document.getElementById("e_LinkId").value = LinkId;
+    }
+
+    // Форма добавления новой позиции
+    function AddNew() {
+        document.getElementById("n_Id").value = 0;
+        document.getElementById("n_Name").value = "";
+        document.getElementById("n_LinkId").value = document.getElementById("a_ID").textContent;
+        document.getElementById("n_LinkIdInfo").value = document.getElementById("n_LinkId").value;
+    }
+
+    function HideAll() {
+        for (var i = 1; i <=@maxUID; i++) {
+            element = document.getElementById(i);
+            link = document.getElementById("s " + i);
+            if (element) {
+                element.style.display = "none";
+            }
+            if (link)
+                link.className = "fas fa-angle-double-right";
+        }
+    }
+
+    function ShowAll() {
+        for (var i = 1; i <=@maxUID; i++) {
+            element = document.getElementById(i);
+            link = document.getElementById("s " + i);
+            if (element)
+                element.style.display = "";
+             if (link)
+                link.className = "fas fa-angle-up";
+        }
+    }
+
+    // Показывает скрытое, скрывает видимое
+    function flipflop(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("m " + id);
+
+        // если таковой в документе существует
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+
+        if (link)
+            link.textContent = link.textContent == "свернуть" ? "развернуть" : "свернуть";
+    }
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("s " + id);
+
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-angle-up" ? "fas fa-angle-double-right" : "fas fa-angle-up";
+    }
+
+    // Show Hide for ID
+    function HideId(id) {
+            document.getElementById(id).style.display = 'none'; // скрыть
+        }
+    function ShowId(id) {
+            document.getElementById(id).style.display = ''; // показать
+    }
+
+    // Получение дочерних объектов
+    function ChildLevels(id) {
+            $.ajax({
+                type: 'get',
+                url: '/Business/ChildLevels',
+                data: { 'Id': id },
+                success: function (result) {
+                    if (result == "") {
+                        document.getElementById("a_alert").style.display = 'none';
+                    } else {
+                        document.getElementById("a_alert").style.display = '';
+                        document.getElementById("a_child").textContent = result;
+                    }
+                    //document.getElementById("a_Text").innerHTML = result;
+                },
+                failure: function () {
+                    alert("failure");
+                }
+            });
+        }
+
+</script>
+

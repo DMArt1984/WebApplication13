@@ -1,0 +1,80 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Добро пожаловать!";
+}
+
+            
+            <div class="card-body p-5 ">
+                <div class="">
+                    <div class="text-center mb-2">
+                        <a href="index.html" class="">
+                            <img src="~/assets/images/logo-dark.png" alt="" height="48" class="auth-logo logo-dark mx-auto">
+                            <img src="~/assets/images/logo-light.png" alt="" height="48" class="auth-logo logo-light mx-auto">
+                        </a>
+                    </div>
+                    <!-- end row -->
+                    <!--
+                    <h4 class="font-size-18 text-muted mt-2 text-center">@ViewData["Title"]</h4>
+                    <p class="mb-5 text-center">Используйте учетную запись для входа.</p>
+                    -->
+                    <form id="account" method="post" class="form-horizontal">
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-4">
+                                    <!--
+        <label asp-for="Input.Login"></label>
+        <span asp-validation-for="Input.Login" class="text-danger"></span>
+        -->
+                                    <input asp-for="Input.Login" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Input.Login)" />
+                                </div>
+                                <div class="form-group mb-4">
+                                    <!--
+        <label asp-for="Input.Password"></label>
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+        -->
+                                    <input asp-for="Input.Password" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Input.Password)" />
+                                </div>
+                                <div class="form-group mb-3 form-check form-check-inline">
+                                    <div class="checkbox">
+                                        <label asp-for="Input.RememberMe">
+                                            <input asp-for="Input.RememberMe" class="form-check-input" />
+                                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group d-grid mb-3">
+                                    <button type="submit" class="btn btn-primary waves-effect waves-light">Вход</button>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <a id="forgot-password" asp-page="./ForgotPassword"><i class="mdi mdi-lock"></i> Забыли пароль?</a>
+                                </div>
+                                <!--
+    <div class="card m-0">
+        <div class="card-header" id="headingOne">
+            <h5 class="m-0 font-size-10">
+                <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne" class="text-dark collapsed">
+                    Настройка подключения
+                </a>
+            </h5>
+        </div>
+
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion" style="">
+            <div class="card-body m-1 p-1">
+                <input asp-for="Input.NameConnection" class="form-control" required="" placeholder="Html.DisplayNameFor(m => m.Input.NameConnection)" value="ViewData["MyConnName"]"/>
+            </div>
+        </div>
+    </div>
+    -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+       
+
+            @section Scripts {
+                <partial name="_ValidationScriptsPartial" />
+            }

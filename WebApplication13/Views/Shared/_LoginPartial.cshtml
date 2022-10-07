@@ -1,0 +1,83 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var company = "";
+    var error = "";
+    var message = "";
+    try
+    {
+        var id = UserManager.GetUserId(User);
+        var user = UserManager.Users.First(x => x.Id == id); // or @user.Company
+        var list = UserManager.GetClaimsAsync(user).Result.Where(y => y.Type.ToLower() == "company");
+        company = list.First().Value; // UserManager.GetClaimsAsync(user).Result.First(y => y.Type.ToLower() == "company").Value;
+        
+        if (list.Distinct().Count() > 1)
+        {
+            company += "..."+list.Last().Value;
+        }
+    }
+    catch (Exception ex)
+    {
+        error = $"{ex.HResult.ToString("X")}";
+        message = $"{ex.Message} ({ex.Source})";
+    }
+}
+
+    <div class="container">
+        <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+            @if (@error != "")
+            {
+                <span class="badge bg-danger" data-toggle="tooltip" data-placement="left" title="@message">Ошибка №@error</span>
+            }
+            <ul class="navbar-nav flex-grow-1">
+                @if (SignInManager.IsSignedIn(User))
+                {
+
+                    <div class="dropdown d-inline-block user-dropdown">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="d-none d-xl-inline-block ms-1">@User.Identity.Name</span>
+                            <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
+                            @try
+                            {
+                                @if (UserManager.GetUserAsync(User).Result.Photo != null)
+                                {
+                                    <img style="width:40px;height:40px; object-fit:cover; border-radius:30px" src="data:image/*;base64,@(Convert.ToBase64String(UserManager.GetUserAsync(User).Result.Photo))" alt="Header Avatar">
+                                }
+                            }
+                            catch
+                            {
+
+                            }
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" style="">
+                            <!-- item-->
+                            @if (@error == "")
+                            {
+                                <a class="dropdown-item d-none" asp-area="Identity" asp-page="/Account/Manage/Index" title="Профиль"><i class="mdi mdi-face align-middle me-1 "></i> Профиль</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Profile" title="Профиль"><i class="mdi mdi-badge-account-horizontal-outline"></i> Профиль</a>
+                            }
+                            <div class="dropdown-divider d-none"></div>
+                            <a class="dropdown-item d-none" href="#"><i class="ri-settings-2-line align-middle me-1"></i> Настройки</a>
+                            <div class="dropdown-divider"></div>
+                            <!--<a class="dropdown-item text-danger" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post"><i class="ri-shut-down-line align-middle me-1 text-danger"></i> Выход</a>-->
+                            <form class="dropdown-item form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                                <button type="submit" class="nav-link btn btn-link text-danger"><i class="ri-shut-down-line align-middle me-1 text-danger"></i>Выход</button>
+                            </form>
+                        </div>
+                    </div>
+
+
+                }
+                else
+                {
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Вход</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+
+

@@ -1,0 +1,165 @@
+﻿
+<li class="menu-title">Общий раздел</li>
+
+<li>
+    <a class="waves-effect" asp-area="" asp-controller="Home" asp-action="Index">
+        <i class="mdi mdi-home"></i>
+        <span>Главная</span>
+    </a>
+</li>
+
+<li class="d-none">
+    <a class="waves-effect" asp-area="" asp-controller="Home" asp-action="Privacy">
+        <i class="mdi mdi-key"></i>
+        <span>Секрет</span>
+    </a>
+</li>
+
+
+
+<li class="menu-title">Обслуживание</li>
+<li>
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="WorksList">
+        <i class="mdi mdi-list-status"></i>
+        <span>Статистика</span>
+    </a>
+</li>
+<li class="d-none">
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams">
+        <i class="mdi mdi-sticker-circle-outline"></i>
+        <span>Диаграммы</span>
+    </a>
+</li>
+<li>
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="AlertsList">
+        <i class="mdi mdi-alert"></i>
+        <span>Уведомления</span>
+    </a>
+</li>
+
+<li>
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Index">
+        <i class="mdi mdi-engine"></i>
+        <span>Объекты</span>
+    </a>
+</li>
+
+<li class="d-none">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="QRCodes">
+        <i class="mdi mdi-qrcode-scan"></i>
+        <span>QR коды</span>
+    </a>
+</li>
+<li class="d-none">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Index">
+        <i class="mdi mdi-file-table"></i>
+        <span>Объекты обслуживания</span>
+    </a>
+</li>
+
+<li class="d-none">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Levels">
+        <i class="mdi mdi-map-marker"></i>
+        <span>Позиции</span>
+    </a>
+</li>
+
+<li>
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Levels_Tree">
+        <i class="mdi mdi-graph-outline"></i>
+        <span>Структура</span>
+    </a>
+</li>
+
+<li>
+    <a class="waves-effect" asp-area="" asp-controller="Files" asp-action="Index">
+        <i class="mdi mdi-image"></i>
+        <span>Файлы</span>
+    </a>
+</li>
+
+<li class="d-none">
+    <a class="waves-effect" asp-area="" asp-controller="Files" asp-action="videofile">
+        <i class="mdi mdi-image"></i>
+        <span>Файлы (М)</span>
+    </a>
+</li>
+
+<li class="d-none">
+    <a href="javascript: void(0);" class="has-arrow waves-effect mm-active" aria-expanded="false">
+        <i class="mdi mdi-graph-outline"></i>
+        <span>Структура</span>
+    </a>
+    <ul class="sub-menu mm-collapse" aria-expanded="false">
+        <li><a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Levels"><i class="mdi mdi-file-delimited"></i>Таблица позиций</a></li>
+        <li><a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Levels_Tree"><i class="mdi mdi-file-tree"></i>Дерево позиций</a></li>
+    </ul>
+</li>
+
+<li class="d-none">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="TagsInfo">
+        <i class="mdi mdi-texture-box"></i>
+        <span>Тест</span>
+    </a>
+</li>
+
+@if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+{
+    <li class="menu-title">Администрирование</li>
+    <ul class="d-none">
+        <li>
+            <a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Index">
+                <i class="mdi mdi-book-account"></i>
+                <span>Пользователи</span>
+            </a>
+        </li>
+        <li>
+            <a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Register">
+                <i class="mdi mdi-account-plus"></i>
+                <span>Регистрация</span>
+            </a>
+        </li>
+        <li>
+            <a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Profile">
+                <i class="mdi mdi-face-recognition"></i>
+                <span>Профиль</span>
+            </a>
+        </li>
+        <li class="d-none">
+            <a class=" waves-effect" asp-area="Identity" asp-page="/Account/Register">
+                <i class="mdi mdi-account-plus"></i>
+                <span>Регистрация</span>
+            </a>
+        </li>
+    </ul>
+    <li>
+        <a href="javascript: void(0);" class="has-arrow waves-effect" aria-expanded="false">
+            <i class="mdi mdi-account-reactivate"></i>
+            <span>Сотрудники</span>
+        </a>
+        <ul class="sub-menu mm-collapse" aria-expanded="false">
+            <li><a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Index"><i class="mdi mdi-book-account"></i>Таблица пользователей</a></li>
+            <li><a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Register"><i class="mdi mdi-account-plus"></i>Регистрация</a></li>
+            <li><a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Profile"><i class="mdi mdi-badge-account-horizontal-outline"></i>Профиль</a></li>
+        </ul>
+    </li>
+
+    <li class="d-none">
+        <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="TagsInfo">
+            <i class="ri-settings-4-fill"></i>
+            <span>Настройки</span>
+        </a>
+    </li>
+
+
+}
+
+
+<li class="menu-title d-none">Справка</li>
+
+<li class="d-none">
+    <a asp-action="Info" asp-controller="Home" class=" waves-effect">
+        <i class="mdi mdi-help-circle"></i>
+        <span>Руководство</span>
+    </a>
+</li>

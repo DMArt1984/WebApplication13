@@ -1,0 +1,163 @@
+﻿@model IEnumerable<Level>
+@{
+    ViewData["Title"] = "Позиции";
+
+    var uid = 0;
+
+    // Получить вложенные позиции
+    void GetObjPos(IEnumerable<Level> Levels)
+    {
+        Dictionary<int, string> IdName = new Dictionary<int, string>(); // список
+        foreach (var item in Levels)
+            IdName.Add(item.Id, item.LinkId + ":" + item.Name);
+        <li>
+            <a href="javascript:SetLink(0, 'Завод');">Завод</a> (id:<code>0</code>)
+            @{var temp = ExpPos(IdName, 0);}
+        </li>
+        <small id="a_Text" class="mx-1">Завод</small><small> (id: <code id="a_ID" class="mx-1">0</code>) > </small><a href="javascript:AddNew();">Добавить новую позицию</a>
+    }
+
+    // Рекурсивное получение вложенных позиций
+    bool ExpPos(Dictionary<int, string> IdName, int Link)
+    {
+        uid++;
+        var MyList = IdName.Where(x => Convert.ToInt32(x.Value.Split(':')[0]) == Link && x.Key != Link);
+        if (MyList.Count() == 0)
+            return false;
+
+        <small class="badge bg-light"><a id="m @uid" href="javascript:flipflop('@uid');">свернуть</a></small>
+        <ul id="@uid">
+            @foreach (var item in MyList)
+            {
+                <li>
+                    <a href="#title" onclick="Edit(@item.Key, '@item.Value.Split(':')[1]', @item.Value.Split(':')[0]);">@item.Value.Split(':')[1]</a> (id: <code>@item.Key</code>)
+                    @{
+                        var temp = ExpPos(IdName, item.Key);
+                    }
+                </li>
+            }
+        </ul>
+        return true;
+    }
+
+}
+
+
+<style>
+    ul li {
+        /*list-style: none;  убираем дефолтные маркеры */
+        list-style: circle;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@ViewData["Title"]</h4>
+        <p class="card-title-desc">Нажмите на <code>позицию</code> для того, чтобы изменить или удалить ее.</p>
+        <div>
+            @{
+                GetObjPos(Model);
+            }
+        </div>
+    </div>
+</div>
+
+<div>
+    <div id="title">
+        <h4 class="card-title d-none">Добавить / Изменить позицию</h4>
+        <div class="d-flex flex-row align-items-end">
+            <form class="row row-cols-md-auto g-3 align-items-end" asp-action="EditLevel_Tree" method="post">
+
+                <div class="col-12">
+                    <small>ID:</small>
+                    <input class="form-control" required="" readonly="" type="text" id="e_Id" name="Id" placeholder="" value="0">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                </div>
+                <div class="col-12">
+                    <small>Название:</small>
+                    <input class="form-control" required="" type="text" id="e_Name" name="Name" placeholder="" value="Name">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                </div>
+                <div class="col-12">
+                    <small>ID ссылки:</small>
+                    <input class="form-control" required="" type="text" id="e_LinkId" name="LinkId" placeholder="" value="0">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="LinkId" data-valmsg-replace="true"></span>
+                </div>
+
+                <div class="col-12">
+                    <button id="but_edit" type="submit" class="btn btn-primary">Добавить / изменить</button>
+                </div>
+            </form>
+            <form id="del" class="row row-cols-lg-auto g-3 align-items-center mx-2" asp-action="DelLevel_Tree" method="post">
+                <div class="col-12 d-none">
+                    <input class="form-control" required="" readonly="" type="text" id="e_Id2" name="Id" placeholder="" value="0">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                </div>
+                <div class="col-12">
+                    <button id="but_edit" type="submit" class="btn btn-danger">Удалить</button>
+                </div>
+            </form>
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    Edit(0, "", 0);
+
+    // Форма редактирования позиции
+    function Edit(Id, Name, LinkId) {
+        if (Id == 0) {
+            //document.getElementById("title").textContent = "Добавить позицию";
+            document.getElementById("but_edit").textContent = "Добавить";
+            document.getElementById("del").style.display = 'none'; // скрыть
+        } else {
+            //document.getElementById("title").textContent = "Изменить позицию";
+            document.getElementById("but_edit").textContent = "Изменить";
+            document.getElementById("del").style.display = ''; // показать
+        }
+        document.getElementById("e_Id").value = Id;
+        document.getElementById("e_Id2").value = Id;
+        document.getElementById("e_Name").value = Name;
+        document.getElementById("e_LinkId").value = LinkId;
+
+        if (Name != "")
+            SetLink(Id, Name);
+    }
+
+    // Установить пересенные для ссылки к новой позиции
+    function SetLink(Id, Text) {
+        elementId = document.getElementById("a_ID");
+        if (elementId)
+            elementId.textContent = Id;
+
+        elementText = document.getElementById("a_Text");
+        if (elementText)
+            elementText.textContent = Text;
+    }
+
+    // Форма добавления новой позиции
+    function AddNew() {
+        elementId = document.getElementById("a_ID");
+        if (elementId)
+            Edit(0, "", elementId.textContent);
+    }
+
+    // Показывает скрытое, скрывает видимое
+    function flipflop(id) {
+        element = document.getElementById(id);
+        link = document.getElementById("m " + id);
+
+        // если таковой в документе существует
+        if (element)
+            element.style.display = element.style.display == "none" ? "" : "none";
+
+        if (link)
+            link.textContent = link.textContent == "свернуть" ? "развернуть >>>" : "свернуть";
+    }
+
+</script>
+

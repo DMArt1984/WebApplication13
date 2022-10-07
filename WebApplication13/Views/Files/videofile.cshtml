@@ -1,0 +1,400 @@
+﻿
+@model IEnumerable<FactPortal.Models.myFiles>
+@{
+    ViewData["Title"] = "AddFile";
+    var uid = 0;
+
+    var names = new List<string>();
+
+    // ---
+
+    string getrus(string word)
+    {
+        switch (word)
+            {
+                case "Images":
+                    return "Фотографии";
+                case "Videos":
+                    return "Видео";
+                case "PDfs":
+                    return "PDF файлы";
+                default:
+                    return "файлы";
+            }
+    }
+
+    string correctpath(string path)
+    {
+        if (path.Split("/").Contains("Files"))
+        {if (path.Split("/").First() == "~") {  path = path.Substring(2); }
+        path = path.Substring(6);}
+        return path;
+    }
+}
+
+<style>
+  .tabs_ {
+    display: flex;
+    flex-direction: row;
+    align-items:flex-end;
+}
+
+.search {
+    width: 100%;
+    background: #F7F8F9;
+    border-radius: 4px; 
+    padding: 12px;
+    margin: 32px 0;
+    gap: 10px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.table__search {
+    width: 100%;
+    max-width: 200px;
+    padding: 8px;
+    gap: 8px;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 20px;
+
+    background: #fff;
+    color: #64748B;
+    border: 1px solid #E7EAEE;
+    border-radius: 4px;
+}
+.tabcontent {
+    display: none;
+    width: 100%;
+}
+
+</style>
+
+
+
+@foreach (var f in Model)
+{
+    @if(f.Path.Split("/").Contains("Files"))
+    {
+        var flag = 0;
+        @foreach(var i in f.Path.Split("/"))
+        {
+            if (flag == 1)
+            {
+                names.Add(i);
+                flag = 0;
+                names = names.Distinct().ToList();
+            }
+            if (i == "Files")
+            {
+                flag = 1;
+            }
+        }
+                    
+     }
+ }
+
+<ul class="nav nav-tabs mx-3" role="tablist">
+    @{var ch=0;}
+    @foreach(var i in names)
+    {
+                    if (ch == 0)
+                    { <li class="nav-item">
+                        <a id="tab1" class="nav-link active" data-bs-toggle="tab" href="#tab_@ch" role="tab" aria-selected="true">
+                            @if(i=="Images"){ <i class="mdi mdi-file-image"></i>}
+                            @if(i=="Videos"){ <i class="mdi mdi-file-video-outline"></i>}
+                            @if(i=="PDFs"){ <i class="mdi mdi-file-pdf-outline"></i>}
+                            <span class="d-none d-md-inline-block">@getrus(i)</span>
+                        </a>
+                      </li>
+                    }
+                    else
+                    {
+                      <li class="nav-item">
+                         <a id="tab2" class="nav-link" data-bs-toggle="tab" href="#tab_1" role="tab" aria-selected="false">
+                            @if(i=="Images"){ <i class="mdi mdi-file-image"></i>}
+                            @if(i=="Videos"){ <i class="mdi mdi-file-video-outline"></i>}
+                            @if(i=="PDFs"){ <i class="mdi mdi-file-pdf-outline"></i>}
+                            <span class="d-none d-md-inline-block">@getrus(i)</span>
+                         </a>
+                      </li>
+                    }
+                    ch++;
+    }
+    <li class="nav-item" >
+         <input id="searchInTable" type="search" class="table__search" placeholder="Поиск" onkeyup="">   
+    </li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content pt-0">
+   @{ch=0;}
+   @foreach(var i in names)
+    {
+        if (ch == 0)
+        {
+            <div id="tab_@ch"  class="tab-pane active" role="tabpanel">
+                <div class="card">
+                    <div class="card-body">  
+                        <table  class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%; " >
+                            <thead class="bg-primary text-white">
+                                <tr class = "">
+                                    <th class="table__heading" >Название</th>
+                                    <th class="table__heading" >Редактирование</th>
+                                </tr>
+                            </thead>
+                            <tdoby>
+                                @if (i=="Images")
+                                 {
+                                    <form asp-action="Index_Images" asp-controller="Files" method="post" enctype="multipart/form-data">
+                                        <td><input type="file" name="uploadedFile" /><br></td>
+                                        <td><input type="submit" class="btn btn-primary" value="Загрузить" /></td>
+                                    </form> 
+                                 }
+                                else
+                                {
+                                    <form asp-action="Index_Video" asp-controller="Files" method="post" enctype="multipart/form-data">
+                                        <td><input type="file" name="uploadedFile" /><br></td>
+                                        <td><input type="submit" class="btn btn-primary" value="Загрузить" /></td>
+                                    </form>
+                                }
+                                @foreach (var f in Model)
+                                 {      
+                                    @if(f.Path.Split("/").Contains("Files"))
+                                     {
+                                        uid++;
+                                        var path =f.Path;
+                                        if (f.Path.Split("/").First() == "~") {  path = f.Path.Substring(1); }
+
+                                        @if (f.Path.Split("/").Contains(i))
+                                         {
+                                                <tr class="table__row">
+                                                    <td class="table__text" ><button type="button" class="btn btn-link btn-rounded waves-effect" data-bs-toggle="modal" data-bs-target="#_@uid">@f.Path.Split("/").Last()</button> </td> 
+                                                    <td class="table__text"  ><a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModal_@f.Id"><i class="ri-delete-bin-2-fill"></i> </a>
+                                                </tr>
+
+                                                <!-- отображение файла -->
+                                                <div id="_@uid" class="modal fade bs-example-modal-xl show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="myModalLabel">@f.Path.Split("/").Last()</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                @if (@f.Path.Split("/").Last().Split(".").Last() == "pdf")
+                                                                {
+                                                                    <embed src="@path" style="width:100%; min-height:790px; display: block;margin: 0 auto; "/>
+                                                                }
+                                                                @if (@f.Path.Split("/").Last().Split(".").Last() == "mp4")
+                                                                {
+
+
+                                                                    <video controls="controls" style="width:100%; display: block; margin: 0 auto; ">
+                                                                        <source src="@path" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                                                                        Тег video не поддерживается вашим браузером. 
+                                                                        <a href="@path">Скачайте видео</a>.
+                                                                    </video>
+                                                                }
+                                                                @if (@f.Path.Split("/").Last().Split(".").Last() == "jpg" || @f.Path.Split("/").Last().Split(".").Last() == "png")
+                                                                {
+                                                                    <embed src="@path" style="min-width:600px; display: block; margin: 0 auto; "/>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Удаление -->
+                                                <div id="myModal_@f.Id" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="myModalLabel">Удалить Файл @f.Path.Split("/").Last()?</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>После этого действия вы не сможете востановить файл с именем @f.Path.Split("/").Last()</p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                                                                <form asp-controller="Files" asp-action="Delete" method="post"><input type="number" name="id" value="@f.Id" style="display: none" readonly /><input type="text" name="fileName" value="@f.Path.Split("/").Last()" style="display: none" readonly /> <div class="form-group"><input type="submit" class="btn btn-danger waves-effect waves-light" value="Удалить" /></div> </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                         }
+                                     }    
+                                 }      
+                            </tdoby>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div id="tab_@ch"  class="tab-pane" role="tabpanel">         
+                <div class="card">
+                    <div class="card-body">  
+                        <table  class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%; " >
+                            <thead class="bg-primary text-white">
+                                <tr class = "">
+                                    <th class="table__heading" >Название</th>
+                                    <th class="table__heading" >Редактирование</th>
+                                </tr>
+                            </thead>
+                            <tdoby>
+                              @if (i=="Images")
+                                {
+                                   <form asp-action="Index_Images" asp-controller="Files" method="post" enctype="multipart/form-data">
+                                    <td><input type="file" name="uploadedFile" /><br></td>
+                                    <td><input type="submit" class="btn btn-primary" value="Загрузить" /></td>
+                                   </form> 
+                                }
+                                else{
+                                <form asp-action="Index_Video" asp-controller="Files" method="post" enctype="multipart/form-data">
+                                <td><input type="file" name="uploadedFile" /><br></td>
+                                <td><input type="submit" class="btn btn-primary" value="Загрузить" /></td>
+                               </form>
+                                }
+                    @foreach (var f in Model)
+                    {      
+                    @if(f.Path.Split("/").Contains("Files"))
+                    {
+                        uid++;
+                        var path =f.Path;
+                        if (f.Path.Split("/").First() == "~") {  path = f.Path.Substring(1); }
+
+                                            @if (f.Path.Split("/").Contains(i))
+                                            {
+                                                <tr class="table__row">
+                                                    <td class="table__text" ><button type="button" class="btn btn-link btn-rounded waves-effect" data-bs-toggle="modal" data-bs-target="#_@uid">@f.Path.Split("/").Last()</button> </td> 
+                                                    <td class="table__text"  ><a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModal_@f.Id"><i class="ri-delete-bin-2-fill"></i> </a>
+                                                </tr>
+
+                                                <!-- отображение файла -->
+                                                <div id="_@uid" class="modal fade bs-example-modal-xl show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog modal-xl">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="myModalLabel">@f.Path.Split("/").Last()</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                @if (@f.Path.Split("/").Last().Split(".").Last() == "pdf")
+                                                                {
+                                                                    <embed src="@path" style="width:100%; min-height:790px; display: block;margin: 0 auto; "/>
+                                                                }
+                                                                @if (@f.Path.Split("/").Last().Split(".").Last() == "mp4")
+                                                                {
+
+
+                                                                    <video controls="controls" style="width:100%; display: block; margin: 0 auto; ">
+                                                                        <source src="@path" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                                                                        Тег video не поддерживается вашим браузером. 
+                                                                        <a href="@path">Скачайте видео</a>.
+                                                                    </video>
+                                                                }
+                                                                @if (@f.Path.Split("/").Last().Split(".").Last() == "jpg" || @f.Path.Split("/").Last().Split(".").Last() == "png")
+                                                                {
+                                                                    <embed src="@path" style="min-width:600px; display: block; margin: 0 auto; "/>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Удаление -->
+                                                <div id="myModal_@f.Id" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="myModalLabel">Удалить Файл @f.Path.Split("/").Last()?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>После этого действия вы не сможете востановить файл с именем @f.Path.Split("/").Last()</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                                                    <form asp-controller="Files" asp-action="Delete" method="post"><input type="number" name="id" value="@f.Id" style="display: none" readonly /><input type="text" name="fileName" value="@f.Path" style="display: none" readonly /> <div class="form-group"><input type="submit" class="btn btn-danger waves-effect waves-light" value="Удалить" /></div> </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                        }
+                    }    
+                    }    
+                     </tdoby>
+                        </table>
+                    </div>
+                </div>
+            </div> 
+        }
+        
+        // ++
+        ch++;
+    }
+</div>
+ 
+
+<!-- Scripts -->
+
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+}
+
+<script type="text/javascript">
+    function openTab(evt, tabName) {
+    // Declare all variables
+    var i, tabcontent, tablinks;
+  
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+  
+    // Get all elements with class="tab__link" and remove the class "active"
+    tablinks = document.getElementsByClassName("tab__link");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" tab__link--active", "");
+    }
+  
+    // Show the current tab, and add an "active" class to the button that opened the tab
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " tab__link--active";
+  }
+  
+  function searchInTable () {
+  const input = document.querySelector(".table__search");
+  const tr = document.querySelectorAll(".table__row");
+  const tableTexts = document.querySelectorAll(".table__text");
+  
+  
+
+  input.addEventListener("input", () => {
+    const inputVal = input.value.trim().toLowerCase();
+
+    tr.forEach((item) => {
+          if (item) {
+              if (item.innerText.toLowerCase().search(inputVal) !== -1 || !inputVal.length) {
+                item.style.display = "";
+              } else {
+                item.style.display = "none";
+              }
+            }
+        });
+    });
+    }
+
+    searchInTable ()
+</script>

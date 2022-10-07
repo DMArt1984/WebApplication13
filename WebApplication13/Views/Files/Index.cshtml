@@ -1,0 +1,231 @@
+﻿@model List<myFiles>
+
+@{
+    ViewData["Title"] = "Файлы " + ViewData["MyCompanyName"];
+
+    List<SelectListItem> listFolders = new List<SelectListItem>();
+    listFolders.Add(new SelectListItem { Text = "/Files", Value = "/Files" });
+    listFolders.Add(new SelectListItem { Text = "/Files/Images", Value = "/Files/Images" });
+    listFolders.Add(new SelectListItem { Text = "/Files/Videos", Value = "/Files/Videos" });
+    listFolders.Add(new SelectListItem { Text = "/Files/Documents", Value = "/Files/Documents" });
+
+    //foreach (var item in Model.Select(x => x.Path.Substring(0, x.Path.LastIndexOf('/'))).Distinct())
+    //    listFolders.Add(new SelectListItem { Text = item, Value = item });
+
+    listFolders.OrderBy(x => x.Text);
+
+}
+
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+<!-- Table -->
+<div class="card">
+    <div class="card-body">
+        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Тип</th>
+                    <th>Путь</th>
+                    <th>Описание</th>
+                    <th>Редактор</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderBy(x => x.Path))
+                {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>
+
+                            <a class="" target="_blank" href=@Html.Partial("_requestPathBase", item.Path.Replace(" ", "%20"))>
+                                @item.Name
+                            </a>
+                            
+                        </td>
+                        <td>
+                            <i class='@Html.Partial("_FileIcon", item.Path) text-secondary px-2'></i> @item.Path.Split(".").Last().ToLower()
+                        </td>
+                        <td>
+                            @foreach (var folder in item.Path.Split("/"))
+                            {
+                                if (folder != "" && folder != item.Path.Split("/").Last())
+                                {
+                                    <span> / </span><strong class="">@folder</strong>
+                                }
+                            }
+                        </td>
+                        <td>@item.Description</td>
+                        <td>
+                            <button class="btn btn-outline-secondary btn-sm edit" title="Редактировать" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="javascript:Edit(@item.Id, '@item.Name', '@item.Description', '@item.Path');">
+                                <i class="fas fa-pencil-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <!-- КНОПКА: Добавить новый файл -->
+        <button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="">
+            <i class="fas fa-plus"></i> Добавить новый файл
+        </button>
+    </div>
+</div>
+
+
+<!-- Добавить новый файл -->
+<div id="myModal_Add" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <form asp-action="Index" method="post" enctype="multipart/form-data">
+
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="myModalLabel">Добавить новый файл</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="pt-2">
+                        <input class="form-control" type="file" name="uploadedFile" /><br>
+                    </div>
+
+                    <div class="pt-2">
+                        <small>Путь:</small>
+                        <!--<input class="form-control" required="" type="text" name="Folders" placeholder="" value="/Files/">-->
+                        <select class="form-select" name="Folders" value="" asp-items="listFolders"></select>
+                    </div>
+
+                    <div class="pt-2">
+                        <small>Описание:</small>
+                        <input class="form-control" type="text" name="Description" value="">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary px-2"><i class="fas fa-plus"></i> Добавить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                </div>
+
+            </form>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Редактировать файл -->
+<div id="myModal_Edit" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- edit -->
+            <form class="" asp-action="EditFile" method="post">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title" id="myModalLabel">Редактировать файл</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-none">
+                        <small>ID:</small>
+                        <input class="form-control" id="e_Id" required="" readonly="" type="text" name="Id" placeholder="" value="0">
+                    </div>
+                    <div class="">
+                        <small>Путь:</small>
+                        <div id="e_Path"></div>
+                    </div>
+                    <div class="pt-2">
+                        <small>Название:</small>
+                        <input class="form-control" id="e_Name" required="" type="text" name="Name" placeholder="Название" value="">
+                    </div>
+                    <div class="pt-2">
+                        <small>Описание:</small>
+                        <input class="form-control" id="e_Description" type="text" name="Description" placeholder="Описание" value="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="d-flex">
+                        <div class="mr-auto px-4">
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#myModal_Del" onclick="ChildLevels(document.getElementById('e_Id').value);"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                        </div>
+                        <div class="">
+                            <button type="submit" class="btn btn-primary px-2"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Удалить файл -->
+<div id="myModal_Del" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <!-- delete -->
+            <form class="" asp-action="DeleteFile" method="post">
+                <div class="modal-header bg-dark">
+                    <h5 class="modal-title text-white" id="myModalLabel">Удалить файл</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-none">
+                        <input class="form-control" required="" readonly="" type="text" id="e_Id2" name="Id" placeholder="" value="0">
+                    </div>
+                    <div class="pt-2">
+                        <small>Название:</small>
+                        <input class="form-control" id="e_Name2" disabled required="" type="text" name="Name" placeholder="" value="Name">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="but_edit" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<script type="text/javascript">
+
+    // Форма редактирования файла
+    function Edit(Id, Name, Description, Path) {
+        document.getElementById("e_Id").value = Id;
+        document.getElementById("e_Name").value = Name;
+        document.getElementById("e_Description").value = Description;
+        document.getElementById("e_Path").textContent = Path;
+
+        document.getElementById("e_Id2").value = Id;
+        document.getElementById("e_Name2").value = Name;
+        //ShowId("myModal_Edit");
+    }
+
+    // Show Hide for ID
+    function HideId(id) {
+        document.getElementById(id).style.display = 'none'; // скрыть
+    }
+    function ShowId(id) {
+        document.getElementById(id).style.display = ''; // показать
+    }
+
+</script>
+
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+}
+

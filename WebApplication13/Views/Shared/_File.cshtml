@@ -1,0 +1,27 @@
+﻿@model myFiles
+
+@{
+    ViewFiles(@Model);
+    @*@Url.Content(file.Path.Replace(" ", "%20"))*@
+}
+
+
+@{
+    void ViewFiles(myFiles file)
+    {
+        @if (file != null)
+        {
+            <a class="" target="_blank" href=@Html.Partial("_requestPathBase", file.Path.Replace(" ", "%20"))>
+                <i class='@Html.Partial("_FileIcon", file.Path) text-secondary px-1'></i>
+                @if (String.IsNullOrEmpty(@file.Description))
+                {
+                    @file.Name
+                }
+                else
+                {
+                    @file.Description
+                }
+            </a>
+        }
+    }
+}

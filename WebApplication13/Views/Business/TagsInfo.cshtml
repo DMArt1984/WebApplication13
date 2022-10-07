@@ -1,0 +1,70 @@
+﻿
+@{
+    ViewData["Title"] = "TagsInfo";
+}
+
+<h1>TagsInfo</h1>
+
+<a href="javascript:Hello();">Получить данные без перезагрузки страницы</a>
+<div id="a_Text" class="mx-1">...</div>
+
+<div id="inputForm">
+    <input type="text" id="message" />
+    <input type="button" id="sendBtn" value="Отправить" />
+</div>
+<div id="chatroom"></div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+
+        function Hello() {
+            $.ajax({
+                type: 'get',
+                url: '/Business/Test1',
+                data: { 'data': '12345' },
+                success: function (result) {
+
+                    //document.getElementById("a_Text").textContent = result;
+                    document.getElementById("a_Text").innerHTML = result;
+                },
+                failure: function () {
+                    alert("failure");
+                }
+            });
+        }
+
+    </script>
+
+
+    <script src="https://disq.us/url?url=https%3A%2F%2Funpkg.com%2F%40microsoft%2Fsignalr%403.1.0%2Fdist%2Fbrowser%2Fsignalr.min.js%3Ao5tLQLsSGLsTpJAaIMzaEfsjGNg&cuid=2394500"></script>
+    <!--<script src="~/js/signalr/dist/browser/signalr.min.js"></script>-->
+
+
+        <script>
+            Hello2();
+
+            function Hello2() {
+                alert('1');
+                var connection = new signalR.HubConnectionBuilder().withUrl("@Url.Content("~/chat")").build();
+
+                alert('2');
+                hubConnection.on("Send", function (data) {
+
+                    let elem = document.createElement("p");
+                    elem.appendChild(document.createTextNode(data));
+                    let firstElem = document.getElementById("chatroom").firstChild;
+                    document.getElementById("chatroom").insertBefore(elem, firstElem);
+
+                });
+
+                document.getElementById("sendBtn").addEventListener("click", function (e) {
+                    let message = document.getElementById("message").value;
+                    hubConnection.invoke("Send", message);
+                });
+
+                hubConnection.start();
+            }
+        </script>
+
+    }

@@ -1,0 +1,47 @@
+﻿@model List<myFiles>
+
+<!-- Files modal: Button -->
+<button type="button" class="btn btn-primary btn-sm waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#FilesModal"><i class="far fa-file"></i> Выбрать</button>
+<!-- Files modal: Window -->
+<div class="modal fade" id="FilesModal" tabindex="-1" aria-labelledby="FilesModalTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="FilesModalTitle">Выбрать файл</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <select size="20" name="hero" class="form-control">
+                        @foreach (var item in Model)
+                        {
+                            <option class="m-1" value="@item.Id">@item.Path</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="d-none">
+                    <p><b>Какое у вас состояние разума?</b></p>
+                    <p><input class="form-check-input" name="dzen" type="radio" value="nedzen"> Не дзен</p>
+                    <p><input class="form-check-input" name="dzen" type="radio" value="dzen"> Дзен</p>
+                    <p><input class="form-check-input" name="dzen" type="radio" value="pdzen" checked> Полный дзен</p>
+
+                    <div class="mt-4">
+                        <div class="form-check custom-control-inline">
+                            <input type="radio" id="custominlineRadio1" name="custominlineRadio" class="form-check-input">
+                            <label class="form-check-label" for="custominlineRadio1">Custom Inline radio 1</label>
+                        </div>
+                        <div class="form-check custom-control-inline">
+                            <input type="radio" id="custominlineRadio2" name="custominlineRadio" class="form-check-input" checked="">
+                            <label class="form-check-label" for="custominlineRadio2">Custom Inline radio 2</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Выбрать</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

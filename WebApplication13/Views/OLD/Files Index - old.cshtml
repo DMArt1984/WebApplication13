@@ -1,0 +1,31 @@
+﻿@model IEnumerable<FactPortal.Models.myFiles>
+@{
+    ViewData["Title"] = "AddFile";
+}
+
+<h1>Добавление рисунков @ViewData["MyCompanyName"]</h1>
+<div class="m-3 p-3 border bg-white">
+    <h4>Выберите файл для загрузки</h4>
+    <form asp-action="Index" asp-controller="Files" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col p-1">
+                <input type="file" name="uploadedFile" /><br>
+            </div>
+            <div class="col p-1">
+                <input type="submit" class="btn btn-primary" value="Загрузить" />
+            </div>
+            </div>
+</form>
+</div>
+
+    <div class="m-3 p-3 border">
+        <div class="p-1 m-1 bg-white">
+            <h4>Все файлы</h4>
+        </div>
+        <div class="d-flex flex-wrap">
+            @foreach (var f in Model)
+            {
+                <p style="margin:5px"><img src="@Url.Content(f.Path)"></p>
+            }
+        </div>
+    </div>

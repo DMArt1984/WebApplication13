@@ -1,0 +1,171 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Администрирование - @ViewData["Title"]</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesdesign" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico">
+    <!-- Bootstrap Css -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body data-topbar="dark" data-layout="horizontal">
+
+    <div id="layout-wrapper">
+
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex">
+                    <!-- LOGO -->
+                    <div class="navbar-brand-box text-center">
+                        <a class="logo logo-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                            <span class="logo-sm">
+                                <img src="~/assets/images/logo-sm.png" alt="logo-sm-dark" height="30">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="~/assets/images/logo-dark.png" alt="logo-dark" height="24">
+                            </span>
+                        </a>
+                        <a class="logo logo-light" asp-area="" asp-controller="Home" asp-action="Index">
+                            <span class="logo-sm">
+                                <img src="~/assets/images/logo-sm2.png" alt="logo-sm-light" height="30">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="~/assets/images/logo-light.png" alt="logo-light" height="24">
+                            </span>
+                        </a>
+                    </div>
+
+                    <button type="button" class="btn btn-sm px-3 font-size-24 d-lg-none header-item" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                        <i class="ri-menu-2-line align-middle"></i>
+                    </button>
+                </div>
+
+                <div class="d-flex">
+                    <h2 class="text-primary">@ViewData["Title"]</h2>
+                </div>
+
+                <div class="d-flex">
+                    <nav class="navbar-expand navbar-dark">
+                        <partial name="_LoginPartial" />
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        @if (@ViewContext.HttpContext.User.Identity.Name != null)
+        {
+            <div class="topnav">
+                <div class="container-fluid">
+                    <nav class="navbar navbar-light navbar-expand-lg topnav-menu">
+
+                        <div class="collapse navbar-collapse" id="topnav-menu-content">
+                            <ul class="navbar-nav active">
+
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                        <i class="mdi mdi-home-variant-outline me-2"></i> Главная
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="Index">
+                                        <i class="mdi mdi-account-box-multiple-outline me-2"></i> Список
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">
+                                        <i class="mdi mdi-account-plus me-2"></i> Регистрация
+                                    </a>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-uielement" role="button">
+                                        <i class="mdi mdi-briefcase-variant-outline me-2"></i>Панель 1 <div class="arrow-down"></div>
+                                    </a>
+
+                                    <div class="dropdown-menu mega-dropdown-menu px-2 dropdown-mega-menu-xl" aria-labelledby="topnav-uielement">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div>
+                                                    <a href="ui-badge.html" class="dropdown-item">Неделя</a>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div>
+                                                    <a href="ui-buttons.html" class="dropdown-item">Месяц</a>
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div>
+                                                    <a href="ui-cards.html" class="dropdown-item">Год</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle arrow-none" href="#" id="topnav-apps" role="button">
+                                        <i class="ri-apps-2-line me-2"></i>Панель 2 <div class="arrow-down"></div>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="topnav-apps">
+                                        <a href="calendar.html" class="dropdown-item">Пункт 1</a>
+                                        <div class="dropdown">
+                                            <a class="dropdown-item dropdown-toggle arrow-none" href="#" id="topnav-email" role="button">
+                                                Пункт 2 <div class="arrow-down"></div>
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="topnav-email">
+                                                <a href="email-inbox.html" class="dropdown-item">2.1</a>
+                                                <a href="email-read.html" class="dropdown-item">2.2</a>
+                                                <a href="email-compose.html" class="dropdown-item">2.3</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        }
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+    <div class="main-content">
+
+        <div class="page-content">
+            @RenderBody()
+        </div>
+
+        <!-- Footer -->
+        <partial name="_FooterPartial" />
+
+    </div>
+        <!-- end main content-->
+
+    </div>
+
+    <!-- END layout-wrapper -->
+    <!-- JAVASCRIPT -->
+    <script src="~/assets/libs/jquery/jquery.min.js"></script>
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="~/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/libs/node-waves/waves.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+    <script src="~/assets/js/app.js"></script>
+
+</body>
+</html>

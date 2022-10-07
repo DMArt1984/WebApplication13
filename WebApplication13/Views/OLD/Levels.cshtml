@@ -1,0 +1,181 @@
+﻿@model List<EditLevel>
+@{
+    ViewData["Title"] = "Позиции объектов обслуживания";
+
+    List<int> txtLink = new List<int>();
+    txtLink.Add(0);
+    foreach (var item in Model.Select(x => x.IT.Id).Distinct().OrderBy(y => y))
+    {
+        txtLink.Add(item);
+    }
+}
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="card">
+    <div class="card-body">
+
+        <div class="alert alert-light border-primary alert-dismissible fade show" role="alert">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            Нажмите на <strong class="text-primary">позицию</strong> для того, чтобы изменить или удалить ее.
+            Нажмите на <small class="badge bg-dark">путь</small> для того, чтобы установить ID ссылки.
+        </div>
+
+        <form class="row row-cols-lg-auto g-3 mb-2 align-items-center d-none" asp-action="FilterLevels" method="post">
+
+            <div class="col-8">
+                <label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
+                <select name="Filter" class="form-select" id="inlineFormSelectPref">
+                    <option value="0">ВСЕ</option>
+                    @foreach (var item in Model.OrderBy(x => x.PathString))
+                    {
+                        <option value="@item.IT.Id">@item.PathString</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-8">
+                <button type="submit" class="btn btn-primary">Выбрать</button>
+            </div>
+        </form>
+
+        <div class="">
+            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Позиция</th>
+                        <th>ID ссылки</th>
+                        <th>Путь</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderBy(x => x.PathString))
+                    {
+                        <tr>
+                            @{
+                                var MyList = item.PathString.Split('>');
+                            }
+                            <th scope="row">@item.IT.Id</th>
+                            <td>
+                                <a href="#title" onclick="Edit(@item.IT.Id, '@item.IT.Name', @item.IT.LinkId);">@item.IT.Name</a>
+                            </td>
+
+                            @if (txtLink.Where(x => x == @item.IT.LinkId).Count() > 0)
+                            {
+                                <td class="text-secondary">@item.IT.LinkId</td>
+                            }
+                            else
+                            {
+                                <td class="text-danger">@item.IT.LinkId</td>
+                            }
+
+                            <td>
+                                @foreach (var pos in MyList)
+                                {
+                                    if (pos != MyList.Last())
+                                    {
+                                        <small class="badge bg-light">@pos </small>
+                                    }
+                                    else
+                                    {
+                                        <a href="#title" onclick="Link(@item.IT.Id);"><strong class="badge bg-dark">@pos</strong></a>
+                                    }
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                    <tr>
+                        <td></td>
+                        <td><a href="#title" onclick="Edit(0, '', 0);">Добавить новую позицию ...</a></td>
+                        <td></td>
+                        <td><a href="javascript:void(0)" onclick="Link(0);"><strong class="badge bg-dark">Завод</strong></a></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+</div>
+
+<div id="title" class="card border-primary p-2">
+        <div class="d-flex flex-row align-items-end">
+            <form class="row row-cols-md-auto g-3 align-items-end" asp-action="EditLevel" method="post">
+
+                <div class="col-12">
+                    <small>ID:</small>
+                    <input class="form-control" required="" readonly="" type="text" id="e_Id" name="Id" placeholder="" value="0">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                </div>
+                <div class="col-12">
+                    <small>Название:</small>
+                    <input class="form-control" required="" type="text" id="e_Name" name="Name" placeholder="" value="Name">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+                </div>
+                <div class="col-12">
+                    <small>ID ссылки:</small>
+                    <input class="form-control" required="" type="text" id="e_LinkId" name="LinkId" placeholder="" value="0">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="LinkId" data-valmsg-replace="true"></span>
+                </div>
+
+                <div class="col-12">
+                    <button id="but_edit" type="submit" class="btn btn-primary">Добавить / изменить</button>
+                </div>
+            </form>
+            <form id="del" class="row row-cols-lg-auto g-3 align-items-center mx-2" asp-action="DelLevel" method="post">
+                <div class="col-12 d-none">
+                    <input class="form-control" required="" readonly="" type="text" id="e_Id2" name="Id" placeholder="" value="0">
+                    <span class="text-danger field-validation-valid" data-valmsg-for="Id" data-valmsg-replace="true"></span>
+                </div>
+                <div class="col-12">
+                    <button id="but_edit" type="submit" class="btn btn-danger">Удалить</button>
+                </div>
+            </form>
+        </div>
+        <div asp-validation-summary="All" class="text-danger"></div>
+    </div>
+
+
+
+
+    <script type="text/javascript">
+        Edit(0, "", 0);
+        function Edit(Id, Name, LinkId) {
+            if (Id == 0) {
+                //document.getElementById("title").textContent = "Добавить позицию";
+                document.getElementById("but_edit").textContent = "Добавить позицию";
+                document.getElementById("del").style.display = 'none'; // скрыть
+            } else {
+                //document.getElementById("title").textContent = "Изменить позицию";
+                document.getElementById("but_edit").textContent = "Изменить позицию";
+                document.getElementById("del").style.display = ''; // показать
+            }
+            document.getElementById("e_Id").value = Id;
+            document.getElementById("e_Id2").value = Id;
+            document.getElementById("e_Name").value = Name;
+            document.getElementById("e_LinkId").value = LinkId;
+        }
+
+        function Link(LinkId) {
+            document.getElementById("e_LinkId").value = LinkId;
+        }
+
+    </script>
+
+    @section Scripts {
+        <!-- Required datatable js -->
+        <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+        <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+        <!-- Datatable init js -->
+        <script src="~/assets/js/pages/datatables.init.js"></script>
+    }

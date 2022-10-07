@@ -1,0 +1,672 @@
+﻿@model UserInfo
+@{
+    ViewData["Title"] = "Профиль пользователя";
+    var company = Model.User.getListClaim(Model.Claims, "company").Where(x => x != "").Distinct();
+    var job = Model.User.getListClaim(Model.Claims, "job").Where(x => x != "").Distinct();
+    var roles = Model.Roles.Where(x => x != "").Distinct();
+    var checkE = (Model.Edit.ConfirmEmail) ? "d-none" : "";
+    var checkP = (Model.Edit.ConfirmPhone) ? "d-none" : "";
+    var viewCompany = (!ViewContext.HttpContext.User.IsInRole("SuperAdmin")) ? "d-none" : "";
+}
+
+
+
+<div class="container-fluid d-flex  p-0">
+    <div class="card col-11 col-lg-10 col-xl-9 p-1">
+        <form asp-action="Profile" method="post" enctype="multipart/form-data">
+            <!-- заголовок -->
+            <div class="card-header d-flex justify-content-between align-items-center">
+
+                <h4 class="text-primary">ID: @Model.User.Id</h4>
+                <input asp-for="User.Id" class="form-control d-none" required="" readonly />
+                <div>
+                    <button type="button" class="btn btn-secondary btn-sm waves-effect waves-light" id="butBack" onclick="EditorClose();"><i class="mdi mdi-arrow-up-thick" style="font-size:120%"></i></button>
+                    <button type="button" class="btn btn-secondary btn-sm waves-effect waves-light" id="butEdit" onclick="EditorOpen();"><i class="mdi mdi-account-edit" style="font-size:120%"></i></button>
+                    <a asp-action="Index" class="d-none btn btn-secondary btn-sm waves-effect waves-light"><i class="mdi mdi-close-thick" style="font-size:120%"></i></a>
+                </div>
+                <!--<a asp-action="Index"><i class="mdi mdi-close-thick" style="font-size:120%"></i></a>-->
+            </div>
+            <div class="card-title">
+                <div asp-validation-summary="All" class="text-danger"></div>
+            </div>
+            <div class="row g-0 align-items-start">
+
+                <!-- колонка-1 фото -->
+                <div class="col-md-4 pt-1 d-flex justify-content-center">
+                    <div class="card-body d-flex flex-column">
+                        @if (Model.User.Photo != null)
+                        {
+                            <img id="profilePicture" class="card-img img-fluid" style="width:200px;height:200px; object-fit:cover" src="data:image/*;base64,@(Convert.ToBase64String(Model.User.Photo))">
+                        }
+                        else
+                        {
+                            <div class="p-4"><span id="nophoto">нет фото</span></div>
+                        }
+                        <div class="d-flex flex-column p-0 m-0">
+                            <input type="file"
+                                   id="e_photo"
+                                   accept=".png,.jpg,.jpeg,.gif,.tif"
+                                   asp-for="Edit.Avatar"
+                                   class="form-group"
+                                   style="border:0px!important;padding: 0px;padding-top: 3px;padding-bottom: 3px;"
+                                   onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0]); HideId('nophoto');" />
+                            <span asp-validation-for="Edit.Avatar" class="text-danger"></span>
+                            <div id="e_photo2" class="checkbox">
+                                <label asp-for="Edit.RemoveAvatar">
+                                    <input asp-for="Edit.RemoveAvatar" class="form-check-input" />
+                                    Удалить аватар
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- колонка-2 -->
+                <div class="col-md-4">
+                    <div class="card-body">
+                        <!-- почта -->
+                        <small>Email: </small>
+                        <h5 id="email" class="card-title">
+                            <a href="mailto:@Model.User.Email">
+                                @Model.User.Email
+                            </a>
+                            @if (Model.User.EmailConfirmed == false)
+                            {
+                                <span class="badge bg-danger"> не подтверждено</span>
+                            }
+                        </h5>
+                        <div id="e_email" class="form-group mb-3">
+                            <input asp-for="Edit.Email" class="form-control" required="" />
+                            <span asp-validation-for="Edit.Email" class="text-danger"></span>
+                            <div class="checkbox @checkE">
+                                <label asp-for="Edit.ConfirmEmail">
+                                    <input asp-for="Edit.ConfirmEmail" class="form-check-input" />
+                                    Почта подтверждена
+                                </label>
+                            </div>
+                        </div>
+                        <hr />
+                        <p class="card-text">
+                            <!-- компания -->
+                            <div class="mb-2 @viewCompany">
+                                <small>Компания: </small>
+                                <h5 id="company">@String.Join(',', company)</h5>
+                                <div id="e_company" class="form-group mb-3">
+                                    <input asp-for="Edit.Company" class="form-control" required="" readonly />
+                                    <span asp-validation-for="Edit.Company" class="text-danger"></span>
+                                </div>
+                                <hr />
+                            </div>
+
+                            <!-- полное имя (ФИО) -->
+                            <div class="mb-2">
+                                <small>ФИО: </small>
+                                <h5 id="fullname">@Model.User.FullName</h5>
+                                <div id="e_fullname" class="form-group mb-3">
+                                    <input asp-for="Edit.FullName" class="form-control" />
+                                    <span asp-validation-for="Edit.FullName" class="text-danger"></span>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <!-- колонка-3 -->
+                <div class="col-md-4">
+                    <div class="card-body">
+                        <!-- телефон -->
+                        <small>Номер телефона: </small>
+                        <h5 id="phone" class="card-title">
+                            <a href="tel:@Model.User.PhoneNumber">
+                                @Model.User.PhoneNumber
+                            </a>
+                            @if (Model.User.PhoneNumber != null && Model.User.PhoneNumberConfirmed == false)
+                            {
+                                <!--<span class="badge bg-danger"> не подтверждено</span>-->
+                            }
+                        </h5>
+                        <div id="e_phone" class="form-group mb-3">
+                            <input asp-for="Edit.PhoneNumber" class="form-control" />
+                            <span asp-validation-for="Edit.PhoneNumber" class="text-danger"></span>
+                            <div class="d-none checkbox @checkP">
+                                <label asp-for="Edit.ConfirmPhone">
+                                    <input asp-for="Edit.ConfirmPhone" class="form-check-input" />
+                                    Телефон подтвержден
+                                </label>
+                            </div>
+                        </div>
+                        <hr />
+                        <p class="card-text">
+                            <!-- должность -->
+                            <div class="mb-2">
+                                <small>Должность: </small>
+                                <h5 id="job">
+                                    @String.Join(',', job)
+                                </h5>
+                                <div id="e_job" class="form-group mb-3">
+                                    <input asp-for="Edit.Job" class="form-control" list="datalistOptions" id="exampleDataList" />
+                                    <datalist id="datalistOptions">
+                                        @foreach (var item in @Model.Edit.DataListJob)
+                                        {
+                                            <option value="@item">
+                                            </option>
+                                        }
+                                    </datalist>
+                                    <span asp-validation-for="Edit.Job" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <hr />
+                            <!-- роли -->
+                            <div class="mb-2">
+                                <small>Роли: </small>
+                                <h6 id="roles">
+                                    @{
+                                        foreach (var role in roles)
+                                        {
+                                            var rusname = Model.User.getRoleName(@role);
+                                            switch (role.ToLower())
+                                            {
+                                                case "superadmin":
+                                                    <span class="badge bg-dark">@rusname</span>
+                                                    break;
+                                                case "admin":
+                                                    <span class="badge bg-info">@rusname</span>
+                                                    break;
+                                                case "moderator":
+                                                    <span class="badge bg-soft-primary text-primary">@rusname</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge bg-light">@rusname</span>
+                                                    break;
+                                            }
+
+                                        }
+                                    }
+                                </h6>
+                                <div id="e_roles" class="form-group mb-3">
+                                    <!--
+                                                                    <input asp-for="Edit.Roles" class="form-control" />
+                                    <div class="form-check mb-1">
+                                        <input class="form-check-input" type="radio" asp-for="Edit.Roles" value="admin" checked="" />Model.User.getRoleName("admin")<br />
+                                        <input class="form-check-input" type="radio" asp-for="Edit.Roles" value="basic" />Model.User.getRoleName("basic")<br />
+                                    </div>
+                                        -->
+                                    @if (@Model.Edit.Roles == "admin")
+                                    {
+                                        <select class="form-select" asp-for="Edit.Roles">
+                                            <option selected value="admin">@Model.User.getRoleName("admin")</option>
+                                            <option value="basic">@Model.User.getRoleName("basic")</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select class="form-select" asp-for="Edit.Roles">
+                                            <option value="admin">@Model.User.getRoleName("admin")</option>
+                                            <option selected value="basic">@Model.User.getRoleName("basic")</option>
+                                        </select>
+                                    }
+                                    <span asp-validation-for="Edit.Roles" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <!--
+                            <div id="e_user" class="checkbox">
+                                <label class="text-danger" asp-for="Edit.RemoveUser">
+                                    <input asp-for="Edit.RemoveUser" class="form-check-input" />
+                                    Удалить пользователя
+                                </label>
+                            </div>
+                            <a href="Url.ActionLink("RemoveUser","Admin", new {Id=Model.User.Id })" class="btn btn-danger btn btn-block" title="Удалить пользователя">
+                                Удалить пользователя
+                            </a>
+                                -->
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div id="butt" class="p-4 pt-0 pb-0">
+                <div class="d-flex justify-content-between">
+                    <!-- удалить пользователя-->
+                    <!--
+                    <a class="btn btn-danger btn btn-block" asp-action="RemoveUser" asp-route-Id="@Model.User.Id">Удалить пользователя</a>
+                    -->
+                    <button type="button" class="btn btn-danger waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#myModal_Delete">Удалить пользователя</button>
+                    <!-- сохранить -->
+                    <button type="submit" class="btn btn-primary btn btn-block">Сохранить изменения</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@{
+    var MyClaims = Model.Claims.ToList();
+    MyClaims.RemoveAll(x => x.Type.ToLower() == "company");
+    MyClaims.RemoveAll(x => x.Type.ToLower() == "job");
+}
+
+@if (MyClaims.Count() > 0)
+{
+    <div class="container-fluid d-flex justify-content-center align-items-center p-0">
+        <div class="card border border-success col-11 col-lg-10 col-xl-9 p-1">
+            <ul class="card-text">
+                @foreach (var cl in MyClaims)
+                {
+                    <li>@cl.Type = @cl.Value</li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+<!--<button type="button" class="btn btn-danger waves-effect waves-light" data-bs-toggle="modal" onclick="ShowId('myModal_1');" data-bs-target="#myModal_1">Удалить</button>-->
+<!-- sample modal content -->
+<div id="myModal_Delete" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Удалить пользователя @Model.User.Email ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>После этого действия вы не сможете востановить его профиль</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                <a class="btn btn-danger waves-effect" asp-action="RemoveUser" asp-route-Id="@Model.User.Id">Удалить</a>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<!-- Test 1 -->
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title text-primary">ID: @Model.User.Id</h4>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs nav-justified nav-tabs-custom" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#custom-home" role="tab" aria-selected="true">
+                    <i class="fas fa-address-card me-1 align-middle"></i> <span class="d-none d-md-inline-block">Просмотр</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#custom-profile" role="tab" aria-selected="false">
+                    <i class="fas fa-edit me-1 align-middle"></i> <span class="d-none d-md-inline-block">Pедактирование</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content p-3">
+            <!-- View -->
+            <div class="tab-pane active" id="custom-home" role="tabpanel">
+                <div class="row g-0 d-flex justify-content-between">
+                    <!-- 1 col -->
+                    <div class="col-md-3 mx-2">
+                        <p class="mb-0">
+                            @if (Model.User.Photo != null)
+                            {
+                                <img id="profilePicture" class="card-img img-fluid" style="width:200px;height:200px; object-fit:cover" src="data:image/*;base64,@(Convert.ToBase64String(Model.User.Photo))">
+                            }
+                            else
+                            {
+                                <div class="p-4"><span id="nophoto">нет фото</span></div>
+                            }
+                        </p>
+                    </div>
+                    <hr class="d-md-none mt-3" />
+                    <!-- 2 col -->
+                    <div class="col-md-4 mx-2">
+                        <!-- почта -->
+                        <small>Email: </small>
+                        <h5 id="email" class="card-title">
+                            <a href="mailto:@Model.User.Email">
+                                @Model.User.Email
+                            </a>
+                            @if (Model.User.EmailConfirmed == false)
+                            {
+                                <span class="badge bg-danger"> не подтверждено</span>
+                            }
+                        </h5>
+                        <hr />
+                        <!-- компания -->
+                        <div class="mb-2 @viewCompany">
+                            <small>Компания: </small>
+                            <h5 id="company">@String.Join(',', company)</h5>
+                            <hr />
+                        </div>
+                        <!-- полное имя (ФИО) -->
+                        @if (!String.IsNullOrEmpty(Model.User.FullName))
+                        {
+                            <small>ФИО: </small>
+                            <h5 id="fullname">@Model.User.FullName</h5>
+                        }
+                    </div>
+                    <hr class="d-md-none" />
+                    <!-- 3 col -->
+                    <div class="col-md-4 mx-2">
+                        <!-- телефон -->
+                        @if (!String.IsNullOrEmpty(Model.User.PhoneNumber))
+                        {
+                            <small>Номер телефона: </small>
+                            <h5 id="phone" class="card-title">
+                                <a href="tel:@Model.User.PhoneNumber">
+                                    @Model.User.PhoneNumber
+                                </a>
+                                @if (Model.User.PhoneNumber != null && Model.User.PhoneNumberConfirmed == false)
+                                {
+                                    <!--<span class="badge bg-danger"> не подтверждено</span>-->
+                                }
+                            </h5>
+                            <hr />
+                        }
+                        <!-- должность -->
+                        @if (job.Count() >= 1)
+                        {
+                            <small>Должность: </small>
+                            <h5 id="job">
+                                @String.Join(',', job)
+                            </h5>
+                            <hr />
+                        }
+                        <!-- роли -->
+                        @if (roles.Count() > 1)
+                        {
+                            <small>Роли: </small>
+                            <h6 id="roles">
+                                @{
+                                    foreach (var role in roles)
+                                    {
+                                        var rusname = Model.User.getRoleName(@role);
+                                        switch (role.ToLower())
+                                        {
+                                            case "superadmin":
+                                                <span class="badge bg-dark">@rusname</span>
+                                                break;
+                                            case "admin":
+                                                <span class="badge bg-info">@rusname</span>
+                                                break;
+                                            case "moderator":
+                                                <span class="badge bg-soft-primary text-primary">@rusname</span>
+                                                break;
+                                            default:
+                                                <span class="badge bg-light">@rusname</span>
+                                                break;
+                                        }
+
+                                    }
+                                }
+                            </h6>
+                        }
+                    </div>
+                </div>
+            </div>
+            <!-- Edit -->
+            <div class="tab-pane" id="custom-profile" role="tabpanel">
+                <form asp-action="Profile" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input asp-for="User.Id" class="form-control d-none" required="" readonly />
+                    <div class="row g-0 d-flex justify-content-between">
+                        <!-- 1 col -->
+                        <div class="col-md-3 mx-2">
+                            <p class="mb-0">
+                                @if (Model.User.Photo != null)
+                                {
+                                    <img id="profilePictureE" class="card-img img-fluid" style="object-fit:cover" src="data:image/*;base64,@(Convert.ToBase64String(Model.User.Photo))">
+                                }
+                                <div class="d-flex flex-column p-0 m-1">
+                                    <div style="text-align:center; padding:3%; border:thin solid black">
+                                        <label for="inputTag" style="cursor:pointer">
+                                            Выбрать фото <br />
+                                            <i class="fa fa-2x fa-camera"></i>
+                                            <input class="d-none" id="inputTag" type="file" asp-for="Edit.Avatar"
+                                                   onchange="document.getElementById('profilePictureE').src = window.URL.createObjectURL(this.files[0]); document.getElementById('imageName').innerText = this.files[0].name;" />
+                                            <br />
+                                            <span id="imageName" style="color:green"></span>
+                                        </label>
+                                    </div>
+                                    <span asp-validation-for="Edit.Avatar" class="text-danger"></span>
+                                    <div id="e_photo2" class="checkbox">
+                                        <label asp-for="Edit.RemoveAvatar">
+                                            <input asp-for="Edit.RemoveAvatar" class="form-check-input" />
+                                            Удалить фото
+                                        </label>
+                                    </div>
+                                </div>
+                            </p>
+                        </div>
+                        <hr class="d-md-none mt-3" />
+                        <!-- 2 col -->
+                        <div class="col-md-4 mx-2">
+                            <!-- почта -->
+                            <div id="e_email" class="form-group mb-3">
+                                <small>Email: </small>
+                                <input asp-for="Edit.Email" class="form-control" required="" />
+                                <span asp-validation-for="Edit.Email" class="text-danger"></span>
+                                <div class="checkbox @checkE">
+                                    <label asp-for="Edit.ConfirmEmail">
+                                        <input asp-for="Edit.ConfirmEmail" class="form-check-input" />
+                                        Почта подтверждена
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- компания -->
+                            <div id="e_company" class="form-group mb-3 @viewCompany">
+                                <small>Компания: </small>
+                                <input asp-for="Edit.Company" class="form-control" required="" readonly />
+                                <span asp-validation-for="Edit.Company" class="text-danger"></span>
+                            </div>
+                            <!-- полное имя (ФИО) -->
+                            <div id="e_fullname" class="form-group mb-3">
+                                <small>ФИО: </small>
+                                <input asp-for="Edit.FullName" class="form-control" />
+                                <span asp-validation-for="Edit.FullName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <!-- 3 col -->
+                        <div class="col-md-4 mx-2">
+                            <!-- телефон -->
+                            <div id="e_phone" class="form-group mb-3">
+                                <small>Номер телефона: </small>
+                                <input asp-for="Edit.PhoneNumber" class="form-control" />
+                                <span asp-validation-for="Edit.PhoneNumber" class="text-danger"></span>
+                                <div class="d-none checkbox @checkP">
+                                    <label asp-for="Edit.ConfirmPhone">
+                                        <input asp-for="Edit.ConfirmPhone" class="form-check-input" />
+                                        Телефон подтвержден
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- должность -->
+                            <div id="e_job" class="form-group mb-3">
+                                <small>Должность: </small>
+                                <input asp-for="Edit.Job" class="form-control" list="datalistOptions" id="exampleDataList" />
+                                <datalist id="datalistOptions">
+                                    @foreach (var item in @Model.Edit.DataListJob)
+                                    {
+                                        <option value="@item">
+                                        </option>
+                                    }
+                                </datalist>
+                                <span asp-validation-for="Edit.Job" class="text-danger"></span>
+                            </div>
+                            <!-- роли -->
+                            <div id="e_roles" class="form-group mb-3">
+                                <small>Роли: </small>
+                                @if (@Model.Edit.Roles == "admin")
+                                {
+                                    <select class="form-select" asp-for="Edit.Roles">
+                                        <option selected value="admin">@Model.User.getRoleName("admin")</option>
+                                        <option value="basic">@Model.User.getRoleName("basic")</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="form-select" asp-for="Edit.Roles">
+                                        <option value="admin">@Model.User.getRoleName("admin")</option>
+                                        <option selected value="basic">@Model.User.getRoleName("basic")</option>
+                                    </select>
+                                }
+                                <span asp-validation-for="Edit.Roles" class="text-danger"></span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row g-0 d-flex justify-content-center">
+                        <!-- удалить пользователя-->
+                        <button type="button" class="col-3 mx-3 btn btn-danger waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#myModal_Delete">Удалить пользователя</button>
+                        <!-- сохранить -->
+                        <button type="submit" class="col-3 mx-3 btn btn-primary btn btn-block">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Test 2 -->
+<div class="card d-none">
+    <div class="card-body">
+        <p class="card-title-desc">ID: @Model.User.Id</p>
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills nav-justified" role="tablist">
+            <li class="nav-item waves-effect waves-light">
+                <a class="nav-link active" data-bs-toggle="tab" href="#home-justify" role="tab" aria-selected="true">
+                    <i class="fas fa-address-card me-1 align-middle"></i> <span class="d-none d-md-inline-block">Просмотр</span>
+                </a>
+            </li>
+            <li class="nav-item waves-effect waves-light">
+                <a class="nav-link" data-bs-toggle="tab" href="#profile-justify" role="tab" aria-selected="false">
+                    <i class="fas fa-edit me-1 align-middle"></i> <span class="d-none d-md-inline-block">Редактирование</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content p-3">
+            <div class="tab-pane active" id="home-justify" role="tabpanel">
+                <p class="mb-0">
+                    Etsy mixtape wayfarers, ethical wes anderson tofu before they
+                    sold out mcsweeney's organic lomo retro fanny pack lo-fi
+                    farm-to-table readymade. Messenger bag gentrify pitchfork
+                    tattooed craft beer, iphone skateboard locavore carles etsy
+                    salvia banksy hoodie helvetica. DIY synth PBR banksy irony.
+                    Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh
+                    mi whatever gluten carles.
+                </p>
+            </div>
+            <div class="tab-pane" id="profile-justify" role="tabpanel">
+                <p class="mb-0">
+                    Raw denim you probably haven't heard of them jean shorts Austin.
+                    Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache
+                    cliche tempor, williamsburg carles vegan helvetica. Reprehenderit
+                    butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi,
+                    qui irure terry richardson ex squid. Aliquip placeat salvia cillum
+                    iphone. Seitan aliquip quis cardigan american apparel, butcher
+                    voluptate nisi qui.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    @*//
+    EditorClose();
+    alert( '1' );
+    if (@Model.Editor) {
+        alert( '2' );
+        EditorOpen();
+    } else {
+        alert( '3' );
+        EditorClose();
+    }
+    alert( '4' );*@
+
+    HideId('myModal_Delete');
+
+    // func...
+    function HideId(id) {
+        document.getElementById(id).style.display = 'none'; // скрыть
+    }
+
+    function ShowId(id) {
+        document.getElementById(id).style.display = ''; // показать
+    }
+
+    function EditorOpen() {
+        HideId('butEdit');
+        HideId('email');
+        HideId('company');
+        HideId('fullname');
+        HideId('phone');
+        HideId('job');
+        HideId('roles');
+
+        ShowId('butBack');
+        ShowId('e_email');
+        ShowId('e_fullname');
+        ShowId('e_phone');
+        ShowId('e_photo');
+        ShowId('e_photo2');
+        ShowId('e_job');
+        ShowId('e_company');
+        ShowId('e_roles');
+        ShowId('butt');
+
+    }
+
+    function EditorClose() {
+        HideId('butBack');
+        HideId('butt');
+        HideId('e_photo');
+        HideId('e_photo2');
+        HideId('e_email');
+        HideId('e_fullname');
+        HideId('e_phone');
+        HideId('e_job');
+        HideId('e_company');
+        HideId('e_roles');
+
+        ShowId('butEdit');
+        ShowId('email');
+        ShowId('company');
+        ShowId('fullname');
+        ShowId('phone');
+        ShowId('job');
+        ShowId('roles');
+    }
+</script>
+
+@if (Model.EnableEditor)
+{
+
+    @if (Model.ViewEditor)
+    {
+        <script type="text/javascript">
+            EditorOpen();
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            EditorClose();
+        </script>
+    }
+
+}
+else
+{
+    <script type="text/javascript">
+        EditorClose();
+        HideId('butSave');
+        HideId('butOpen');
+    </script>
+}
+
+
+
+
+

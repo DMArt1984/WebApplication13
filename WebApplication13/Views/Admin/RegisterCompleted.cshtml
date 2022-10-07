@@ -1,0 +1,40 @@
+﻿@model FactPortal.Controllers.AdminController.InputModel
+@{
+    ViewData["Title"] = "Регистрация завершена";
+}
+
+
+<div class="container-fluid d-flex justify-content-center align-items-center p-0">
+        <div class="card border border-primary col-8 col-lg-6 col-xl-4 p-1">
+            <div class="card-header bg-transparent border-primary">
+                <h5 class="my-0 text-primary"><i class="uil uil-user me-3"></i>@ViewData["Title"]</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title ">Пользователь добавлен</h5>
+                <div class="card-text">
+                    @{if (@Model.SendMail)
+                        {
+                            <p>Письмо для подтверждения регистрации отправлено по адресу: @Model.Email</p>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                Письмо на адрес @Model.Email не отправлено. Требуется подтверждение регистрации администратором.
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="d-flex align-items-center mt-3">
+                    <a class="btn btn-info m-2" asp-action="Profile" asp-route-Email="@Model.Email" asp-route-ViewEditor="true">Редактировать профиль</a>
+                    <a class="btn btn-primary m-2" asp-action="Index">Завершить</a>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+
+
+
+
+

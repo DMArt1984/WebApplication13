@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Мой Завод</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesdesign" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico">
+    <!-- CSS first -->
+    @RenderSection("CSS_first", required: false)
+    <!-- Bootstrap Css -->
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css -->
+    <link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- CSS last -->
+    @RenderSection("CSS_last", required: false)
+    
+    <style type="text/css">
+        .separator {
+            padding-left:3px;
+            padding-right:3px;
+        }
+        .breadcrumb {
+            font-size:12px
+        }
+    </style>
+
+</head>
+
+<body data-sidebar="dark">
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex">
+                    <!-- LOGO -->
+                    <div class="navbar-brand-box text-center">
+                        <a asp-action="Index" asp-controller="Home" class="logo logo-light">
+                            <span class="logo-sm">
+                                <img src="~/assets/images/logo-sm.png" alt="" height="30">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="~/assets/images/logo-light.png" alt="" height="30">
+                            </span>
+                        </a>
+                    </div>
+
+                    <button type="button" class="btn btn-sm px-3 font-size-24 header-item waves-effect" id="vertical-menu-btn">
+                        <!--mdi mdi-backburger-->
+                        <i class="dripicons-menu"></i>
+                    </button>
+
+                    <!--<h4 class="text-center align-items-center">ViewData["Title"]</h4>-->
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex flex-column">
+                            <div class="p-0 m-0">
+                                <a href="javascript:history.go(-1);"><i class="fas fa-chevron-circle-left"></i></a>
+                                <strong class="font-size-18 text-secondary font-family-secondary p-0 m-0">@ViewData["Title"]</strong>
+                            </div>
+                            <breadcrumb></breadcrumb>
+                        </div>
+                        <div class="font-size-12 p-0 m-0">
+                            
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="d-flex d-none">
+
+                    @if (@ViewContext.HttpContext.User.Identity.Name != null)
+                    {
+                        <nav class="navbar navbar-expand navbar-light bg-white">
+                            <div class="container">
+                                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                                    <ul class="navbar-nav flex-grow-1">
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark align-middle" asp-area="" asp-controller="Home" asp-action="Index"><i class="ri-calendar-todo-fill align-middle"></i> Календарь </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link text-dark align-middle" href="#"><span class="badge bg-success align-middle">11</span> Задачи </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    }
+
+                </div>
+
+                <div class="d-flex">
+                    
+                    @RenderSection("TopBar", required: false)
+                </div>
+
+                <div class="d-flex">
+                    <nav class="navbar-expand navbar-light bg-white">
+                        <partial name="_LoginPartial" />
+                    </nav>
+                </div>
+
+            </div>
+</header>
+
+        <!-- ========== Left Sidebar Start ========== -->
+        @if (@ViewContext.HttpContext.User.Identity.Name != null)
+        {
+        <div class="vertical-menu">
+            <div data-simplebar class="h-100">
+            <!--- Sidemenu -->
+                <div id="sidebar-menu">
+                    <!-- Left Menu Start -->
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <partial name="_Menu" />
+                    </ul>
+                </div>
+            </div>
+         </div>
+        }
+        <!-- ========= Left Sidebar End ============= -->
+            
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+        
+            <div class="page-content">
+                @RenderBody()
+            </div>
+            <!-- End Page-content -->
+            <!-- Footer -->
+            <partial name="_FooterPartial" />
+
+
+            <!-- end main content-->
+        </div>
+
+    </div>
+    <!-- END layout-wrapper -->
+
+    <!-- JAVASCRIPT -->
+    <script src="~/assets/libs/jquery/jquery.min.js"></script>
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="~/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/libs/node-waves/waves.min.js"></script>
+
+    <script src="~/assets/js/app.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

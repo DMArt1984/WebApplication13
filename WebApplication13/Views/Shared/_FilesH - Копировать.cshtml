@@ -1,0 +1,22 @@
+﻿@model List<string>
+
+@{
+    ViewFiles(@Model);
+
+    void ViewFiles(List<string> SL)
+    {
+        @foreach (var file in SL.OrderBy(x => x.Split(";").Last()))
+        {
+            <div class="px-2 mt-1 mb-1">
+                    <span class='fa-stack fa-lg'>
+                        <i class='fas fa-square fa-stack-2x text-secondary'></i>
+                        <i class='@Html.Partial("_FileIcon", file.Split(";").First()) fa-stack-1x fa-inverse'></i>
+                    </span>
+                <a class="" target="_blank" href=@Url.Content(file.Split(";").First())>
+                    <!--<i class="Html.Partial("_FileIcon", file.Split(";").First()) fa-1x align-middle text-secondary"></i>-->
+                    @file.Split(";").Last()
+                </a>
+            </div>
+        }
+    }
+}

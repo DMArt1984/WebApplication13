@@ -1,0 +1,103 @@
+﻿@model WorkInfo
+@using System.Text.RegularExpressions;
+@{
+    if (Model.Id > 0)
+    {
+        ViewData["Title"] = $"Обслуживание ID {Model.Id}";
+    }
+    else
+    {
+        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое обслуживание";
+    }
+
+    List<myFiles> MF = ViewBag.Files;
+}
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+                <div class="card-body">
+                    <div class="row g-0 d-flex justify-content-start">
+                        <div class="col-3 pb-2">
+                            <small>Дата и время: </small>
+                            <br />
+                            @Model.DT
+                        </div>
+                        <div class="col-10 col-md-3 pb-2">
+                            <small>Объект: </small>
+                            <br />
+                            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
+                        </div>
+                        <div class="col-10 col-md-3 pb-2">
+                            <small>Сотрудник: </small>
+                            <br />
+                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
+                        </div>
+                        <div class="col-3 pb-2">
+                            <small>Выполнено шагов: </small>
+                            <br />
+                            @Model.ReadyStep
+                        </div>
+                        <div class="col-10 col-md-3 pb-2">
+                            <small>Статус: </small>
+                            <br />
+                            @Model.StatusRus()
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <small>Сообщение: </small>
+                        <br />
+                        @if (@Model.Description == "")
+                        {
+                            <span> - </span>
+                        }
+                        else
+                        {
+                            @Model.Description
+                        }
+                    </div>
+                    <hr />
+                    <!--Файлы-->
+                    <div class="col-12 pt-2">
+                        @if (Model.FileLinks.Count > 0)
+                        {
+                            <small class="mb-2">Файлы:</small>
+                            <br />
+                            <div class="d-flex flex-wrap">
+                                @Html.Partial("_FilesH", @Model.FileLinks)
+                            </div>
+                        }
+                    </div>
+                    <!---->
+                </div>
+                <div class="card-footer">
+                    <div class="row g-0 d-flex justify-content-start">
+                        <!-- закрыть -->
+                        <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function Next(Index) {
+            ShowId('upload' + Index);
+    }
+
+    // Show Hide for ID
+    function HideId(id) {
+            document.getElementById(id).style.display = 'none'; // скрыть
+        }
+    function ShowId(id) {
+            document.getElementById(id).style.display = ''; // показать
+    }
+
+</script>
+
+
+
+

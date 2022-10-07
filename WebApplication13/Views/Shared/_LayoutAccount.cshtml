@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - FactPortal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Themesdesign" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="~/assets/images/favicon.ico">
+
+    <!-- Bootstrap Css -->
+    <link href="~/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="~/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+
+    <style>
+        .bg-pattern {
+            background-image: url('@Url.Content("~/assets/images/bgs.jpg")'); /* Путь к фоновому изображению */
+            background-size: cover;
+            background-position: center;
+            background-color: #c7b39b; /* Цвет фона */
+        }
+
+        .bg-overlay {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            top: 0;
+            opacity: 0.7;
+            background-color: #000;
+        }
+    </style>
+
+</head>
+
+<body class="bg-pattern">
+    <div class="bg-overlay"></div>
+    <div class="account-pages my-5 pt-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-6">
+                    <div class="card">
+                            @RenderBody()
+                    </div>
+                    <div class="mt-5 text-center">
+                        <p class="text-white-50">
+                            ©
+                            <script>document.write(new Date().getFullYear())</script> АС Инжиниринг. asp.net
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- end Account pages -->
+    <!-- JAVASCRIPT -->
+    <script src="~/assets/libs/jquery/jquery.min.js"></script>
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/libs/metismenu/metisMenu.min.js"></script>
+    <script src="~/assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="~/assets/libs/node-waves/waves.min.js"></script>
+
+    <script src="~/assets/js/app.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

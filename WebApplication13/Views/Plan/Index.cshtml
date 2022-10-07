@@ -1,0 +1,18 @@
+﻿@model List<myEvent>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+@foreach (myEvent i in Model)
+{
+    <p>@i.Title @i.Description @i.Date</p>
+}
+@{
+    <p>@Model.First().Id</p>
+    <p>@Model.Last().Id</p>
+}
+
+
+

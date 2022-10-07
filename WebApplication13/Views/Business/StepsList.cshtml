@@ -1,0 +1,94 @@
+﻿@model List<StepInfo>
+
+@{
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    if (Obj != null && Obj.Count() == 1)
+    {
+         ViewData["Title"] = $"{@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}: Шаги обслуживания";
+         //ViewData["Title"] = "Шаги обслуживания";
+    } else
+    {
+         ViewData["Title"] = "Шаги обслуживания";
+    }
+   
+}
+
+@section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="card">
+    <div class="card-body">
+        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>ID</th>
+                    @if (ViewData["ServiceObjectId"].ToString() == "0")
+                    {
+                        <th>Объект</th>
+                    }
+                        <th>Шаг</th>
+                        <th>Мероприятия</th>
+                        <th>Файлы</th>
+                        <th>Подробнее</th>
+                    </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderBy(x => x.Index))
+                {
+                <tr>
+                    <th scope="row">@item.Id</th>
+                    @if (ViewData["ServiceObjectId"].ToString() == "0")
+                    {
+                        <td>
+                            @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                        </td>
+                    }
+                        <td>@item.Index</td>
+                        <td style="max-width:300px; word-break: break-all">
+                            @item.Description
+                        </td>
+                        <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                        <td>
+                            @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+                            {
+                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                            }
+                            <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- Добавить -->
+    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+    {
+        @if (Convert.ToInt32(ViewData["ServiceObjectId"]) > 0)
+        {
+            <div class="card-footer">
+                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]"><i class="fas fa-plus"></i> Добавить новый шаг</a>
+            </div>
+        }
+    }
+</div>
+
+
+    @section Scripts {
+        <!-- Required datatable js -->
+        <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+        <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+        <!-- Datatable init js -->
+        <script src="~/assets/js/pages/datatables.init.js"></script>
+    }
+

@@ -1,0 +1,50 @@
+﻿@model string
+
+@{
+    GetIcon(@Model);
+
+    void GetIcon(string FileName)
+    {
+        string Icon = "fas fa-file"; // "ri-file-text-fill";
+        switch (FileName.Split(".").Last().ToLower())
+        {
+            case "jpg":
+            case "png":
+            case "gif":
+            case "wmf":
+                Icon = "fas fa-file-image";
+                break;
+
+            case "pdf":
+            case "txt":
+                Icon = "fas fa-file-alt";
+                break;
+
+            case "doc":
+                Icon = "fas fa-file-word"; // mdi mdi-microsoft-word
+                break;
+
+            case "xls":
+                Icon = "fas fa-file-excel"; // mdi mdi-microsoft-excel
+                break;
+
+            case "avi":
+            case "mov":
+            case "mpg":
+                Icon = "fas fa-file-video";
+                break;
+
+            case "mp3":
+            case "wav":
+                Icon = "fas fa-file-audio";
+                break;
+
+            case "zip":
+            case "rar":
+                Icon = "fas fa-file-archive";
+                break;
+        }
+            
+        @Icon
+    }
+}

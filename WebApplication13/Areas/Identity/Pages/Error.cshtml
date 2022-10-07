@@ -1,0 +1,60 @@
+﻿@page
+@model ErrorModel
+@{
+    ViewData["Title"] = "Ошибка";
+}
+
+    <h2 class="alert alert-danger mb-0" role="alert">
+        <i class="mdi mdi-alert"></i>
+        @if (Model.Code == 0)
+        {
+            <strong>Ошибка №1</strong>
+        }
+        else
+        {
+            <strong>Ошибка №@Model.Code</strong>
+        }
+    </h2>
+        
+    @if (Model.ShowRequestId)
+        {
+            <div class="m-3 text-center">
+                <strong>ID запроса:</strong> <code>@Model.RequestId</code>
+            </div>
+        }
+
+<div class="text-center m-2">
+    Во время выполнения запроса произошла ошибка. Обратитесь к администратору или напишите в службу технической поддержки на <a href="mailto:support@mail.com" class="alert-link">support@mail.com</a>
+</div>
+
+<div class="card mb-0">
+    <div class="card-header" id="headingTwo">
+        <h5 class="m-0 font-size-14">
+            <a class="collapsed text-primary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Информация для разработчика >>>
+            </a>
+        </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="m-2">
+            <p>
+                При переключении в среду <strong>Разработка</strong> будет отображаться более подробная информация о возникшей ошибке.
+            </p>
+            <p>
+                <strong>Среда разработки не должна быть включена для развернутых приложений.</strong>
+                Это может привести к отображению конфиденциальной информации из исключений для конечных пользователей.
+                Для локальной отладки включите среду <strong>Разработка</strong>, задав для переменной среды <strong>ASPNETCORE_ENVIRONMENT</strong> значение <strong>Разработка</strong>.
+                и перезапустить приложение.
+            </p>
+
+        </div>
+    </div>
+</div>
+
+
+<form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+    <div class="d-flex justify-content-center p-2">
+    <!--<button type="submit" class="nav-link btn btn-link text-danger"><i class="ri-shut-down-line align-middle me-1 text-danger"></i>Выход</button>-->
+    <button type="submit" class="btn btn-danger waves-effect waves-light">Выход</button>
+    </div>
+</form>

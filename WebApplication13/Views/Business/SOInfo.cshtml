@@ -1,0 +1,302 @@
+﻿@model FactPortal.Models.ServiceObjectInfo
+@using System.Text.RegularExpressions;
+@using QRCoder;
+
+@{
+    ViewData["Title"] = Model.ObjectTitle;
+
+    byte[] QRCode(string Text)
+    {
+        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+        QRCodeData qrCodeData = qrGenerator.CreateQrCode(Text, QRCodeGenerator.ECCLevel.Q);
+        BitmapByteQRCode qrCode2 = new BitmapByteQRCode(qrCodeData);
+        byte[] qrCodeAsBitmapByteArr = qrCode2.GetGraphic(3);
+        return qrCodeAsBitmapByteArr;
+    }
+}
+
+<style>
+    .block:target {
+        display: block;
+    }
+
+    .block {
+        display: none;
+    }
+</style>
+
+<!-- Уведомления -->
+@if (Model.Alerts != null && Model.Alerts.Count() > 0)
+{
+    <div id="accordion2">
+        <div class="card mb-2">
+            <div class="card-header bg-soft-danger" id="headingThree">
+                <h5 class="m-0 font-size-14">
+                    <a class="collapsed text-danger" data-bs-toggle="collapse" data-parent="#accordion2" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" onclick="javascript:flipflopClass('alerts');">
+                        <i id="alerts" class="fas fa-arrow-up"></i>
+                        Уведомления <span class="badge bg-danger">@Model.Alerts.Count()</span>
+                        <small class="px-2"><a class="text-danger px-2" asp-action="AlertsList" asp-route-ServiceObjectId="@Model.Id">Подробнее >>></a></small>
+                    </a>
+                </h5>
+            </div>
+            <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion2">
+                <div class="">
+                    <!--card-body-->
+                    <table id="datatable-buttons" class="table table-sm table-small-font  mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                        <thead class="bg-danger text-white">
+                            <tr>
+                                <th>ID</th>
+                                <th>Дата и время</th>
+                                <th>Статус</th>
+                                <th>Сотрудник</th>
+                                <th>Сообщение</th>
+                                <th>Файл</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Alerts.OrderByDescending(x => x.DT))
+                            {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.DT</td>
+                                    <td>@item.StatusRus()</td>
+                                    <td>
+                                        @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                                    </td>
+                                    <td style="max-width:250px; word-break: break-all">
+                                        @item.Message
+                                    </td>
+                                    <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+    {
+        <div class="mb-2">
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
+        </div>
+    }
+}
+    <!-- Позиция, Описание, QR-код и файлы -->
+    <div class="card">
+        <div class="card-body">
+            <div class="row d-flex justify-content-between">
+                <!-- Позиция, описание и Файлы -->
+                <div class="col-12 col-sm-8 pb-2 pb-sm-0">
+                    <div class="pb-2">
+                        <small>Позиция:</small>
+                        <br />
+                        @if (!String.IsNullOrEmpty(Model.Position))
+                        {
+                            @foreach (var pos in Model.Position.Split("/"))
+                            {
+                                if (pos == Model.Position.Split("/").Last())
+                                {
+                                    <span class="badge bg-primary">@pos</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light">@pos</span>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-danger">Не задана</div>
+                        }
+                    </div>
+                    <div class="pb-2">
+                        <small>Описание:</small>
+                        <br />
+                        @if (!String.IsNullOrEmpty(Model.Description))
+                        {
+                            <h5 class="mb-sm-0">@Model.Description</h5>
+                        }
+                        else
+                        {
+                            <div class="text-danger">Нет описания</div>
+                        }
+                    </div>
+                    @if (Model.FileLinks != null && Model.FileLinks.Count() > 0)
+                    {
+                        <hr />
+                        <div class="pb-2">
+                            <small class="mb-2">Файлы:</small>
+                            <br />
+                            <div class="d-flex flex-wrap">
+                                @Html.Partial("_FilesH", @Model.FileLinks)
+                                <!--{ViewFiles(Model.FileLinks); }-->
+                            </div>
+                        </div>
+                    }
+                </div>
+                <!-- QR код -->
+                @if (!String.IsNullOrEmpty(@Model.ObjectCode))
+                {
+                    <div class="col card border border-primary">
+                        <div class="d-flex justify-content-center">
+                            <small>Код объекта:</small>
+                            <h5 class="px-3 mb-sm-0 text-primary"> @Model.ObjectCode</h5>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <img class="card-img-top img-fluid" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" style="max-width:300px; max-height:300px; min-width:150px; min-height:150px; text-align: center;" />
+                        </div>
+                        <div class="d-flex justify-content-center pb-2">
+                            <a href="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" class="btn btn-outline-secondary btn-sm edit" download>Скачать файл</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col container h-100">
+                        <h6 class="row justify-content-center align-self-center text-danger">
+                            Код объекта не задан!
+                        </h6>
+                    </div>
+                }
+            </div>
+
+        </div>
+    </div>
+
+<!-- Шаги и обслуживание -->
+<div id="accordion">
+        
+    <!-- Обслуживание -->
+    @if (Model.Works != null && Model.Works.Count() > 0)
+    {
+        <div class="card mb-3">
+            <div class="card-header bg-soft-primary" id="headingTwo">
+                <h5 class="m-0 font-size-14">
+                    <a class="collapsed text-primary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" onclick="javascript:flipflopClass('works');">
+                        <i id="works" class="fas fa-arrow-up"></i>
+                        Обслуживание <span class="badge bg-primary">@Model.Works.Count()</span>
+                        <small class="px-2"><a class="text-primary px-2" asp-action="WorksList" asp-route-ServiceObjectId="@Model.Id">Подробнее >>></a></small>
+                    </a>
+                </h5>
+            </div>
+            <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+                <div class="">
+                    <!--card-body-->
+                    <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Дата и время</th>
+                                <th>Статус</th>
+                                <th>Выполнено шагов</th>
+                                <th>Сотрудник</th>
+                                <!--<th>Комментарий</th>-->
+                                <th>Файлы</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Works.OrderByDescending(x => x.DT))
+                            {
+                                <tr>
+                                    <td>@item.DT</td>
+                                    <td class="text-info">@item.StatusRus()</td>
+                                    <td>@item.ReadyStep</td>
+                                    <td>
+                                        @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                                    </td>
+                                    <!--<td>item.Description</td>-->
+                                    <td>
+                                        @Html.Partial("_FilesV", item.FileLinks)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    }
+    else
+    {
+        @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+        {
+            <div class="mb-2">
+                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
+            </div>
+        }
+    }
+
+    <!-- Шаги -->
+    @if (Model.Steps != null && Model.Steps.Count() > 0)
+    {
+        <div class="card mb-3">
+            <div class="card-header bg-soft-secondary" id="headingOne">
+                <h5 class="m-0 font-size-14">
+                    <a class="text-secondary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="javascript:flipflopClass('steps');">
+                        <i id="steps" class="fas fa-arrow-up"></i>
+                        Шаги обслуживания <span class="badge bg-dark">@Model.Steps.Count()</span>
+                        <small class="px-2"><a class="text-secondary px-2" asp-action="StepsList" asp-route-ServiceObjectId="@Model.Id">Подробнее >>></a></small>
+                    </a>
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion" style="">
+                <div class="">
+                    <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                        <thead class="bg-secondary text-white">
+                            <tr>
+                                <th>№ шага</th>
+                                <th>Мероприятия</th>
+                                <th>Файлы</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Steps.OrderBy(x => x.Index))
+                            {
+                                <tr>
+                                    <td>@item.Index</td>
+                                    <td style="max-width:300px; word-break: break-all">
+                                        @item.Description
+                                    </td>
+                                    <td>
+                                        @Html.Partial("_FilesV", item.FileLinks)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+        {
+            <div class="mb-2">
+                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новый шаг</a>
+            </div>
+         }
+    }
+</div>
+
+
+    <script type="text/javascript">
+
+        function flipflopClass(id) {
+            element = document.getElementById(id);
+            link = document.getElementById(id);
+
+            // fas fa-plus-circle
+            // fas fa-angle-double-right
+            if (link)
+                link.className = link.className == "fas fa-arrow-up" ? "fas fa-arrow-down" : "fas fa-arrow-up";
+        }
+
+    </script>

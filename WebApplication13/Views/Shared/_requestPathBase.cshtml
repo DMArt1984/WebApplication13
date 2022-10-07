@@ -1,0 +1,8 @@
+﻿@model string
+
+@{
+    //var _rPathBase = ViewContext.HttpContext.Request.PathBase; // /MySite
+    var absUrl = string.Format("{0}://{1}{2}{3}", ViewContext.HttpContext.Request.Scheme, ViewContext.HttpContext.Request.Host, ViewContext.HttpContext.Request.PathBase, Model);
+}
+
+@absUrl
