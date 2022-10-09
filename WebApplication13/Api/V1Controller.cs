@@ -340,12 +340,12 @@ namespace FactPortal.Api
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 var listIds = _business.WorkSteps.Where(x => x.myUserId == UserId).Select(x => x.WorkId).ToList();
-                var Works1 = _business.Works.Where(x => listIds.Any(y => y == x.Id)).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId);
+                var Works1 = _business.Works.Where(x => listIds.Any(y => y == x.Id)).ToList().OrderBy(x => x.ServiceObjectId);
 
                 Dictionary<string, string> dFiles = _business.Files.ToDictionary(x => x.Id.ToString(), y => y.Path);
                 Dictionary<int, int> dPos = _business.Claims.Where(x => x.ClaimType.ToLower() == "position").OrderBy(y => y.ClaimValue).ToDictionary(x => x.ServiceObjectId, y => Convert.ToInt32(y.ClaimValue));
                 
-                var Works2 = Works1.Select(x => new { x.Id, x.ServiceObjectId, Position = (dPos.ContainsKey(x.ServiceObjectId)) ? dPos[x.ServiceObjectId] : 0 , x.Description, x.Status, x.ReadyStep, x.DT, FilesId = x.groupFilesId, Files = Bank.inf_SSList(dFiles, x.groupFilesId), Steps = _business.WorkSteps.Where(w => w.WorkId == x.Id).ToList() });
+                var Works2 = Works1.Select(x => new { x.Id, x.ServiceObjectId, Position = (dPos.ContainsKey(x.ServiceObjectId)) ? dPos[x.ServiceObjectId] : 0, Steps = _business.WorkSteps.Where(w => w.WorkId == x.Id).ToList() });
 
                 return new JsonResult(new { Result = 0, Works = Works2.OrderBy(x => x.Id) }, jsonOptions);
             }
@@ -395,28 +395,35 @@ namespace FactPortal.Api
                 if (_context.Users.Where(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
-            List<Alert> Alerts0 = new List<Alert>();
-            foreach (var item in _business.Alerts)
-            {
-                if (Bank.DateInRange(item.DT, DateFrom, DateTo))
-                    Alerts0.Add(item);
-            }
-            List<Work> Works0 = new List<Work>();
-            foreach (var item in _business.Works)
-            {
-                if (Bank.DateInRange(item.DT, DateFrom, DateTo))
-                    Works0.Add(item);
-            }
+                List<Alert> Alerts0 = new List<Alert>();
+                foreach (var item in _business.Alerts)
+                {
+                    if (Bank.DateInRange(item.DT, DateFrom, DateTo))
+                        Alerts0.Add(item);
+                }
+                List<WorkStep> WorkSteps0 = new List<WorkStep>();
+                foreach (var item in _business.WorkSteps)
+                {
+                    if (Bank.DateInRange(item.DT_Start, DateFrom, DateTo))
+                        WorkSteps0.Add(item);
+                }
+                List<Work> Works0 = new List<Work>();
+                foreach (var item in _business.Works)
+                {
+                    if (WorkSteps0.Any(x => x.WorkId == item.Id))
+                        Works0.Add(item);
+                }
 
-            var Alerts1 = Alerts0.Where(x => x.myUserId == UserId).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId);
-            var Works1 = Works0.Where(x => x.myUserId == UserId).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId);
+                var Alerts1 = Alerts0.Where(x => x.myUserId == UserId).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId);
+                var WorkSteps1 = WorkSteps0.Where(x => x.myUserId == UserId).ToList().OrderBy(x => x.DT_Start).OrderBy(x => x.Index).OrderBy(x => x.WorkId);
 
                 Dictionary<string, string> dFiles = _business.Files.ToDictionary(x => x.Id.ToString(), y => y.Path);
                 Dictionary<int, int> dPos = _business.Claims.Where(x => x.ClaimType.ToLower() == "position").OrderBy(y => y.ClaimValue).ToDictionary(x => x.ServiceObjectId, y => Convert.ToInt32(y.ClaimValue));
                 var Alerts2 = Alerts1.Select(x => new { x.Id, x.ServiceObjectId, Position = (dPos.ContainsKey(x.ServiceObjectId)) ? dPos[x.ServiceObjectId] : 0, x.Message, x.Status, x.DT, FilesId = x.groupFilesId, Files = Bank.inf_SSList(dFiles, x.groupFilesId) });
-                var Works2 = Works1.Select(x => new { x.Id, x.ServiceObjectId, Position = (dPos.ContainsKey(x.ServiceObjectId)) ? dPos[x.ServiceObjectId] : 0, x.Description, x.Status, x.ReadyStep, x.DT, FilesId = x.groupFilesId, Files = Bank.inf_SSList(dFiles, x.groupFilesId) });
+                var WorkSteps2 = WorkSteps1.Select(x => new { x.Id, x.WorkId, x.Index, x.Status, x.DT_Start, x.DT_Stop, FilesId = x.groupFilesId, Files = Bank.inf_SSList(dFiles, x.groupFilesId) });
+                var Works2 = Works0.Select(x => new { x.Id, x.ServiceObjectId, Position = (dPos.ContainsKey(x.ServiceObjectId)) ? dPos[x.ServiceObjectId] : 0 });
 
-                return new JsonResult(new { Result = 0, Alerts = Alerts2.OrderBy(x => x.Id), Works = Works2.OrderBy(x => x.Id) }, jsonOptions);
+                return new JsonResult(new { Result = 0, Alerts = Alerts2.OrderBy(x => x.Id), Works = Works2.OrderBy(x => x.ServiceObjectId), WorkSteps = WorkSteps2.OrderBy(x => x.WorkId) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -493,12 +500,13 @@ namespace FactPortal.Api
 
                 // добавление к списку атрибутов и оповещений и работ
                 var ListView = (!String.IsNullOrEmpty(ViewClaim)) ? ViewClaim.Split(';').Select(x => x.ToLower()) : null; // список атрибутов, которые необходимо оставить
-                var SObjects2 = SObjects.Select(m => new { m.Id, m.ObjectTitle, m.ObjectCode, m.Description,
+                var SObjects2 = SObjects.Select(m => new 
+                        { m.Id, m.ObjectTitle, m.ObjectCode, m.Description,
                         Claims = m.Claims.Select(w => new {Type = w.ClaimType, Value = w.ClaimValue }).Where(u => ListView.Contains(u.Type.ToLower()) || String.IsNullOrEmpty(ViewClaim)).ToList(),
                         Alerts = m.Alerts.Where(k => k.ServiceObjectId == m.Id).OrderBy(y => y.DT).Select(j => new { j.Id, j.Message, j.Status, j.DT, UserId = j.myUserId, User = Bank.inf_SS(dUsers, j.myUserId), FilesId = j.groupFilesId, Files = Bank.inf_SSList(dFiles, j.groupFilesId) }).ToList(),
-                        Works = m.Works.Where(k => k.ServiceObjectId == m.Id).OrderBy(y => y.DT).Select(j => new { j.Id, j.Status, j.ReadyStep, j.DT, UserId = j.myUserId, User = Bank.inf_SS(dUsers, j.myUserId), FilesId = j.groupFilesId, Files = Bank.inf_SSList(dFiles, j.groupFilesId) }).ToList(),
+                        Works = m.Works.Where(k => k.ServiceObjectId == m.Id).OrderBy(y => y.ServiceObjectId).Select(j => new { j.Id, j.ServiceObjectId }).ToList(),
                         Steps = m.Steps.Where(k => k.ServiceObjectId == m.Id).OrderBy(y => y.Index).Select(j => new { j.Id, j.Index, j.Description, FilesId = j.groupFilesId, Files = Bank.inf_SSList(dFiles, j.groupFilesId) }).ToList()
-                }
+                        }
                     ).ToList();
 
                 // 5) копирование важных атрибутов в основной список
@@ -543,7 +551,7 @@ namespace FactPortal.Api
                     SObject.Description,
                     Claims = _business.Claims.Where(x => x.ServiceObjectId == SObject.Id).Select(w => new { Type = w.ClaimType, Value = w.ClaimValue }).ToList(),
                     Alerts = _business.Alerts.Where(k => k.ServiceObjectId == SObject.Id).OrderBy(y => y.DT).Select(j => new { j.Id, j.Message, j.Status, j.DT, UserId = j.myUserId, User = Bank.inf_SS(dUsers, j.myUserId), FilesId = j.groupFilesId, Files = Bank.inf_SSList(dFiles, j.groupFilesId) }).ToList(),
-                    Works = _business.Works.Where(k => k.ServiceObjectId == SObject.Id).OrderBy(y => y.DT).Select(j => new { j.Id, j.Status, j.ReadyStep, j.DT, UserId = j.myUserId, User = Bank.inf_SS(dUsers, j.myUserId), FilesId = j.groupFilesId, Files = Bank.inf_SSList(dFiles, j.groupFilesId) }).ToList(),
+                    Works = _business.Works.Where(k => k.ServiceObjectId == SObject.Id).OrderBy(y => y.ServiceObjectId).Select(j => new { j.Id, j.ServiceObjectId }).ToList(),
                     Steps = _business.Steps.Where(k => k.ServiceObjectId == SObject.Id).OrderBy(y => y.Index).Select(j => new { j.Id, j.Index, j.Description, FilesId = j.groupFilesId, Files = Bank.inf_SSList(dFiles, j.groupFilesId) }).ToList()
                 };
 
@@ -589,7 +597,7 @@ namespace FactPortal.Api
                     // Alerts = m.Alerts.Count(k => k.ServiceObjectId == m.Id),
                     Alerts = m.Alerts.Count(),
                     Works = m.Works.Count(),
-                    LastWork = m.Works.OrderBy(n => n.DT).Select(f => new {f.DT, f.Status, f.ReadyStep }).Last(),
+                    LastWork = m.Works.OrderBy(n => n.ServiceObjectId).Select(f => new {f.Id }).Last(),
                     Steps = m.Steps.Count(),
                     Claims = (Claims) ? m.Claims.Select(x => new {x.ClaimType, x.ClaimValue }) : null
                 }
@@ -1043,11 +1051,11 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var listIds = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
-                var Works1 = _business.Works.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Count() == 0).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId);
+                var Works1 = _business.Works.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Count() == 0).ToList().OrderBy(x => x.ServiceObjectId);
 
                 Dictionary<string, string> dUsers = _context.Users.ToDictionary(x => x.Id, y => y.FullName);
                 Dictionary<string, string> dFiles = _business.Files.ToDictionary(x => x.Id.ToString(), y => y.Path);
-                var Works2 = Works1.Select(x => new { x.Id, x.ServiceObjectId, Steps = _business.WorkSteps.Where(w => w.WorkId == x.Id).Select(s => new {s.Id, s.WorkId, UserId = x.myUserId, User = Bank.inf_SS(dUsers, x.myUserId), s.Index, s.Status, s.DT_Start, s.DT_Stop, FilesId = x.groupFilesId, Files = Bank.inf_SSList(dFiles, x.groupFilesId) }).ToList() });
+                var Works2 = Works1.Select(x => new { x.Id, x.ServiceObjectId, Steps = _business.WorkSteps.Where(w => w.WorkId == x.Id).Select(s => new {s.Id, s.WorkId, UserId = s.myUserId, User = Bank.inf_SS(dUsers, s.myUserId), s.Index, s.Status, s.DT_Start, s.DT_Stop, FilesId = s.groupFilesId, Files = Bank.inf_SSList(dFiles, s.groupFilesId) }).ToList() });
 
                 return new JsonResult(new { Result = 0, Works = Works2.OrderBy(x => x.Id) }, jsonOptions);
             }
@@ -1071,7 +1079,7 @@ namespace FactPortal.Api
 
                 
                 // Добавить работу
-                Work ObjWork = new Work { Id = Bank.maxID(_business.Works.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, myUserId = "100", groupFilesId = "", DT = "", Description = "", ReadyStep = 0, Status = 0 };
+                Work ObjWork = new Work { Id = Bank.maxID(_business.Works.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId };
                 _business.Works.Add(ObjWork);
 
 
@@ -1088,54 +1096,19 @@ namespace FactPortal.Api
 
         // POST: api/v1/service/work_change
         [HttpPost("service/work_change")]
-        public JsonResult WorkChange([FromHeader] string db, [FromForm] int Id = 0,
-            [FromForm] string UserId = "",
-            [FromForm] string AddFilesId = "", [FromForm] string DelFilesId = "",
-            [FromForm] string DT = "", [FromForm] string Description = "",
-            [FromForm] int ReadyStep = 0,  [FromForm] int Status = 0)
+        public JsonResult WorkChange([FromHeader] string db, [FromForm] int Id = 0 )
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(UserId) || !(Id > 0))
+                if (String.IsNullOrEmpty(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
-
-                // UserId
-                if (String.IsNullOrEmpty(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
-                    return new JsonResult(jsonUserNotFound, jsonOptions);
-
-                // DT
-                if (String.IsNullOrEmpty(DT))
-                    DT = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
-
-                // AddFilesId
-                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Add.Count() > 0)
-                {
-                    if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
-                        return new JsonResult(jsonFileNotFound, jsonOptions);
-                }
-
-                // DelFilesId
-                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Del.Count() > 0)
-                {
-                    //if (!Files_for_Del.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
-                    //    return new JsonResult(jsonFileNotFound, jsonOptions);
-                }
 
                 // Поиск                
                 var Obj = _business.Works.FirstOrDefault(x => x.Id == Id);
                 if (Obj == null)
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
-                // Изменить
-                Obj.myUserId = UserId;
-                Obj.groupFilesId = Bank.DelItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Del));
-                Obj.groupFilesId = Bank.AddItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Add));
-                Obj.DT = DT;
-                Obj.Description = Description;
-                Obj.ReadyStep = ReadyStep;
-                Obj.Status = Status;
+                // Изменить нечего
                 _business.SaveChanges();
 
                 return new JsonResult(new { Result = 0, Work = Obj }, jsonOptions);
@@ -1363,10 +1336,10 @@ namespace FactPortal.Api
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT_Start
-                string DT_Start = (Status == 5) ? Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+                string DT_Start = Bank.GetWork_DTStart(Status);
 
                 // DT_Stop
-                string DT_Stop = (Status == 8 || Status == 9) ? Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+                string DT_Stop = Bank.GetWork_DTStop(Status);
 
                 // groupFilesId
                 var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
@@ -1406,10 +1379,10 @@ namespace FactPortal.Api
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT_Start
-                string DT_Start = (Status == 5) ? Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+                string DT_Start = Bank.GetWork_DTStart(Status);
 
                 // DT_Stop
-                string DT_Stop = (Status == 8 || Status == 9) ? Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+                string DT_Stop = Bank.GetWork_DTStop(Status);
 
                 // AddFilesId
                 var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
@@ -1470,10 +1443,10 @@ namespace FactPortal.Api
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT_Start
-                string DT_Start = (Status == 5) ? Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+                string DT_Start = Bank.GetWork_DTStart(Status);
 
                 // DT_Stop
-                string DT_Stop = (Status == 8 || Status == 9) ? Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+                string DT_Stop = Bank.GetWork_DTStop(Status);
 
                 // AddFilesId
                 var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
@@ -1806,11 +1779,11 @@ namespace FactPortal.Api
                             Step.groupFilesId = Bank.AddItemToStringList(Step.groupFilesId, ";", file.Id.ToString());
                             break;
                         case "work":
-                            var Work = _business.Works.FirstOrDefault(x => x.Id == CategoryId);
-                            if (Work == null)
+                            var WorkStep = _business.WorkSteps.FirstOrDefault(x => x.Id == CategoryId);
+                            if (WorkStep == null)
                                 return new JsonResult(jsonWorkNotFound, jsonOptions);
 
-                            Work.groupFilesId = Bank.AddItemToStringList(Work.groupFilesId, ";", file.Id.ToString());
+                            WorkStep.groupFilesId = Bank.AddItemToStringList(WorkStep.groupFilesId, ";", file.Id.ToString());
                             break;
                         case "alert":
                             var Alert = _business.Alerts.FirstOrDefault(x => x.Id == CategoryId);

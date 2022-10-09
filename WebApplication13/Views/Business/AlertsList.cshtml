@@ -22,77 +22,7 @@
     <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 }
 
-<!-- Table -->
-<div class="card">
-    <div class="card-body">
-        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-            <thead class="bg-danger text-white">
-                <tr>
-                    <th>ID</th>
-                    <th>Дата и время</th>
-                    @if (ViewData["ServiceObjectId"].ToString() == "0")
-                    {
-                    <th>Объект</th>
-                    }
-                    <th>Статус</th>
-                    <th>Сотрудник</th>
-                    <th>Сообщение</th>
-                    <th>Файлы</th>
-                    <th>Подробнее</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.OrderByDescending(x => x.DT))
-                {
-                <tr>
-                    <th scope="row">@item.Id</th>
-                    <td>@item.DT</td>
-                    @if (ViewData["ServiceObjectId"].ToString() == "0")
-                    {
-                        <td>
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
-                        </td>
-                    }
-                        <td>@item.StatusRus()</td>
-                        <td>
-                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
-                        </td>
-                        <td style="max-width:250px; word-break: break-all">
-                            @item.Message
-                        </td>
-                        <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                        <td>
-                            @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
-                            {
-                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
-                            }
-                            <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
-                                <i class="fas fa-info-circle"></i>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-    <!-- Добавить -->
-    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
-    {
-        @if (Convert.ToInt32(ViewData["ServiceObjectId"]) > 0)
-        {
-            <div class="card-footer">
-                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
-            </div>
-        }
-    }
-</div>
-
-
-<script type="text/javascript">
-
-</script>
+@Html.Partial("tbl_Alerts", Model)
 
 @section Scripts {
     <!-- Required datatable js -->

@@ -1,0 +1,79 @@
+﻿@model List<WorkStepInfo>
+
+@{
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+
+    var WRK = Model.Select(x => x.WorkId).Distinct();
+    int FilterWRK = (WRK != null && WRK.Count() == 1) ? WRK.First() : 0;
+    string Title = (FilterWRK > 0) ? $"Обслуживание ID {FilterWRK} по шагам " : "Обслуживание по шагам ";
+}
+
+<!-- Таблица -->
+<div id="accordion4">
+    <div class="card mb-2">
+        <div class="card-header bg-soft-success" id="headingFour">
+            <h5 class="m-0 font-size-14">
+                <a class="collapsed text-success" data-bs-toggle="collapse" data-parent="#accordion4" href="#collapseFour" aria-expanded="true" aria-controls="collapseFour" onclick="javascript:flipflopClass('worksteps');">
+                    <i id="worksteps" class="fas fa-arrow-up"></i>
+                    @Title
+                    <span class="badge bg-success">@Model.Count()</span>
+                    <small class="px-2"><a class="text-success px-2" asp-action="WorkStepsList" asp-route-WorkId="@FilterWRK" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+                </a>
+            </h5>
+        </div>
+        <div id="collapseFour" class="collapse show" aria-labelledby="headingFour" data-parent="#accordion4">
+            <div class="">
+                <!--card-body-->
+                <table id="datatable-buttons" class="table table-sm table-small-font  mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-success text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Шаг</th>
+                            <th>Начало</th>
+                            <th>Окончание</th>
+                            <th>Статус</th>
+                            <th>Сотрудник</th>
+                            <th>Файлы</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(x => x.Index))
+                        {
+                            <tr>
+                                <th scope="row">@item.Id</th>
+                                <td>@item.Index</td>
+                                <td>@item.DT_Start</td>
+                                <td>@item.DT_Stop</td>
+                                <td>@item.StatusRus()</td>
+                                <td>
+                                    @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                                </td>
+                                <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                                
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById(id);
+
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-arrow-up" ? "fas fa-arrow-down" : "fas fa-arrow-up";
+    }
+
+</script>
+
+

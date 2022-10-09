@@ -24,7 +24,6 @@
     }
 </style>
 
-
 <!-- Table -->
 <div class="card">
     <div class="card-body">
@@ -99,9 +98,7 @@
                         <td>
                             @if (item.LastWork != null)
                             {
-                                @item.LastWork.DT
-                                <span> - </span>
-                                @item.LastWork.StatusRus()
+                                @Html.Partial("_cellWork", new Work { Id = item.LastWork.Id, ServiceObjectId = item.Id })
                             }
                         </td>
                         @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
@@ -118,13 +115,7 @@
             </tbody>
         </table>
     </div> <!-- end col -->
-    <!-- Добавить -->
-    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
-    {
-        <div class="card-footer">
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="SOEdit" asp-route-id="0"><i class="fas fa-plus"></i> Добавить новый объект</a>
-        </div>
-    }
+
 </div>
 
 

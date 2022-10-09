@@ -1,0 +1,105 @@
+﻿@model WorkStepInfo
+@using System.Text.RegularExpressions;
+@{
+    if (Model.Id > 0)
+    {
+        ViewData["Title"] = $"Шаг ID {Model.Id} обслуживания ID {Model.WorkId}";
+    }
+    else
+    {
+        ViewData["Title"] = $"{Model.WorkId}: Новый шаг обслуживания";
+    }
+
+    //List<myFiles> MF = ViewBag.Files;
+}
+
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+                <div class="card-body">
+                    <div class="row g-0 d-flex justify-content-start">
+                        <<div class="col-10 col-md-3 pb-2">
+                            <small>Объект: </small>
+                            <br />
+                            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
+                        </div>
+                        <div class="col-3 pb-2">
+                            <small>Обслуживание: </small>
+                            <br />
+                            @Html.Partial("_cellWork", new Work { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId })
+                        </div>
+                        <div class="col-3 pb-2">
+                            <small>Шаг: </small>
+                            <br />
+                            @Model.Index
+                        </div>
+                        <div class="col-10 col-md-3 pb-2">
+                            <small>Сотрудник: </small>
+                            <br />
+                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
+                        </div>
+                        <div class="col-3 pb-2">
+                            <small>Дата и время начала: </small>
+                            <br />
+                            @Model.DT_Start
+                        </div>
+                        <div class="col-3 pb-2">
+                            <small>Дата и время окончания: </small>
+                            <br />
+                            @Model.DT_Stop
+                        </div>
+                        @if (Model.Id > 0)
+                        {
+                            <div class="col-10 col-md-3 pb-2">
+                                <small>Статус: </small>
+                                <br />
+                                @Model.StatusRus()
+                            </div>
+                        }
+                    </div>
+                    
+                    <hr />
+                    <!--Файлы-->
+                    <div class="col-12 pt-2">
+                        @if (Model.FileLinks.Count > 0)
+                        {
+                            <small class="mb-2">Файлы:</small>
+                            <br />
+                            <div class="d-flex flex-wrap">
+                                @Html.Partial("_FilesH", @Model.FileLinks)
+                            </div>
+                        }
+                    </div>
+                    <!---->
+                </div>
+                <div class="card-footer">
+                    <div class="row g-0 d-flex justify-content-start">
+                        <!-- закрыть -->
+                        <a asp-action="WorkStepsList" asp-route-WorkId="@ViewData["WorkReturn"]" asp-route-ServiceObjectId="@ViewData["SOReturn"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function Next(Index) {
+            ShowId('upload' + Index);
+    }
+
+    // Show Hide for ID
+    function HideId(id) {
+            document.getElementById(id).style.display = 'none'; // скрыть
+        }
+    function ShowId(id) {
+            document.getElementById(id).style.display = ''; // показать
+    }
+
+</script>
+
+
+
+

@@ -2,7 +2,9 @@
 
 @{
     ViewData["Title"] = "Главная";
+    //List<Alert> Alerts = ViewBag.Alerts;
 }
+
 @section CSS_first {
     <!-- DataTables -->
     <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
@@ -271,18 +273,22 @@
             <tr>
                 <th scope="row">@item.Id</th>
                 <td>@item.DT</td>
-                <td>@if (item.ObjectActive)
-                {<a asp-controller="Business" asp-action="objofslist" asp-route-id="@item.ObjectId">@item.ObjectName <small>(id:@item.ObjectId)</small></a>}
-            else
-            {<span class="text-danger me-2">@item.ObjectName</span>}</td>
-                <td> <span class="text-danger me-2"> @item.StatusRus() </span></td>
-                <td>@if (item.UserActive)
+                <td>
+                    @if (item.ObjectActive)
+                    {<a asp-controller="Business" asp-action="objofslist" asp-route-id="@item.ObjectId">@item.ObjectName <small>(id:@item.ObjectId)</small></a>}
+                else
+                {<span class="text-danger me-2">@item.ObjectName</span>}
+            </td>
+            <td> <span class="text-danger me-2"> @item.StatusRus() </span></td>
+            <td>
+                @if (item.UserActive)
                 {<a asp-controller="Admin" asp-action="Profile" asp-route-Email="@item.UserEmail">@item.UserName <small>(@item.UserEmail)</small></a>}
             else
-            {<span class="text-danger me-2">@item.UserName</span>}</td>
-                <td>@item.Description</td>
-            </tr>
-        }
+            {<span class="text-danger me-2">@item.UserName</span>}
+        </td>
+        <td>@item.Description</td>
+    </tr>
+}
     </tbody>
 </table>
 <br>
@@ -310,20 +316,27 @@
             <tr>
                 <th scope="row">@item.Id</th>
                 <td>@item.DT</td>
-                <td>@if (item.ObjectActive)
-                {<a asp-controller="Business" asp-action="objofslist" asp-route-id="@item.ObjectId">@item.ObjectName <small>(id:@item.ObjectId)</small></a>}
-            else
-            {<span class="text-danger me-2">@item.ObjectName</span>}</td>
-                <td>  <span class="text-success me-2"> @item.StatusRus() </span></td>
-                <td>@if (item.UserActive)
+                <td>
+                    @if (item.ObjectActive)
+                    {<a asp-controller="Business" asp-action="objofslist" asp-route-id="@item.ObjectId">@item.ObjectName <small>(id:@item.ObjectId)</small></a>}
+                else
+                {<span class="text-danger me-2">@item.ObjectName</span>}
+            </td>
+            <td>  <span class="text-success me-2"> @item.StatusRus() </span></td>
+            <td>
+                @if (item.UserActive)
                 {<a asp-controller="Admin" asp-action="Profile" asp-route-Email="@item.UserEmail">@item.UserName <small>(@item.UserEmail)</small></a>}
             else
-            {<span class="text-danger me-2">@item.UserName</span>}</td>
-                <td>@item.Description</td>
-            </tr>
-        }
+            {<span class="text-danger me-2">@item.UserName</span>}
+        </td>
+        <td>@item.Description</td>
+    </tr>
+}
     </tbody>
 </table>
+
+
+
 @section Scripts {
     <!-- apexcharts js -->
     <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>

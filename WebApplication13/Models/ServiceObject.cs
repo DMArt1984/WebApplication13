@@ -128,32 +128,7 @@ namespace FactPortal.Models
     {
         public int Id { get; set; } // ID записи
         public int ServiceObjectId { get; set; } // ID объекта обслуживания
-        public string myUserId { get; set; } // Персонал
-        public int Status { get; set; } // Статус
-        public string Description { get; set; } // Описание
-        public string DT { get; set; } // Дата и время
-        public string groupFilesId { get; set; } // Файлы (10;11;12)
-        public int ReadyStep { get; set; } // Выполненный шаг (1,2...7)
-        public string StatusRus()
-        {
-            switch (Status)
-            {
-                case 1:
-                    return "ожидание";
-                case 2:
-                    return "редактирование";
-                case 11:
-                    return "загрузка данных";
-                case 5:
-                    return "работа";
-                case 8:
-                    return "частично";
-                case 9:
-                    return "выполнено";
-                default:
-                    return Status.ToString();
-            }
-        }
+
     }
     // Обслуживание объектов: полная информация
     public class WorkInfo
@@ -162,6 +137,7 @@ namespace FactPortal.Models
         public int ServiceObjectId { get; set; } // ID объекта обслуживания
         public string ServiceObjectTitle { get; set; } // Название объекта обслуживания
         public string ServiceObjectCode { get; set; } // Код объекта обслуживания
+        public int FinalStep { get; set; } // Номер последнего шага (всего шагов)
         public List<WorkStepInfo> Steps { get; set; } // Шаги выполнения работ
         
     }
@@ -199,7 +175,6 @@ namespace FactPortal.Models
         public string DT_Start { get; set; } // Дата и время начала
         public string DT_Stop { get; set; } // Дата и время начала
         public string groupFilesId { get; set; } // Файлы (10;11;12)
-
         public string StatusRus()
         {
             switch (Status)
@@ -208,6 +183,8 @@ namespace FactPortal.Models
                     return "ожидание";
                 case 2:
                     return "редактирование";
+                case 3:
+                    return "пропущен";
                 case 11:
                     return "загрузка данных";
                 case 5:
@@ -236,6 +213,27 @@ namespace FactPortal.Models
         public string DT_Start { get; set; } // Дата и время начала
         public string DT_Stop { get; set; } // Дата и время начала
         public List<myFiles> FileLinks { get; set; } // Файлы (10;11;12)
-
+        public string StatusRus()
+        {
+            switch (Status)
+            {
+                case 1:
+                    return "ожидание";
+                case 2:
+                    return "редактирование";
+                case 3:
+                    return "пропущен";
+                case 11:
+                    return "загрузка данных";
+                case 5:
+                    return "работа";
+                case 8:
+                    return "частично";
+                case 9:
+                    return "выполнено";
+                default:
+                    return Status.ToString();
+            }
+        }
     }
 }

@@ -1,0 +1,73 @@
+﻿@model List<AlertInfo>
+
+@{
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+}
+
+<!-- Таблица -->
+<div id="accordion2">
+    <div class="card mb-2">
+        <div class="card-header bg-soft-danger" id="headingThree">
+            <h5 class="m-0 font-size-14">
+                <a class="collapsed text-danger" data-bs-toggle="collapse" data-parent="#accordion2" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" onclick="javascript:flipflopClass('alerts');">
+                    <i id="alerts" class="fas fa-arrow-up"></i>
+                    Уведомления <span class="badge bg-danger">@Model.Count()</span>
+                    <small class="px-2"><a class="text-danger px-2" asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+                </a>
+            </h5>
+        </div>
+        <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion2">
+            <div class="">
+                <!--card-body-->
+                <table id="datatable-buttons" class="table table-sm table-small-font  mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-danger text-white">
+                        <tr>
+                            <th>ID</th>
+                            <th>Дата и время</th>
+                            <th>Статус</th>
+                            <th>Сотрудник</th>
+                            <th>Сообщение</th>
+                            <th>Файл</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(x => x.DT))
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.DT</td>
+                                <td>@item.StatusRus()</td>
+                                <td>
+                                    @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                                </td>
+                                <td style="max-width:250px; word-break: break-all">
+                                    @item.Message
+                                </td>
+                                <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById(id);
+
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-arrow-up" ? "fas fa-arrow-down" : "fas fa-arrow-up";
+    }
+
+</script>
+
+

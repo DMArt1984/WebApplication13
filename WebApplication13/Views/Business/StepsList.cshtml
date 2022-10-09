@@ -4,11 +4,11 @@
     var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
     if (Obj != null && Obj.Count() == 1)
     {
-         ViewData["Title"] = $"{@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}: Шаги обслуживания";
-         //ViewData["Title"] = "Шаги обслуживания";
+         ViewData["Title"] = $"Шаги для {@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle} : параметры";
+         //ViewData["Title"] = "Шаги";
     } else
     {
-         ViewData["Title"] = "Шаги обслуживания";
+         ViewData["Title"] = "Шаги : параметры";
     }
    
 }

@@ -65,28 +65,20 @@ namespace FactPortal.Controllers
             foreach (var item in _business.Works)
             {
                 var ObjectName = "Объект удален";
-                var UserName = "Юзер удалён";
-                var UserEmail = "email удален";
                 var ObjectActive = false;
-                var UserActive = false;
                 if (B1.Where(x => x.Key == item.ServiceObjectId).Count() > 0)
                 {
                     ObjectName = B1[item.ServiceObjectId];
                     ObjectActive = true;
                 }
-                if (B2.Where(x => x.Key == item.myUserId).Count() > 0)
-                {
-                    UserName = B2[item.myUserId];
-                }
-                if (B3.Where(x => x.Key == item.myUserId).Count() > 0)
-                {
-                    UserEmail = B3[item.myUserId];
-                    UserActive = true;
-                }
-                SS.Add(new Statistic { Id = item.Id, ObjectId = item.ServiceObjectId, ObjectName = ObjectName, UserName = UserName, UserEmail = UserEmail, DT = item.DT, Status = item.Status, Description = item.Description, UserActive = UserActive, ObjectActive = ObjectActive });
+                
+                SS.Add(new Statistic { Id = item.Id, ObjectId = item.ServiceObjectId, ObjectName = ObjectName, ObjectActive = ObjectActive });
 
             }
             var stat = new IndexStat() { Statistics = SS.ToList(), Today = DateTime.Today };
+
+            //ViewBag.Alerts = //_business.Alerts.OrderByDescending(x => x.DT).ToList(); //.Take(5);
+
             return View(stat);
         }
 

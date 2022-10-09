@@ -10,30 +10,6 @@
         ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое обслуживание";
     }
 
-    //List<myFiles> MF = ViewBag.Files;
-
-    List<SelectListItem> listStatus = new List<SelectListItem>();
-    listStatus.Add(new SelectListItem { Value = "1", Text = "ожидание" });
-    listStatus.Add(new SelectListItem { Value = "2", Text = "редактирование" });
-    listStatus.Add(new SelectListItem { Value = "5", Text = "работа" });
-    listStatus.Add(new SelectListItem { Value = "8", Text = "частично" });
-    listStatus.Add(new SelectListItem { Value = "9", Text = "выполнено" });
-    var X = listStatus.FirstOrDefault(x => x.Value == Model.Status.ToString());
-    if (X != null)
-        X.Selected = true;
-
-    List<SelectListItem> listIndex = new List<SelectListItem>();
-    if (ViewBag.Indexes != null)
-    {
-        List<int> ST = ViewBag.Indexes;
-        foreach (var item in ST)
-        {
-            listIndex.Add(new SelectListItem { Value = item.ToString(), Text = item.ToString() });
-        }
-        var Y = listIndex.FirstOrDefault(x => x.Value == Model.ReadyStep.ToString());
-        if (Y != null)
-            Y.Selected = true;
-    }
 }
 
 
@@ -47,121 +23,18 @@
                     <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
                     <div class="row g-0 d-flex justify-content-start">
-                        <div class="col-3 pb-2">
-                            <small>Дата и время: </small>
-                            <br />
-                            @Model.DT
-                        </div>
+                        
                         <div class="col-10 col-md-3 pb-2">
                             <small>Объект: </small>
                             <br />
                             @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                         </div>
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Сотрудник: </small>
-                            <br />
-                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
-                        </div>
-                        <div class="col-3 pb-2">
-                            <small>Выполнено шагов: </small>
-                            <br />
-                            @Model.ReadyStep
-                        </div>
-                        @if (Model.Id > 0)
-                        {
-                            <div class="col-10 col-md-3 pb-2">
-                                <small>Статус: </small>
-                                <br />
-                                @Model.StatusRus()
-                            </div>
-                        }
+                        
+                        
                     </div>
-                    @if (Model.Id > 0)
-                    {
-                        <div class="col-12">
-                            <small>Сообщение: </small>
-                            <br />
-                            @if (@Model.Description == "")
-                            {
-                                <span> - </span>
-                            }
-                            else
-                            {
-                                @Model.Description
-                            }
-                        </div>
-                    }
+                    
                     <hr />
-                    <div class="col-12 pt-2">
-                        <small>Новый статус:</small>
-                        <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
-                    </div>
-                    <div class="col-12 pt-2">
-                        <small>Новое сообщение:</small>
-                        <br />
-                        <textarea form="myform" name="Message" rows="5" class="form-control">@Model.Description</textarea>
-                    </div>
-                    @*<div class="col-12 pt-2">
-            <small>Выполнено шагов:</small>
-            <input name="ReadyStep" class="form-control" asp-for="@Model.ReadyStep" required="" />
-        </div>*@
-                <div class="col-12 pt-2">
-                    @if (ViewBag.Indexes != null)
-                    {
-                        <small>Выполнено шагов:</small>
-                        <select class="form-select" name="ReadyStep" value="0" asp-items="listIndex"></select>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Шаги обслуживания не назначены</span>
-                        <input name="ReadyStep" class="form-control d-none" asp-for="@Model.ReadyStep" required="" />
-                    }
-                </div>
-
-                    <!--Файлы-->
-                    <div class="col-12 pt-2">
-                        <small>Выберите файлы для загрузки:</small>
-                        <br />
-                        <div>
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(2);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #1" /><br>
-                        </div>
-                        <div id="upload2" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(3);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #2" /><br>
-                        </div>
-                        <div id="upload3" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(4);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #3" /><br>
-                        </div>
-                        <div id="upload4" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(5);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #4" /><br>
-                        </div>
-                        <div id="upload5" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #5" /><br>
-                        </div>
-                    </div>
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small>Выберите файлы для удаления:</small>
-                            <br />
-                        }
-                        <div>
-                            @foreach (var item in Model.FileLinks)
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" name="DelFileId" type="checkbox" value="@item.Id">
-                                    <label class="form-check-label">
-                                        @Html.Partial("_File", item)
-                                    </label>
-                                </div>
-                            }
-                        </div>
-
-                    </div>
+                    
                     <!---->
                 </div>
                 <div class="card-footer">

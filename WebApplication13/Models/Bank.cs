@@ -219,11 +219,6 @@ namespace FactPortal.Models
             return GetDTfromString(Date) >= GetDTfromString(DateFrom) && GetDTfromString(Date) <= GetDTfromString(DateTo);
         } 
 
-        public static bool TR(string Date = "")
-        {
-            return true;
-        }
-
         // Получить дату из строки
         public static DateTime GetDTfromString(string Date)
         {
@@ -238,6 +233,20 @@ namespace FactPortal.Models
                 return DateTime.UtcNow;
             }
         }
+
+        // Время и дата начала работы
+        public static string GetWork_DTStart(int Status)
+        {
+            return (Status == 5) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+        }
+
+        // Время и дата окончания работы
+        public static string GetWork_DTStop(int Status)
+        {
+            return (Status == 8 || Status == 9) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+        }
+
+        // =========================================================================================
 
         // Добавить данные в строку списка 1;5;8 -> 1;5;8;7
         public static string AddItemToStringList(string StringList, string Delim, string Values)

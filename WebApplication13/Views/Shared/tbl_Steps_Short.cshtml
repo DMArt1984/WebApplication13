@@ -1,0 +1,64 @@
+﻿@model List<StepInfo>
+
+@{
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+}
+
+<!-- Таблица -->
+<div class="card mb-3">
+    <div class="card-header bg-soft-secondary" id="headingOne">
+        <h5 class="m-0 font-size-14">
+            <a class="text-secondary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="javascript:flipflopClass('steps');">
+                <i id="steps" class="fas fa-arrow-up"></i>
+                Шаги обслуживания <span class="badge bg-dark">@Model.Count()</span>
+                <small class="px-2"><a class="text-secondary px-2" asp-action="StepsList" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+            </a>
+        </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion" style="">
+        <div class="">
+            <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <thead class="bg-secondary text-white">
+                    <tr>
+                        <th>№ шага</th>
+                        <th>Мероприятия</th>
+                        <th>Файлы</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderBy(x => x.Index))
+                    {
+                        <tr>
+                            <td>@item.Index</td>
+                            <td style="max-width:300px; word-break: break-all">
+                                @item.Description
+                            </td>
+                            <td>
+                                @Html.Partial("_FilesV", item.FileLinks)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById(id);
+
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-arrow-up" ? "fas fa-arrow-down" : "fas fa-arrow-up";
+    }
+
+</script>
+
+

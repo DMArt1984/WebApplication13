@@ -10,7 +10,6 @@
         ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое обслуживание";
     }
 
-    List<myFiles> MF = ViewBag.Files;
 }
 
 
@@ -19,56 +18,18 @@
         <div class="card">
                 <div class="card-body">
                     <div class="row g-0 d-flex justify-content-start">
-                        <div class="col-3 pb-2">
-                            <small>Дата и время: </small>
-                            <br />
-                            @Model.DT
-                        </div>
+                        
                         <div class="col-10 col-md-3 pb-2">
                             <small>Объект: </small>
                             <br />
                             @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                         </div>
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Сотрудник: </small>
-                            <br />
-                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
-                        </div>
-                        <div class="col-3 pb-2">
-                            <small>Выполнено шагов: </small>
-                            <br />
-                            @Model.ReadyStep
-                        </div>
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Статус: </small>
-                            <br />
-                            @Model.StatusRus()
-                        </div>
+                        
+                        
                     </div>
-                    <div class="col-12">
-                        <small>Сообщение: </small>
-                        <br />
-                        @if (@Model.Description == "")
-                        {
-                            <span> - </span>
-                        }
-                        else
-                        {
-                            @Model.Description
-                        }
-                    </div>
+                    
                     <hr />
-                    <!--Файлы-->
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small class="mb-2">Файлы:</small>
-                            <br />
-                            <div class="d-flex flex-wrap">
-                                @Html.Partial("_FilesH", @Model.FileLinks)
-                            </div>
-                        }
-                    </div>
+                    
                     <!---->
                 </div>
                 <div class="card-footer">

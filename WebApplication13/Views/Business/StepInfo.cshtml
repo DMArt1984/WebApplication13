@@ -3,11 +3,11 @@
 @{
     if (Model.Id > 0)
     {
-        ViewData["Title"] = $"Шаг обслуживания {Model.Index} (ID {Model.Id})";
+        ViewData["Title"] = $"Шаг {Model.Index} (ID {Model.Id}) : параметры";
     }
     else
     {
-        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новый шаг обслуживания";
+        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новый шаг : параметры";
     }
 
     List<myFiles> MF = ViewBag.Files;

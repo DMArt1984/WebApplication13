@@ -1,0 +1,86 @@
+﻿@model List<WorkInfo>
+
+@{
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+}
+
+<!-- Таблица -->
+<div class="card mb-3">
+    <div class="card-header bg-soft-primary" id="headingTwo">
+        <h5 class="m-0 font-size-14">
+            <a class="collapsed text-primary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" onclick="javascript:flipflopClass('works');">
+                <i id="works" class="fas fa-arrow-up"></i>
+                Обслуживание <span class="badge bg-primary">@Model.Count()</span>
+                <small class="px-2"><a class="text-primary px-2" asp-action="WorksList" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+            </a>
+        </h5>
+    </div>
+    <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="">
+            <!--card-body-->
+            <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <thead class="bg-primary text-white">
+                    <tr>
+                        <th>ID</th>
+                        <th>Начало</th>
+                        <th>Выполнено</th>
+                        <th>Шаги</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(x => x.Id))
+                    {
+
+                        var Steps = item.Steps.OrderBy(x => x.Index);
+                        var DT_Start = "";
+                        var DT_Stop = "";
+                        var TRClass = "bg-soft-warning";
+                        if (Steps.Count() >= 1)
+                        {
+                            DT_Start = Steps.First().DT_Start;
+                            if (Steps.Last().Index == item.FinalStep)
+                            {
+                                DT_Stop = Steps.Last().DT_Stop;
+                                TRClass = ""; // "bg-soft-success";
+                            }
+                        }
+
+                        <tr class="@TRClass">
+                            <th>@item.Id</th>
+                            <td>@DT_Start</td>
+                            <td>@DT_Stop</td>
+                            <td>
+                                <ul>
+                                @foreach (var st in item.Steps)
+                                {
+                                    <li>@st.Index) @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @st.DT_Start / @st.DT_Stop</li>
+                                }
+                                </ul>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    function flipflopClass(id) {
+        element = document.getElementById(id);
+        link = document.getElementById(id);
+
+        // fas fa-plus-circle
+        // fas fa-angle-double-right
+        if (link)
+            link.className = link.className == "fas fa-arrow-up" ? "fas fa-arrow-down" : "fas fa-arrow-up";
+    }
+
+</script>
+
+
