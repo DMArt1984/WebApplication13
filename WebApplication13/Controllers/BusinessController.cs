@@ -1379,8 +1379,8 @@ namespace FactPortal.Controllers
 
             var Files = _business.Files.ToList();
             var Work = _business.Works.FirstOrDefault(z => z.Id == Id || Id == 0);
-            var Steps = _business.Steps.Where(x => x.ServiceObjectId == Work.ServiceObjectId).OrderBy(y => y.Index);
-            var FinalStep = (Steps.Count() >= 1) ? Steps.Last().Index : 0;
+            var Steps = (Work != null) ? _business.Steps.Where(x => x.ServiceObjectId == Work.ServiceObjectId).OrderBy(y => y.Index).ToList() : null;
+            var FinalStep = (Steps != null) ? (Steps.Count() >= 1) ? Steps.Last().Index : 0 : 0;
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             if (Work == null && Id > 0)
@@ -1412,8 +1412,8 @@ namespace FactPortal.Controllers
             return _business.WorkSteps.Where(z => z.WorkId == WorkId || WorkId == 0).Select(x => new WorkStepInfo
             {
                 Id = x.Id,
-                ServiceObjectId = (DW.ContainsKey(x.WorkId)) ? DW[x.WorkId] : 0,
-                ServiceObjectTitle = (DW.ContainsKey(x.WorkId)) ? Bank.inf_IS(DObjects,  DW[x.WorkId]) : "",
+                ServiceObjectId = Bank.inf_II(DW, x.WorkId), //(DW.ContainsKey(x.WorkId)) ? DW[x.WorkId] : 0,
+                ServiceObjectTitle = Bank.inf_IS(DObjects, Bank.inf_II(DW, x.WorkId)), // (DW.ContainsKey(x.WorkId)) ? DObjects[DW[x.WorkId]] : "",
                 WorkId = x.WorkId,
                 UserName = Bank.inf_SS(DUsersName, x.myUserId),
                 UserEmail = Bank.inf_SS(DUsersEmail, x.myUserId),
@@ -1443,8 +1443,8 @@ namespace FactPortal.Controllers
             return new WorkStepInfo
             {
                 Id = (Id > 0) ? WorkStep.Id : 0,
-                ServiceObjectId = (DW.ContainsKey(WorkStep.WorkId)) ? DW[WorkStep.WorkId] : 0,
-                ServiceObjectTitle = (DW.ContainsKey(WorkStep.WorkId)) ? Bank.inf_IS(DObjects, DW[WorkStep.WorkId]) : "",
+                ServiceObjectId = Bank.inf_II(DW, WorkStep.WorkId), //(DW.ContainsKey(x.WorkId)) ? DW[x.WorkId] : 0,
+                ServiceObjectTitle = Bank.inf_IS(DObjects, Bank.inf_II(DW, WorkStep.WorkId)), // (DW.ContainsKey(x.WorkId)) ? DObjects[DW[x.WorkId]] : "",
                 WorkId = (Id > 0) ? WorkStep.WorkId : WorkId,
                 UserName = Bank.inf_SS(DUsersName, (Id > 0) ? WorkStep.myUserId : user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, (Id > 0) ? WorkStep.myUserId : user.Id),

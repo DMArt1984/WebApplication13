@@ -16,22 +16,24 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-                <div class="card-body">
-                    <div class="row g-0 d-flex justify-content-start">
-                        
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Объект: </small>
-                            <br />
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
-                        </div>
-                        
-                        
+            <div class="card-body">
+                <div class="row g-0 d-flex justify-content-start">
+
+                    <div class="col-10 col-md-3 pb-2">
+                        <small>Объект: </small>
+                        <br />
+                        @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                     </div>
-                    
-                    <hr />
-                    
-                    <!---->
                 </div>
+
+                <hr />
+                <!-- Обслуживание по шагам -->
+                @if (Model.Steps != null && Model.Steps.Count() > 0)
+                {
+                    @Html.Partial("tbl_WorkSteps_Short", Model.Steps)
+                }
+                <!---->
+            </div>
                 <div class="card-footer">
                     <div class="row g-0 d-flex justify-content-start">
                         <!-- закрыть -->

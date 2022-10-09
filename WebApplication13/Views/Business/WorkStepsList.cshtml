@@ -49,7 +49,7 @@
                     @if (ViewData["WorkReturn"].ToString() == "0")
                     {
                         <td>
-                            @Html.Partial("_cellWork", new Work { Id = item.Id, ServiceObjectId = item.ServiceObjectId })
+                            @Html.Partial("_cellWork", new WorkInfo { Id = item.WorkId, ServiceObjectId = item.ServiceObjectId, ServiceObjectTitle = item.ServiceObjectTitle })
                         </td>
                     }
                     <td>@item.Index</td>

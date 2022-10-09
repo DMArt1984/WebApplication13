@@ -279,6 +279,11 @@ namespace FactPortal.Models
             return IS.ContainsKey(Id) ? IS[Id] : "";
         }
 
+        public static int inf_II(Dictionary<int, int> II, int Id)
+        {
+            return II.ContainsKey(Id) ? II[Id] : 0;
+        }
+
         public static string inf_SSOne(Dictionary<string, string> SS, string Ids)
         {
             return (String.IsNullOrEmpty(Ids)) ? "" : String.Join(';', Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : ""));
