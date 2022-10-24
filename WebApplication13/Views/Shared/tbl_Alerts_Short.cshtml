@@ -12,15 +12,15 @@
             <h5 class="m-0 font-size-14">
                 <a class="collapsed text-danger" data-bs-toggle="collapse" data-parent="#accordion2" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" onclick="javascript:flipflopClass('alerts');">
                     <i id="alerts" class="fas fa-arrow-up"></i>
-                    Уведомления <span class="badge bg-danger">@Model.Count()</span>
-                    <small class="px-2"><a class="text-danger px-2" asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+                    Активные уведомления <span class="badge bg-danger">@Model.Count()</span>
+                    <small class="px-2"><a class="text-danger px-2" asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO">Все уведомления объекта >>></a></small>
                 </a>
             </h5>
         </div>
         <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion2">
             <div class="">
                 <!--card-body-->
-                <table id="datatable-buttons" class="table table-sm table-small-font  mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <table id="datatable-buttons" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                     <thead class="bg-danger text-white">
                         <tr>
                             <th>ID</th>

@@ -1,14 +1,15 @@
 ﻿@model List<StepInfo>
 
 @{
-    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
-    if (Obj != null && Obj.Count() == 1)
+    int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
+    if (FilterSO > 0)
     {
-         ViewData["Title"] = $"Шаги для {@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle} : параметры";
-         //ViewData["Title"] = "Шаги";
-    } else
+        ViewData["Title"] = $"Шаги для объекта {@Model.First(x => x.ServiceObjectId == FilterSO).ServiceObjectTitle} : параметры";
+    }
+    else
     {
-         ViewData["Title"] = "Шаги : параметры";
+        ViewData["Title"] = "Шаги : параметры";
     }
    
 }
@@ -28,7 +29,7 @@
             <thead class="bg-primary text-white">
                 <tr>
                     <th>ID</th>
-                    @if (ViewData["ServiceObjectId"].ToString() == "0")
+                    @if (FilterSO == 0)
                     {
                         <th>Объект</th>
                     }
@@ -43,7 +44,7 @@
                 {
                 <tr>
                     <th scope="row">@item.Id</th>
-                    @if (ViewData["ServiceObjectId"].ToString() == "0")
+                    @if (FilterSO == 0)
                     {
                         <td>
                             @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
@@ -55,13 +56,13 @@
                         </td>
                         <td>@Html.Partial("_FilesV", item.FileLinks)</td>
                         <td>
-                            @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+                            @if (IsAdmin)
                             {
-                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
+                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
                             }
-                            <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
+                            <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
                                 <i class="fas fa-info-circle"></i>
                             </a>
                         </td>
@@ -71,14 +72,11 @@
         </table>
     </div>
     <!-- Добавить -->
-    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+    @if (IsAdmin && FilterSO > 0)
     {
-        @if (Convert.ToInt32(ViewData["ServiceObjectId"]) > 0)
-        {
-            <div class="card-footer">
-                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]"><i class="fas fa-plus"></i> Добавить новый шаг</a>
-            </div>
-        }
+        <div class="card-footer">
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новый шаг</a>
+        </div>
     }
 </div>
 

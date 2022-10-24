@@ -34,32 +34,22 @@
                 }
                 <!---->
             </div>
-                <div class="card-footer">
-                    <div class="row g-0 d-flex justify-content-start">
-                        <!-- закрыть -->
-                        <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
-                    </div>
+            <div class="card-footer">
+                <div class="row g-0 d-flex justify-content-start">
+                    <!-- закрыть -->
+                    <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
                 </div>
+            </div>
         </div>
     </div>
 </div>
 
 
-<script type="text/javascript">
+@section Scripts {
 
-    function Next(Index) {
-            ShowId('upload' + Index);
-    }
-
-    // Show Hide for ID
-    function HideId(id) {
-            document.getElementById(id).style.display = 'none'; // скрыть
-        }
-    function ShowId(id) {
-            document.getElementById(id).style.display = ''; // показать
-    }
-
-</script>
+    <script type="text/javascript">
+    </script>
+}
 
 
 

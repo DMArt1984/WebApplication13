@@ -48,38 +48,46 @@ namespace FactPortal.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            // old
-            //string HP = MyHash.HashPassword("Az+12345");
-            //ViewBag.Hash = ""; // HP;
-            //ViewBag.Verify = ""; // MyHash.VerifyHashedPassword(HP, "Az+12345");
-            //return View();
+            try { 
+                // old
+                //string HP = MyHash.HashPassword("Az+12345");
+                //ViewBag.Hash = ""; // HP;
+                //ViewBag.Verify = ""; // MyHash.VerifyHashedPassword(HP, "Az+12345");
+                //return View();
 
-            // new
-            string HP = MyHash.HashPassword("Az+12345");
-            ViewBag.Hash = ""; // HP;
-            ViewBag.Verify = ""; // MyHash.VerifyHashedPassword(HP, "Az+12345");
-            List<Statistic> SS = new List<Statistic>();
-            Dictionary<int, string> B1 = _business.ServiceObjects.ToDictionary(x => x.Id, y => y.ObjectTitle);
-            Dictionary<string, string> B2 = _context.Users.ToDictionary(x => x.Id, y => y.FullName);
-            Dictionary<string, string> B3 = _context.Users.ToDictionary(x => x.Id, y => y.Email);
-            foreach (var item in _business.Works)
-            {
-                var ObjectName = "Объект удален";
-                var ObjectActive = false;
-                if (B1.Where(x => x.Key == item.ServiceObjectId).Count() > 0)
+                // new
+                string HP = MyHash.HashPassword("Az+12345");
+                ViewBag.Hash = ""; // HP;
+                ViewBag.Verify = ""; // MyHash.VerifyHashedPassword(HP, "Az+12345");
+                List<Statistic> SS = new List<Statistic>();
+                Dictionary<int, string> B1 = _business.ServiceObjects.ToDictionary(x => x.Id, y => y.ObjectTitle);
+                Dictionary<string, string> B2 = _context.Users.ToDictionary(x => x.Id, y => y.FullName);
+                Dictionary<string, string> B3 = _context.Users.ToDictionary(x => x.Id, y => y.Email);
+                foreach (var item in _business.Works)
                 {
-                    ObjectName = B1[item.ServiceObjectId];
-                    ObjectActive = true;
-                }
+                    var ObjectName = "Объект удален";
+                    var ObjectActive = false;
+                    if (B1.Where(x => x.Key == item.ServiceObjectId).Count() > 0)
+                    {
+                        ObjectName = B1[item.ServiceObjectId];
+                        ObjectActive = true;
+                    }
                 
-                SS.Add(new Statistic { Id = item.Id, ObjectId = item.ServiceObjectId, ObjectName = ObjectName, ObjectActive = ObjectActive });
+                    SS.Add(new Statistic { Id = item.Id, ObjectId = item.ServiceObjectId, ObjectName = ObjectName, ObjectActive = ObjectActive });
 
+                }
+                var stat = new IndexStat() { Statistics = SS.ToList(), Today = DateTime.Today };
+
+                //ViewBag.Alerts = //_business.Alerts.OrderByDescending(x => x.DT).ToList(); //.Take(5);
+
+                return View(stat);
             }
-            var stat = new IndexStat() { Statistics = SS.ToList(), Today = DateTime.Today };
-
-            //ViewBag.Alerts = //_business.Alerts.OrderByDescending(x => x.DT).ToList(); //.Take(5);
-
-            return View(stat);
+            catch (Exception ex)
+            {
+                ErrorCatch ec = new ErrorCatch();
+                ec.Set(ex, "");
+                return RedirectToAction("Error_Catch", ec);
+            }
         }
 
         [Authorize(Roles = "Admin, SuperAdmin")]

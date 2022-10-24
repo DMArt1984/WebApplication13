@@ -6,7 +6,7 @@
 
     var WRK = Model.Select(x => x.WorkId).Distinct();
     int FilterWRK = (WRK != null && WRK.Count() == 1) ? WRK.First() : 0;
-    string Title = (FilterWRK > 0) ? $"Обслуживание ID {FilterWRK} по шагам " : "Обслуживание по шагам ";
+    string Title = (FilterWRK > 0) ? $"Выполненные шаги по обслуживанию № {FilterWRK}" : "Выполненные шаги";
 }
 
 <!-- Таблица -->
@@ -28,7 +28,6 @@
                 <table id="datatable-buttons" class="table table-sm table-small-font  mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                     <thead class="bg-success text-white">
                         <tr>
-                            <th>ID</th>
                             <th>Шаг</th>
                             <th>Начало</th>
                             <th>Окончание</th>
@@ -41,8 +40,7 @@
                         @foreach (var item in Model.OrderBy(x => x.Index))
                         {
                             <tr>
-                                <th scope="row">@item.Id</th>
-                                <td>@item.Index</td>
+                                <th>@item.Index</th>
                                 <td>@item.DT_Start</td>
                                 <td>@item.DT_Stop</td>
                                 <td>@item.StatusRus()</td>

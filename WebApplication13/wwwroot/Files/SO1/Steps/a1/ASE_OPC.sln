@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ASE_OPC", "ASE_OPC\ASE_OPC.csproj", "{0EF3E3C4-50EC-4936-BC7E-9B8767ADCADC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0EF3E3C4-50EC-4936-BC7E-9B8767ADCADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0EF3E3C4-50EC-4936-BC7E-9B8767ADCADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0EF3E3C4-50EC-4936-BC7E-9B8767ADCADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0EF3E3C4-50EC-4936-BC7E-9B8767ADCADC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3BB21F1B-8531-4CD7-84E7-237770DF4F1A}
+	EndGlobalSection
+EndGlobal

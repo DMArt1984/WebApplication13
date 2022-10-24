@@ -1,5 +1,5 @@
 ﻿
-<li class="menu-title">Общий раздел</li>
+<li class="menu-title d-none">Общий раздел</li>
 
 <li>
     <a class="waves-effect" asp-area="" asp-controller="Home" asp-action="Index">
@@ -17,11 +17,11 @@
 
 
 
-<li class="menu-title">Обслуживание</li>
+<li class="menu-title d-none">Обслуживание</li>
 <li>
     <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="WorksList">
         <i class="mdi mdi-list-status"></i>
-        <span>Статистика</span>
+        <span>Обслуживание</span>
     </a>
 </li>
 <li class="d-none">
@@ -38,8 +38,8 @@
 </li>
 <li>
     <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="WorkStepsList">
-        <i class="mdi mdi-alert"></i>
-        <span>Шаги обслуживания</span>
+        <i class="mdi mdi-hand-pointing-right"></i>
+        <span>Выполненные шаги</span>
     </a>
 </li>
 
@@ -102,16 +102,23 @@
     </ul>
 </li>
 
-<li class="d-none">
+<li class="">
     <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="TagsInfo">
         <i class="mdi mdi-texture-box"></i>
         <span>Тест</span>
     </a>
 </li>
 
+<li class="d-none">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="TestAjaxForm">
+        <i class="mdi mdi-texture-box"></i>
+        <span>Тест AjaxForm</span>
+    </a>
+</li>
+
 @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
 {
-    <li class="menu-title">Администрирование</li>
+    <li class="menu-title d-none">Администрирование</li>
     <ul class="d-none">
         <li>
             <a class=" waves-effect" asp-area="" asp-controller="Admin" asp-action="Index">

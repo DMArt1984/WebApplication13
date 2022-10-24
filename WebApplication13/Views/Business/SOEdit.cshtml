@@ -82,51 +82,18 @@
                     <div class="pt-1">
                         <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
                     </div>
-                    <!--Файлы-->
-                    <div class="col-12 pt-2">
-                        <small>Выберите файлы для загрузки:</small>
-                        <br />
-                        <div>
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(2);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #1" /><br>
-                        </div>
-                        <div id="upload2" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(3);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #2" /><br>
-                        </div>
-                        <div id="upload3" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(4);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #3" /><br>
-                        </div>
-                        <div id="upload4" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(5);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #4" /><br>
-                        </div>
-                        <div id="upload5" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #5" /><br>
-                        </div>
-                    </div>
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small>Выберите файлы для удаления:</small>
-                            <br />
-                        }
-                        <div>
-                            @foreach (var item in Model.FileLinks)
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" name="DelFileId" type="checkbox" value="@item.Id">
-                                    <label class="form-check-label">
-                                        @Html.Partial("_File", item)
-                                    </label>
-                                </div>
-                            }
-                        </div>
-
-                    </div>
-                    <!---->
+                    <br />
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "so", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новый объект</small>
+                    }
                 </div>
                 <div class="card-footer">
                     <div class="row g-0 d-flex justify-content-start">
@@ -138,7 +105,7 @@
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                         <!-- отмена -->
-                        <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                        <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
                 </div>
             </form>
@@ -169,29 +136,21 @@
 </div>
 <!-- /.modal -->
 
-<script type="text/javascript">
+@section Scripts {
+    <!-- files -->
+    <script src="~/assets/dm/fileControl.js"></script>
 
-    Edit();
+    <script type="text/javascript">
 
-    // Форма редактирования позиции
-    function Edit() {
-        document.getElementById("e_Pos").value = @Model.Position;
-        document.getElementById("e_PosInfo").value = document.getElementById("e_Pos").value;
-    }
+        Edit();
 
+        // Форма редактирования позиции
+        function Edit() {
+            document.getElementById("e_Pos").value = @Model.Position;
+            document.getElementById("e_PosInfo").value = document.getElementById("e_Pos").value;
+        }
 
-    function Next(Index) {
-        ShowId('upload' + Index);
-    }
+    </script>
 
-    // Show Hide for ID
-    function HideId(id) {
-        document.getElementById(id).style.display = 'none'; // скрыть
-    }
-    function ShowId(id) {
-        document.getElementById(id).style.display = ''; // показать
-    }
-
-</script>
-
+}
 

@@ -12,7 +12,7 @@
 
     //List<myFiles> MF = ViewBag.Files;
 
-    
+
 
 }
 
@@ -58,8 +58,8 @@
                         <small>Новый шаг</small>
                         <input name="Index" value="@Model.Index" asp-for="@Model.Index" class="form-control" required="" placeholder="Введите шаг" />
                         @*<div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
-            </div>*@
+                                <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
+                            </div>*@
                         <br />
                     </div>
                     <div class="col-12 pt-2">
@@ -67,51 +67,18 @@
                         <br />
                         <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
                     </div>
-                    <!--Файлы-->
-                    <div class="col-12 pt-2">
-                        <small>Выберите файлы для загрузки:</small>
-                        <br />
-                        <div>
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(2);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #1" /><br>
-                        </div>
-                        <div id="upload2" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(3);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #2" /><br>
-                        </div>
-                        <div id="upload3" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(4);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #3" /><br>
-                        </div>
-                        <div id="upload4" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(5);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #4" /><br>
-                        </div>
-                        <div id="upload5" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #5" /><br>
-                        </div>
-                    </div>
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small>Выберите файлы для удаления:</small>
-                            <br />
-                        }
-
-                        <div>
-                            @foreach (var item in Model.FileLinks)
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" name="DelFileId" type="checkbox" value="@item.Id">
-                                    <label class="form-check-label">
-                                        @Html.Partial("_File", item)
-                                    </label>
-                                </div>
-                            }
-                        </div>
-
-                    </div>
+                    <br />
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "step", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новый шаг</small>
+                    }
                     <!---->
                 </div>
                 <div class="card-footer">
@@ -124,7 +91,7 @@
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                         <!-- закрыть -->
-                        <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                        <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
                 </div>
             </form>
@@ -166,6 +133,9 @@
 </div>
 
 @section Scripts {
+    <!-- files -->
+    <script src="~/assets/dm/fileControl.js"></script>
+
     <!-- plugins -->
     <script src="~/assets/libs/select2/js/select2.min.js"></script>
     <script src="~/assets/libs/bootstrap-datepicker/js/bootstrap-datepicker.min.js"></script>
@@ -176,20 +146,9 @@
 
     <!-- init js -->
     <script src="~/assets/js/pages/form-advanced.init.js"></script>
+
+    <script type="text/javascript">
+
+    </script>
 }
 
-<script type="text/javascript">
-
-    function Next(Index) {
-        ShowId('upload' + Index);
-    }
-
-    // Show Hide for ID
-    function HideId(id) {
-        document.getElementById(id).style.display = 'none'; // скрыть
-    }
-    function ShowId(id) {
-        document.getElementById(id).style.display = ''; // показать
-    }
-
-</script>

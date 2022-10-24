@@ -235,15 +235,15 @@ namespace FactPortal.Models
         }
 
         // Время и дата начала работы
-        public static string GetWork_DTStart(int Status)
+        public static string GetWork_DTStart(int Status, string DT = "")
         {
-            return (Status == 5) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+            return (Status == 5) ? (String.IsNullOrEmpty(DT)) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()): DT : "";
         }
 
         // Время и дата окончания работы
-        public static string GetWork_DTStop(int Status)
+        public static string GetWork_DTStop(int Status, string DT = "")
         {
-            return (Status == 8 || Status == 9) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : "";
+            return (Status == 9) ? (String.IsNullOrEmpty(DT)) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : DT : "";
         }
 
         // =========================================================================================
@@ -266,6 +266,12 @@ namespace FactPortal.Models
                 myList.Remove(item);
             myList.RemoveAll(x => String.IsNullOrEmpty(x));
             return String.Join(Delim, myList.Distinct());
+        }
+
+        // Проверить наличие информации в списке
+        public static int inf_ListMinus(List<int> myList, int Value)
+        {
+            return myList.Any(j => j == Value) ? Value : -Value; // если нет в списке, то знак минус
         }
 
         // Получить значения из словарей  ----------------------------------------------
@@ -330,6 +336,85 @@ namespace FactPortal.Models
         }
 
         // --------------------------------------------------------------------------------
+
+        // Получение статуса работы
+        public static int GetStatusWork(List<int> Steps, int FinalStep)
+        {
+            int CalcStatus = 0; // нет работ
+
+            if (Steps.Count() > 0)
+                CalcStatus = 5; // работа
+
+            // ожидание
+            foreach (var item in Steps)
+            {
+                if (item == 1)
+                {
+                    CalcStatus = 1;
+                    break;
+                }
+            }
+
+            // выполнено
+            var Ready = 0;
+            if (CalcStatus != 1 && FinalStep > 0)
+            {
+                foreach (var item in Steps)
+                {
+                    if (item == 9)
+                        Ready++;
+                }
+                if (Ready == FinalStep)
+                    CalcStatus = 9;
+            }
+
+            return CalcStatus;
+        }
+
+        // ---- Словари ----------------------------------------------------------------------------
+
+        public static Dictionary<string, string> GetDicUsers(List<ApplicationUser> Users)
+        {
+            return Users.ToDictionary(x => x.Id, y => y.FullName);
+        }
+
+        public static Dictionary<string, string> GetDicFilesPath(List<myFiles> Files)
+        {
+            return Files.ToDictionary(x => x.Id.ToString(), y => y.Path);
+        }
+
+        public static Dictionary<int, int> GetDicPos(List<ObjectClaim> Claims)
+        {
+            return Claims.Where(x => x.ClaimType.ToLower() == "position").ToDictionary(x => x.ServiceObjectId, y => Convert.ToInt32(y.ClaimValue));
+        }
+
+        public static Dictionary<int, int> GetDicLastWorkId(List<ServiceObject> SO, List<Work> Works)
+        {
+            var Works2 = Works.OrderBy(y => y.Id).ToList();
+            var SW1 = SO.Select(x => new { x.Id, Works = Works2.Where(k => k.ServiceObjectId == x.Id).ToList() }).ToList();
+            var SW2 = SW1.Select(x => new { x.Id, WorkId = (x.Works.Count > 0) ? x.Works.Last().Id : 0 }).ToList();
+            return SW2.ToDictionary(x => x.Id, y => y.WorkId);
+        }
+
+        public static Dictionary<int, int> GetDicFinalStep(List<ServiceObject> SO, List<Step> Steps)
+        {
+            return SO.ToDictionary(x => x.Id, y => Steps.Where(z => z.ServiceObjectId == y.Id).Select(m => m.Index).Distinct().Count());
+        }
+
+        public static Dictionary<int, int> GetDicWorkStatus(List<Work> Works, List<WorkStep> WorkSteps, Dictionary<int, int> DFinalSteps)
+        {
+            return Works.ToDictionary(x => x.Id, y => Bank.GetStatusWork(WorkSteps.Where(z => z.WorkId == y.Id).Select(z => z.Status).ToList(), Bank.inf_II(DFinalSteps, y.ServiceObjectId)));
+        }
+
+        // ------------------------
+
+        public static int GetLastWorkId(int ServiceObjectId, List<Work> Works)
+        {
+            var Works_SO = Works.Where(x => x.ServiceObjectId == ServiceObjectId).OrderBy(y => y.Id).ToList();
+            var OUT = (Works_SO.Count() > 0) ? Works_SO.Last().Id : 0;
+            return OUT;
+        }
+
 
         #region OLD
         // Название позиции (Id, Name)

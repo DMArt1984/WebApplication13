@@ -1,7 +1,14 @@
 ﻿@model WorkInfo
 
+@if (Model.Id > 0)
+{
     <a asp-controller="Business" asp-action="WorkInfo" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId">
 
-        @Model.ServiceObjectTitle <small>(id: @Model.ServiceObjectId)</small> : № @Model.Id
+        @Model.ServiceObjectTitle <small>(ID: @Math.Abs(@Model.ServiceObjectId))</small> : № @Model.Id
 
-</a>
+    </a>
+}
+else
+{
+    <span class="text-danger me-2">№ @Math.Abs(@Model.Id) - удален</span>
+}

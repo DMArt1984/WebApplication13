@@ -18,68 +18,68 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-                <div class="card-body">
-                    
-                    <div class="row g-0 d-flex justify-content-start">
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Объект: </small>
-                            <br />
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
-                        </div>
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Шаг: </small>
-                            <br />
-                            @Model.Index
-                        </div>
+            <div class="card-body">
+
+                <div class="row g-0 d-flex justify-content-start">
+                    <div class="col-10 col-md-3 pb-2">
+                        <small>Объект: </small>
+                        <br />
+                        @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                     </div>
-                    @if (Model.Id > 0)
+                    <div class="col-10 col-md-3 pb-2">
+                        <small>Шаг: </small>
+                        <br />
+                        @Model.Index
+                    </div>
+                </div>
+                @if (Model.Id > 0)
+                {
+                    <div class="col-12">
+                        <small>Мероприятия: </small>
+                        <br />
+                        @if (@Model.Description == "")
+                        {
+                            <span> - </span>
+                        }
+                        else
+                        {
+                            @Model.Description
+                        }
+                    </div>
+                }
+                <hr />
+
+                <!--Файлы-->
+
+                <div class="col-12 pt-2">
+                    @if (Model.FileLinks.Count > 0)
                     {
-                        <div class="col-12">
-                            <small>Мероприятия: </small>
-                            <br />
-                            @if (@Model.Description == "")
-                            {
-                                <span> - </span>
-                            }
-                            else
-                            {
-                                @Model.Description
-                            }
+                        <small class="mb-2">Файлы:</small>
+                        <br />
+                        <div class="d-flex flex-wrap">
+                            @Html.Partial("_FilesH", @Model.FileLinks)
                         </div>
                     }
-                    <hr />
-                    
-                    <!--Файлы-->
-                    
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small class="mb-2">Файлы:</small>
-                            <br />
-                            <div class="d-flex flex-wrap">
-                                @Html.Partial("_FilesH", @Model.FileLinks)
-                            </div>
-                        }
-                    </div>
+                </div>
 
-                </div>
-                    <!---->
-                </div>
-                <div class="card-footer">
-                    <div class="row g-0 d-flex justify-content-start">
-                        @if (Model.Id != 0)
-                        {
-                            <!-- удалить -->
-                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
-                        }
-                        <!-- сохранить -->
-                        <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
-                        <!-- закрыть -->
-                        <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
-                    </div>
-                </div>
+            </div>
+            <!---->
+        </div>
+        <div class="card-footer">
+            <div class="row g-0 d-flex justify-content-start">
+                @if (Model.Id != 0)
+                {
+                    <!-- удалить -->
+                    <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                }
+                <!-- сохранить -->
+                <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+                <!-- закрыть -->
+                <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+            </div>
         </div>
     </div>
+</div>
 </div>
 
 
@@ -126,20 +126,8 @@
 
     <!-- init js -->
     <script src="~/assets/js/pages/form-advanced.init.js"></script>
+
+    <script type="text/javascript">
+    </script>
 }
 
-<script type="text/javascript">
-
-    function Next(Index) {
-        ShowId('upload' + Index);
-    }
-
-    // Show Hide for ID
-    function HideId(id) {
-        document.getElementById(id).style.display = 'none'; // скрыть
-    }
-    function ShowId(id) {
-        document.getElementById(id).style.display = ''; // показать
-    }
-
-</script>

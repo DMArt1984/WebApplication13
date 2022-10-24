@@ -30,7 +30,7 @@
     <div class="col-12">
         <!-- data -->
         <div class="card">
-            <form id="myform" asp-action="AlertEditData" method="post" enctype="multipart/form-data">
+            <form id="myform" method="post" enctype="multipart/form-data">
                 <h5 class="card-header bg-soft-light">Свойства</h5>
                 <div class="card-body">
                     <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
@@ -63,30 +63,41 @@
                     </div>
                     @if (Model.Id > 0)
                     {
-                        <div class="col-12">
-                            <small>Сообщение: </small>
-                            <br />
-                            @if (@Model.Message == "")
-                            {
-                                <span> - </span>
-                            }
-                            else
-                            {
-                                @Model.Message
-                            }
-                        </div>
+                        @*<div class="col-12">
+                                <small>Сообщение: </small>
+                                <br />
+                                @if (@Model.Message == "")
+                                {
+                                    <span> - </span>
+                                }
+                                else
+                                {
+                                    @Model.Message
+                                }
+                            </div>*@
                     }
                     <hr />
                     <div class="col-12 pt-2">
                         <small>Новый статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
                     </div>
-                    <div class="col-12 pt-2">
+                    <div class="col-12 pt-2 d-none">
                         <small>Новое сообщение:</small>
                         <br />
                         <textarea form="myform" name="Message" rows="5" class="form-control">@Model.Message</textarea>
                     </div>
-
+                    <br />
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "alert", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новое уведомление</small>
+                    }
                     <!---->
                 </div>
                 <div class="card-footer bg-soft-light">
@@ -99,83 +110,14 @@
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                         <!-- отмена -->
-                        <a asp-action="AlertsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Отмена</a>
+                        <a asp-action="AlertsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
                 </div>
             </form>
         </div>
-        <!-- files -->
-        <div class="card">
-            <form id="myform" method="post" enctype="multipart/form-data">
-                <h5 class="card-header bg-soft-light">Файлы</h5>
-                <div class="card-body">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
-                    <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
-                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
 
-                    <!--Файлы-->
-                    <div class="col-12 pt-2">
-                        <small>Выберите файлы для загрузки:</small>
-                        <br />
-                        <div>
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(2);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #1" /><br>
-                        </div>
-                        <div id="upload2" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(3);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #2" /><br>
-                        </div>
-                        <div id="upload3" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(4);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #3" /><br>
-                        </div>
-                        <div id="upload4" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(5);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #4" /><br>
-                        </div>
-                        <div id="upload5" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #5" /><br>
-                        </div>
-                    </div>
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small>Выберите файлы для удаления:</small>
-                            <br />
-                        }
-                        @*@Html.Partial("_winOneFile", MF)
-            @Html.Partial("_FilesV", Model.FileLinks)*@
-                        <div>
-                            @foreach (var item in Model.FileLinks)
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" name="DelFileId" type="checkbox" value="@item.Id">
-                                    <label class="form-check-label">
-                                        @Html.Partial("_File", item)
-                                    </label>
-                                </div>
-                            }
-                        </div>
-
-                    </div>
-                    <!---->
-                </div>
-                <div class="card-footer bg-soft-light">
-                    <div class="row g-0 d-flex justify-content-start">
-
-                        <!-- сохранить изменения -->
-                        <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="far fa-list-alt px-1"></i> Добавить / удалить</button>
-
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
-
-
 
 
 <!-- sample modal content -->
@@ -202,27 +144,11 @@
 </div>
 <!-- /.modal -->
 
+@section Scripts {
+    <!-- files -->
+    <script src="~/assets/dm/fileControl.js"></script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
+    </script>
 
-    function Next(Index) {
-        element = document.getElementById('upload' + Index);
-        //alert(element.file);
-        //if (Index > 1 && element.value == '') {
-        //    HideId('upload' + (Index - 1));
-        //} else {
-            ShowId('upload' + Index);
-        //}
-    }
-
-    // Show Hide for ID
-    function HideId(id) {
-            document.getElementById(id).style.display = 'none'; // скрыть
-        }
-    function ShowId(id) {
-            document.getElementById(id).style.display = ''; // показать
-    }
-   
-</script>
-
-
+}

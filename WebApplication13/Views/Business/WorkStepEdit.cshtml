@@ -1,13 +1,15 @@
 ﻿@model WorkStepInfo
 @using System.Text.RegularExpressions;
 @{
-    if (Model.Id > 0)
+    int FilterSO = Convert.ToInt32(ViewData["SOReturn"]); // выборка по объекту
+    int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
+    if (FilterWrk > 0)
     {
-        ViewData["Title"] = $"Шаг ID {Model.Id} обслуживания ID {Model.WorkId}";
+        ViewData["Title"] = $"Выполненный шаг ID {Model.Id} по обслуживанию № {FilterWrk}";
     }
     else
     {
-        ViewData["Title"] = $"{Model.WorkId}: Новый шаг обслуживания";
+        ViewData["Title"] = $"Обслуживание № {FilterWrk}: Новый выполненный шаг";
     }
 
     //List<myFiles> MF = ViewBag.Files;
@@ -28,7 +30,7 @@
     if (ViewBag.Indexes != null)
     {
         List<int> ST = ViewBag.Indexes;
-        foreach (var item in ST)
+        foreach (var item in ST.OrderBy(x => x))
         {
             listIndex.Add(new SelectListItem { Value = item.ToString(), Text = item.ToString() });
         }
@@ -37,19 +39,20 @@
             Y.Selected = true;
     }
 
-    
+
 }
 
 
 <div class="row">
     <div class="col-12">
+        <!-- data -->
         <div class="card">
             <form id="myform" method="post" enctype="multipart/form-data">
                 <div class="card-body">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
-                    <input type="number" name="WorkReturn" class="form-control d-none" value="@ViewData["WorkReturn"]" readonly />
-                    <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["SOReturn"]" readonly />
+                    <input type="number" name="WorkReturn" class="form-control d-none" value="@FilterWrk" readonly />
+                    <input type="number" name="SOReturn" class="form-control d-none" value="@FilterSO" readonly />
                     <input type="number" name="WorkId" class="form-control d-none" value="@Model.WorkId" readonly />
                     <div class="row g-0 d-flex justify-content-start">
                         <div class="col-10 col-md-3 pb-2">
@@ -60,7 +63,7 @@
                         <div class="col-3 pb-2">
                             <small>Обслуживание: </small>
                             <br />
-                            @Html.Partial("_cellWork", new Work { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId })
+                            @Html.Partial("_cellWork", new WorkInfo { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId, ServiceObjectTitle = Model.ServiceObjectTitle })
                         </div>
                         <div class="col-3 pb-2">
                             <small>Шаг: </small>
@@ -109,51 +112,18 @@
                         <small>Новый статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
                     </div>
-
-                    <!--Файлы-->
-                    <div class="col-12 pt-2">
-                        <small>Выберите файлы для загрузки:</small>
-                        <br />
-                        <div>
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(2);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #1" /><br>
-                        </div>
-                        <div id="upload2" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(3);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #2" /><br>
-                        </div>
-                        <div id="upload3" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(4);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #3" /><br>
-                        </div>
-                        <div id="upload4" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" onchange="Next(5);" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #4" /><br>
-                        </div>
-                        <div id="upload5" style="display:none">
-                            <input class="form-control" type="file" name="uploadedFile" />
-                            <input type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла #5" /><br>
-                        </div>
-                    </div>
-                    <div class="col-12 pt-2">
-                        @if (Model.FileLinks.Count > 0)
-                        {
-                            <small>Выберите файлы для удаления:</small>
-                            <br />
-                        }
-                        <div>
-                            @foreach (var item in Model.FileLinks)
-                            {
-                                <div class="form-check">
-                                    <input class="form-check-input" name="DelFileId" type="checkbox" value="@item.Id">
-                                    <label class="form-check-label">
-                                        @Html.Partial("_File", item)
-                                    </label>
-                                </div>
-                            }
-                        </div>
-
-                    </div>
+                    <br />
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "work", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новый выполненный шаг</small>
+                    }
                     <!---->
                 </div>
                 <div class="card-footer">
@@ -165,31 +135,30 @@
                         }
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
-                        <!-- закрыть -->
-                        <a asp-action="WorkStepsList" asp-route-WorkId="@ViewData["WorkReturn"]" asp-route-ServiceObjectId="@ViewData["SOReturn"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                        <!-- отмена -->
+                        <a asp-action="WorkStepsList" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
                 </div>
             </form>
         </div>
+
     </div>
 </div>
-
-
 
 
 <!-- sample modal content -->
 <div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form class="" asp-controller="Business" asp-action="WorkDelete" method="post">
+            <form class="" asp-controller="Business" asp-action="WorkStepDelete" method="post">
                 <div class="modal-header bg-dark">
                     <h5 class="modal-title text-white" id="myModalLabel">Удалить шаг ID @Model.Id обслуживания ID @Model.WorkId</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
-                    <input type="number" name="WorkId" class="form-control d-none" value="@ViewData["WorkReturn"]" readonly />
-                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@ViewData["SOReturn"]" readonly />
+                    <input type="number" name="WorkId" class="form-control d-none" value="@FilterWrk" readonly />
+                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@FilterSO" readonly />
                     <p>После этого действия вы не сможете востановить обслуживание</p>
                 </div>
                 <div class="modal-footer">
@@ -202,22 +171,13 @@
 </div>
 <!-- /.modal -->
 
+@section Scripts {
+    <!-- files -->
+    <script src="~/assets/dm/fileControl.js"></script>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    function Next(Index) {
-            ShowId('upload' + Index);
-    }
-
-    // Show Hide for ID
-    function HideId(id) {
-            document.getElementById(id).style.display = 'none'; // скрыть
-        }
-    function ShowId(id) {
-            document.getElementById(id).style.display = ''; // показать
-    }
-
-</script>
-
+    </script>
+}
 
 

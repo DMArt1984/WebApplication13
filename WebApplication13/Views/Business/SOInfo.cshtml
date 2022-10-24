@@ -131,19 +131,10 @@ else
         @Html.Partial("tbl_Works_Short", Model.Works)
 
         <!-- Обслуживание по шагам -->
-        @if (Model.Works != null && Model.Works.Last().Steps.Count() > 0)
-        {
-            @Html.Partial("tbl_WorkSteps_Short", Model.Works.Last().Steps)
-        }
-        else
-        {
-            @if (IsAdmin)
+        @*@if (Model.Works != null && Model.Works.Last().Steps.Count() > 0)
             {
-                <div class="mb-2">
-                    <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@Model.Works.Last().Id" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новое обслуживание по шагам</a>
-                </div>
-            }
-        }
+                @Html.Partial("tbl_WorkSteps_Short", Model.Works.Last().Steps)
+            }*@
 
     }
     else
@@ -174,17 +165,8 @@ else
     }
 </div>
 
+@section Scripts {
 
-@*<script type="text/javascript">
-
-    function flipflopClass(id) {
-        element = document.getElementById(id);
-        link = document.getElementById(id);
-
-        // fas fa-plus-circle
-        // fas fa-angle-double-right
-        if (link)
-            link.className = link.className == "fas fa-arrow-up" ? "fas fa-arrow-down" : "fas fa-arrow-up";
-    }
-
-</script>*@
+    <script type="text/javascript">
+    </script>
+}

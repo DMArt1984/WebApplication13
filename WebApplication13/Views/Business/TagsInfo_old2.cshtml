@@ -1,0 +1,260 @@
+﻿
+@{
+    ViewData["Title"] = "TagsInfo";
+}
+
+<h1>TagsInfo</h1>
+
+<!-- data chANGE-->
+<a href="javascript:Hello();">Получить данные без перезагрузки страницы</a>
+<div id="a_Text" class="mx-1">...</div>
+<div id="a_Work" class="mx-1">...</div>
+
+<!-- load files -->
+<!-- HTML5 Input Form Elements -->
+<input id="fileupload" type="file" name="fileupload" />
+<button id="upload-button" onclick="uploadFile2(GetInfo('category'), GetInfo('categoryId'),'')"> Загрузить </button>
+
+<!-- info -->
+<hr />
+<div class="d-none" id="base">@ViewContext.HttpContext.Request.PathBase</div>
+<div class="d-none" id="host">@ViewContext.HttpContext.Request.Host</div>
+<div class="d-none" id="category">step</div>
+<div class="d-none" id="categoryId">1</div>
+<div class="d-none" id="delfileId"></div>
+
+<!-- files -->
+@*<a href="javascript:getFiles('step',1,'');">Получить файлы</a>*@
+<div id="listfiles"></div>
+
+<!-- sample modal content -->
+<div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+                <div class="modal-header bg-dark">
+                    <h5 class="modal-title text-white" id="myModalLabel">Удалить файл</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>После этого действия вы не сможете востановить файл</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="SelectDelFile()"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+                </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+@section Scripts {
+    <script type="text/javascript">
+
+        // Получить файлы
+        getFiles('', GetInfo('category'), GetInfo('categoryId'))
+
+
+        function GetInfo(Id) {
+            return document.getElementById(Id).innerText;
+        }
+
+        function SetInfo(Id, Value) {
+            document.getElementById(Id).innerText = Value;
+        }
+
+        function GetPathHost() {
+            var host = document.getElementById('host').innerText;
+            return host;
+        }
+
+        function GetPathBase() {
+            var base = document.getElementById('base').innerText;
+            return base;
+        }
+
+        //function Hello() {
+        //    $.ajax({
+        //        type: 'get',
+        //        url: '/Business/Test1',
+        //        data: { 'data': '12345' },
+        //        success: function (result) {
+
+        //            //document.getElementById("a_Text").textContent = result;
+        //            document.getElementById("a_Text").innerHTML = result;
+        //        },
+        //        failure: function () {
+        //            alert("failure");
+        //        },
+        //        beforeSend: function () {
+        //            document.getElementById("a_Work").innerHTML = "Loading...";
+        //        },
+        //        complete: function () {
+        //            document.getElementById("a_Work").innerHTML = "OK";
+        //        }
+        //    });
+        //}
+
+        //async function uploadFile() {
+        //      let formData = new FormData();
+        //      formData.append("file", fileupload.files[0]);
+        //      await fetch('/Business/GetFiles', {
+        //        method: "POST",
+        //        body: formData
+        //      });
+        //      alert('The file has been uploaded successfully.');
+        //}
+
+        // Загрузить файл
+        async function uploadFile2(category, categoryId, description) {
+            let formData = new FormData();
+            formData.append("file", fileupload.files[0]);
+            formData.append("category", category);
+            formData.append("categoryId", categoryId);
+            formData.append("description", description);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/AddFile_forJS`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Upload: " + percentComplete + "% complete")
+                                document.getElementById("a_Work").innerHTML = "Upload: " + percentComplete + "% complete";
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    //console.log(data.FileName);
+                    //console.log(data.description);
+                    //console.log(data.category);
+                    //console.log(data.categoryId);
+                    //data.Info.forEach(element => console.log(">"+element));
+                    //alert('The file has been uploaded successfully.');
+                    getFiles('', GetInfo('category'), GetInfo('categoryId'))
+                },
+                error: function (error) {
+                    // handle error
+                    alert('Error');
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    HideId("listfiles")
+                    document.getElementById("a_Work").innerHTML = "Загрузка файла...";
+                },
+                complete: function () {
+                    document.getElementById("a_Work").innerHTML = "OK";
+                },
+                timeout: 60000
+            });
+
+        }
+
+        function SelectDelFile() {
+            DeleteFile(GetInfo('delfileId'))
+        }
+
+        // Удалить файл
+        function DeleteFile(Id) {
+            $.ajax({
+                type: 'get',
+                url: `${GetPathBase()}/Business/DeleteFile_forJS`,
+                data: { 'Id': Id },
+                success: function (result) {
+                    getFiles('', GetInfo('category'), GetInfo('categoryId'))
+                },
+                failure: function () {
+                    alert("failure");
+                },
+                beforeSend: function () {
+                    HideId("listfiles")
+                    document.getElementById("a_Work").innerHTML = "Удаление файла...";
+                },
+                complete: function () {
+                    document.getElementById("a_Work").innerHTML = "OK";
+                }
+            });
+        }
+
+        // Получение списка файлов с сервера
+        async function getFiles(Ids, category, categoryId) {
+            let formData = new FormData();
+            formData.append("Ids", Ids);
+            formData.append("category", category);
+            formData.append("categoryId", categoryId);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/GetFiles_forJS`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Upload: " + percentComplete + "% complete")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    BuildFiles(data);
+                    //alert('The file has been uploaded successfully.');
+                },
+                error: function (error) {
+                    // handle error
+                    alert('Error');
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    document.getElementById("a_Work").innerHTML = "Получение списка файлов...";
+                },
+                complete: function () {
+                    document.getElementById("a_Work").innerHTML = "OK";
+                },
+                timeout: 60000
+            });
+
+        }
+
+        // Вывод списка файлов
+        function BuildFiles(data) {
+            const group = document.getElementById('listfiles');
+            group.innerHTML = ""
+
+            for (const element of data.Files) {
+                var line = document.createElement('p')
+                line.innerHTML = `<button type="button" class="btn btn-s btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetInfo('delfileId',${element.Id})"><i class="fas fa-trash-alt px-1"></i> Удалить</button> <a href="javascript:DeleteFile(${element.Id});"><i class="fas fa-trash-alt"></i></a> <a class="px-3" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a>`
+                group.appendChild(line)
+            }
+
+            ShowId("listfiles")
+        }
+
+        // Show Hide for ID
+        function HideId(id) {
+            document.getElementById(id).style.display = 'none'; // скрыть
+        }
+        function ShowId(id) {
+            document.getElementById(id).style.display = ''; // показать
+        }
+
+    </script>
+
+}
+

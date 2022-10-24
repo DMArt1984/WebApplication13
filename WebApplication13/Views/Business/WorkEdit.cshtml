@@ -23,18 +23,18 @@
                     <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
                     <div class="row g-0 d-flex justify-content-start">
-                        
+
                         <div class="col-10 col-md-3 pb-2">
                             <small>Объект: </small>
                             <br />
                             @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                         </div>
-                        
-                        
+
+
                     </div>
-                    
+
                     <hr />
-                    
+
                     <!---->
                 </div>
                 <div class="card-footer">
@@ -47,7 +47,7 @@
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                         <!-- закрыть -->
-                        <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                        <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
                 </div>
             </form>
@@ -82,22 +82,11 @@
 </div>
 <!-- /.modal -->
 
+@section Scripts {
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    function Next(Index) {
-            ShowId('upload' + Index);
-    }
-
-    // Show Hide for ID
-    function HideId(id) {
-            document.getElementById(id).style.display = 'none'; // скрыть
-        }
-    function ShowId(id) {
-            document.getElementById(id).style.display = ''; // показать
-    }
-
-</script>
-
+    </script>
+}
 
 

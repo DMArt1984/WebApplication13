@@ -1,14 +1,15 @@
 ﻿@model List<WorkInfo>
 
 @{
-    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
-    if (Obj != null && Obj.Count() == 1)
+    int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
+    if (FilterSO > 0)
     {
-         ViewData["Title"] = $"{@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}: Статистика обслуживания";
-         //ViewData["Title"] = "Статистика обслуживания";
-    } else
+        ViewData["Title"] = $"{@Model.First(x => x.ServiceObjectId == FilterSO).ServiceObjectTitle}: Статистика обслуживания";
+    }
+    else
     {
-         ViewData["Title"] = "Статистика обслуживания";
+        ViewData["Title"] = "Статистика обслуживания";
     }
 }
 
@@ -27,7 +28,7 @@
             <thead class="bg-primary text-white">
                 <tr>
                     <th>ID</th>
-                    @if (ViewData["ServiceObjectId"].ToString() == "0")
+                    @if (FilterSO == 0)
                     {
                         <th>Объект</th>
                     }
@@ -54,7 +55,7 @@
 
                 <tr>
                     <th scope="row">@item.Id</th>
-                    @if (ViewData["ServiceObjectId"].ToString() == "0")
+                    @if (FilterSO == 0)
                     {
                         <td>
                             @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
@@ -63,22 +64,33 @@
                     <td>@DT_Start</td>
                     <td>@DT_Stop</td>
                     <td>
-                        <ul>
-                            @foreach (var st in item.Steps)
+                        <small>
+                        <ol>
+                            @foreach (var st in item.Steps.OrderBy(x => x.Index))
                             {
-                                <li>@st.Index) @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @st.DT_Start / @st.DT_Stop</li>
+                                if (st.Status > 0)
+                                {
+                                    var DT = st.DT_Start;
+                                    if (st.DT_Stop != "")
+                                        DT += "/" + st.DT_Stop;
+                                <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                }
                             }
-                        </ul>
+                        </ol>
+                        </small>
                     </td>
                     <td>
-                        @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+                        @if (IsAdmin)
                         {
-                            <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
+                            <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
                         }
-                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]">
+                        @*<a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
                             <i class="fas fa-info-circle"></i>
+                        </a>*@
+                        <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                            <i class="fas fa-align-justify"></i>
                         </a>
                     </td>
                 </tr>
@@ -87,14 +99,11 @@
         </table>
     </div>
     <!-- Добавить -->
-    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+    @if (IsAdmin && FilterSO > 0)
     {
-        @if (Convert.ToInt32(ViewData["ServiceObjectId"]) > 0)
-        {
-            <div class="card-footer">
-                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
-            </div>
-        }
+        <div class="card-footer">
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
+        </div>
     }
 </div>
 

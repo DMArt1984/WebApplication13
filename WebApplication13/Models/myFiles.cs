@@ -13,4 +13,10 @@ namespace FactPortal.Models
         public string Path { get; set; }
         public string Description { get; set; }
     }
+
+    public class FileFront
+    {
+        public string category { get; set; }
+        public int categoryId { get; set; }
+    }
 }

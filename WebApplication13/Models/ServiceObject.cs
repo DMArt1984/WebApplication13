@@ -5,7 +5,27 @@ using System.Threading.Tasks;
 
 namespace FactPortal.Models
 {
-    
+    public enum eWorkStep
+    {
+        Wait = 1, // ожидание
+        Edit = 2, // редактирование
+        Skip = 3, // пропущен
+        Work = 5, // работа
+        Part = 8, // частично
+        Ready = 9, // выполнено
+        Load = 11, // загрузка данных
+    }
+
+    public enum eAlert
+    {
+        New = 0, // новое
+        View = 5, // просмотрено
+        Closed = 9, // закрыто
+        Edit = 10, // редактирование
+        Load = 11, // загрузка данных
+        Change = 99 // изменено
+    }
+
     // Объекты обслуживания: модель
     public class ServiceObject
     {
@@ -109,7 +129,7 @@ namespace FactPortal.Models
                 case 5:
                     return "просмотрено";
                 case 9:
-                    return "исправлено";
+                    return "закрыто";
                 case 10:
                     return "редактирование";
                 case 11:
@@ -117,7 +137,7 @@ namespace FactPortal.Models
                 case 99:
                     return "изменено";
                 default:
-                    return Status.ToString();
+                    return $"статус #{Status.ToString()}";
             }
         }
     }
@@ -137,9 +157,26 @@ namespace FactPortal.Models
         public int ServiceObjectId { get; set; } // ID объекта обслуживания
         public string ServiceObjectTitle { get; set; } // Название объекта обслуживания
         public string ServiceObjectCode { get; set; } // Код объекта обслуживания
+        public int Status { get; set; } // Статус
         public int FinalStep { get; set; } // Номер последнего шага (всего шагов)
         public List<WorkStepInfo> Steps { get; set; } // Шаги выполнения работ
+        public string StatusRus()
+        {
+            switch (Status)
+            {
+                case 1:
+                    return "ожидание";
+                case 5:
+                    return "работа";
+                case 9:
+                    return "выполнено";
+                default:
+                    return $"статус #{Status.ToString()}";
+            }
+        }
+
         
+
     }
 
 
@@ -194,7 +231,7 @@ namespace FactPortal.Models
                 case 9:
                     return "выполнено";
                 default:
-                    return Status.ToString();
+                    return $"статус #{Status.ToString()}";
             }
         }
 
@@ -217,6 +254,8 @@ namespace FactPortal.Models
         {
             switch (Status)
             {
+                case 0:
+                    return "-";
                 case 1:
                     return "ожидание";
                 case 2:
@@ -232,8 +271,10 @@ namespace FactPortal.Models
                 case 9:
                     return "выполнено";
                 default:
-                    return Status.ToString();
+                    return $"статус #{Status.ToString()}";
             }
         }
     }
+
+    
 }

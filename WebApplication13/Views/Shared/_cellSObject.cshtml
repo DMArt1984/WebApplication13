@@ -1,10 +1,11 @@
 ﻿@model ServiceObject
 
+@if (Model.Id > 0)
+{
     <a asp-controller="Business" asp-action="SOInfo" asp-route-id="@Model.Id">
-       
+
         @if (!String.IsNullOrEmpty(Model.ObjectTitle))
         {
-
             @Model.ObjectTitle
             @if (!String.IsNullOrEmpty(Model.ObjectCode))
             {
@@ -14,7 +15,6 @@
             {
                 <small>(ID: @Model.Id)</small>
             }
-
         }
         else
         {
@@ -22,3 +22,8 @@
         }
 
     </a>
+}
+else
+{
+    <span class="text-danger me-2">ID: @Math.Abs(@Model.Id) - удален</span>
+}

@@ -66,7 +66,7 @@
                             <breadcrumb></breadcrumb>
                         </div>
                         <div class="font-size-12 p-0 m-0">
-                            
+
                         </div>
                     </div>
 
@@ -95,7 +95,7 @@
                 </div>
 
                 <div class="d-flex">
-                    
+
                     @RenderSection("TopBar", required: false)
                 </div>
 
@@ -106,31 +106,33 @@
                 </div>
 
             </div>
-</header>
+        </header>
 
         <!-- ========== Left Sidebar Start ========== -->
         @if (@ViewContext.HttpContext.User.Identity.Name != null)
         {
-        <div class="vertical-menu">
-            <div data-simplebar class="h-100">
-            <!--- Sidemenu -->
-                <div id="sidebar-menu">
-                    <!-- Left Menu Start -->
-                    <ul class="metismenu list-unstyled" id="side-menu">
-                        <partial name="_Menu" />
-                    </ul>
+            <div class="vertical-menu">
+                <div data-simplebar class="h-100">
+                    <!--- Sidemenu -->
+                    <div id="sidebar-menu">
+                        <!-- Left Menu Start -->
+                        <ul class="metismenu list-unstyled" id="side-menu">
+                            <partial name="_Menu" />
+                        </ul>
+                    </div>
                 </div>
             </div>
-         </div>
         }
         <!-- ========= Left Sidebar End ============= -->
-            
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
         <div class="main-content">
-        
-            <div class="page-content">
+
+            <div id="load" class="page-content">
+                Загрузка страницы...
+            </div>
+            <div id="content" class="page-content">
                 @RenderBody()
             </div>
             <!-- End Page-content -->
@@ -143,7 +145,6 @@
 
     </div>
     <!-- END layout-wrapper -->
-
     <!-- JAVASCRIPT -->
     <script src="~/assets/libs/jquery/jquery.min.js"></script>
     <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -153,7 +154,21 @@
 
     <script src="~/assets/js/app.js"></script>
 
+    <!-- base -->
+    <script src="~/assets/dm/base.js"></script>
+
     @RenderSection("Scripts", required: false)
+
+    <!-- load -->
+    <script type="text/javascript">
+        ShowId("load")
+        HideId("content")
+
+        window.addEventListener("load", function () {
+            HideId("load")
+            ShowId("content")
+        });
+    </script>
 
 </body>
 </html>

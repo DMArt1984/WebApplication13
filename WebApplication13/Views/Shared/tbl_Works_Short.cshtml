@@ -11,21 +11,22 @@
         <h5 class="m-0 font-size-14">
             <a class="collapsed text-primary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" onclick="javascript:flipflopClass('works');">
                 <i id="works" class="fas fa-arrow-up"></i>
-                Обслуживание <span class="badge bg-primary">@Model.Count()</span>
-                <small class="px-2"><a class="text-primary px-2" asp-action="WorksList" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+                Последнее обслуживание <span class="badge bg-primary">@Model.Count()</span>
+                <small class="px-2"><a class="text-primary px-2" asp-action="WorksList" asp-route-ServiceObjectId="@FilterSO">Все обслуживания объекта >>></a></small>
             </a>
         </h5>
     </div>
     <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
         <div class="">
             <!--card-body-->
-            <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                 <thead class="bg-primary text-white">
                     <tr>
                         <th>ID</th>
                         <th>Начало</th>
                         <th>Выполнено</th>
                         <th>Шаги</th>
+                        <th>Подробнее</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -35,28 +36,41 @@
                         var Steps = item.Steps.OrderBy(x => x.Index);
                         var DT_Start = "";
                         var DT_Stop = "";
-                        var TRClass = "bg-soft-warning";
                         if (Steps.Count() >= 1)
                         {
                             DT_Start = Steps.First().DT_Start;
                             if (Steps.Last().Index == item.FinalStep)
                             {
                                 DT_Stop = Steps.Last().DT_Stop;
-                                TRClass = ""; // "bg-soft-success";
                             }
                         }
 
-                        <tr class="@TRClass">
+                        <tr>
                             <th>@item.Id</th>
                             <td>@DT_Start</td>
                             <td>@DT_Stop</td>
                             <td>
-                                <ul>
-                                @foreach (var st in item.Steps)
-                                {
-                                    <li>@st.Index) @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @st.DT_Start / @st.DT_Stop</li>
-                                }
-                                </ul>
+                                <small>
+                                <ol>
+                                    @foreach (var st in item.Steps.OrderBy(x => x.Index))
+                                    {
+
+                                        if (st.Status > 0)
+                                        {
+                                            var DT = st.DT_Start;
+                                            if (st.DT_Stop != "")
+                                                DT += "/" + st.DT_Stop;
+
+                                        <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                        }
+                                    }
+                                </ol>
+                                <small>
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                    <i class="fas fa-align-justify"></i>
+                                </a>
                             </td>
                         </tr>
                     }
