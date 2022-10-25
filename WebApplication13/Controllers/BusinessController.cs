@@ -77,11 +77,11 @@ namespace FactPortal.Controllers
 
         // Просмотр объекта обслуживания
         [Breadcrumb("ViewData.Title")]
-        public IActionResult SOInfo(int id = 0)
+        public async Task<IActionResult> SOInfo(int id = 0)
         {
             try
             {
-                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == id); // объект обслуживания
+                var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == id); // объект обслуживания
 
                 if (SObject == null)
                     return NotFound();
@@ -91,7 +91,7 @@ namespace FactPortal.Controllers
 
                 // Путь и файлы
                 string Position = "";
-                var Files = _business.Files.ToList();
+                var Files = await _business.Files.ToListAsync();
                 List<myFiles> groupFiles = new List<myFiles>();
                 if (Claims.Count() > 0)
                 {
@@ -113,11 +113,11 @@ namespace FactPortal.Controllers
                 }
 
                 // Получение списков из базы
-                var myAlerts = _business.Alerts.Where(x => x.ServiceObjectId == SObject.Id && x.Status != 9 ).ToList();
-                var myWorks = _business.Works.Where(x => x.ServiceObjectId == SObject.Id).ToList();
+                var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == SObject.Id && x.Status != 9 ).ToListAsync();
+                var myWorks = await _business.Works.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
                 var myLastWork = (myWorks.Count() > 0) ? myWorks.Last() : null;
-                var mySteps = _business.Steps.Where(x => x.ServiceObjectId == SObject.Id).ToList();
-                var myWorkSteps = _business.WorkSteps.ToList();
+                var mySteps = await _business.Steps.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
+                var myWorkSteps = await _business.WorkSteps.ToListAsync();
 
                 // Словари раскрывающие свойства
                 Dictionary<string, string> DUsersName = _context.Users.ToDictionary(x => x.Id, y => y.FullName);
@@ -204,7 +204,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult SOEdit(int id = 0)
+        public async Task<IActionResult> SOEdit(int id = 0)
         {
             try
             {
@@ -217,13 +217,13 @@ namespace FactPortal.Controllers
                         ObjectCode = "",
                         Description = "",
                         Position = 0,
-                        Levels = _business.Levels.OrderBy(x => x.Name).ToList()
+                        Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync()
                     };
                     return View(NewSO);
                 }
                 else
                 {
-                    var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == id); // объект обслуживания
+                    var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == id); // объект обслуживания
                     if (SO == null)
                         return NotFound();
 
@@ -248,7 +248,7 @@ namespace FactPortal.Controllers
                         ObjectCode = SO.ObjectCode,
                         Description = SO.Description,
                         Position = Position,
-                        Levels = _business.Levels.OrderBy(x => x.Name).ToList()
+                        Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync()
                     };
                     return View(SOEdit);
                 }
@@ -422,7 +422,7 @@ namespace FactPortal.Controllers
         // Таблица уведомлений
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult AlertsList(int ServiceObjectId = 0)
+        public async Task<IActionResult> AlertsList(int ServiceObjectId = 0)
         {
             // Поиск
             var Alerts = GetAlertsInfo(ServiceObjectId);
@@ -430,7 +430,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("AlertsList", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadObj(SO.Id, SO.ObjectTitle) : GetBreadMain(),
@@ -445,7 +445,7 @@ namespace FactPortal.Controllers
         // Просмотр уведомлений
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult AlertInfo(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> AlertInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Alert = GetAlertInfo(Id, ServiceObjectId);
@@ -453,7 +453,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("AlertEdit", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadAlertsList_Filter(SO.Id, "") : GetBreadAlertsList_All()
@@ -470,7 +470,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult AlertEdit(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> AlertEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Alert = GetAlertInfo(Id, ServiceObjectId);
@@ -478,7 +478,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("AlertEdit", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadAlertsList_Filter(SO.Id, "") : GetBreadAlertsList_All()
@@ -487,7 +487,7 @@ namespace FactPortal.Controllers
             // Вывод
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
-            ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
+            //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
             return View(Alert);
         }
         
@@ -560,7 +560,7 @@ namespace FactPortal.Controllers
         // Таблица параметров шагов объекта обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult StepsList(int ServiceObjectId = 0)
+        public async Task<IActionResult> StepsList(int ServiceObjectId = 0)
         {
             // Поиск
             var Steps = GetStepsInfo(ServiceObjectId);
@@ -568,7 +568,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("StepsList", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadObj(SO.Id, SO.ObjectTitle) : GetBreadMain(),
@@ -584,7 +584,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult StepInfo(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> StepInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Step = GetStepInfo(Id, ServiceObjectId);
@@ -592,7 +592,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("StepEdit", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadStepsList_Filter(SO.Id, "") : GetBreadStepsList_All()
@@ -609,7 +609,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult StepEdit(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Step = GetStepInfo(Id, ServiceObjectId);
@@ -617,7 +617,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("StepEdit", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadStepsList_Filter(SO.Id, "") : GetBreadStepsList_All()
@@ -692,7 +692,7 @@ namespace FactPortal.Controllers
         // Таблица обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult WorksList(int ServiceObjectId = 0)
+        public async Task<IActionResult> WorksList(int ServiceObjectId = 0)
         {
             // Поиск
             List<WorkInfo> Works = GetWorksInfo(ServiceObjectId);
@@ -700,7 +700,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorksList", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadObj(SO.Id, SO.ObjectTitle) : GetBreadMain(),
@@ -715,7 +715,7 @@ namespace FactPortal.Controllers
         // Просмотр обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult WorkInfo(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Work = GetWorkInfo(Id, ServiceObjectId);
@@ -723,7 +723,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorkInfo", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadWorksList_Filter(SO.Id, "") : GetBreadWorksList_All()
@@ -732,7 +732,7 @@ namespace FactPortal.Controllers
             // Вывод
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
-            ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
+            //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
             return View(Work);
         }
 
@@ -740,7 +740,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult WorkEdit(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Work = GetWorkInfo(Id, ServiceObjectId);
@@ -748,7 +748,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorkEdit", "Business", "ViewData.Title")
             {
                 Parent = (SO != null) ? GetBreadWorksList_Filter(SO.Id, "") : GetBreadWorksList_All()
@@ -832,7 +832,7 @@ namespace FactPortal.Controllers
         // Таблица шагов обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult WorkStepsList(int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepsList(int WorkId = 0, int ServiceObjectId = 0)
         {
             // Поиск
             List<WorkStepInfo> WorkSteps = GetWorkStepsInfo(WorkId);
@@ -840,8 +840,8 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var WRK = _business.Works.FirstOrDefault(x => x.Id == WorkId);
-            var Obj = (WRK != null) ? _business.ServiceObjects.FirstOrDefault(x => x.Id == WRK.ServiceObjectId) : null;
+            var WRK = await _business.Works.FirstOrDefaultAsync(x => x.Id == WorkId);
+            var Obj = (WRK != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == WRK.ServiceObjectId) : null;
             var thisNode = new MvcBreadcrumbNode("WorkStepsList", "Business", "ViewData.Title")
             {
                 Parent = (Obj != null) ? GetBreadWorksList_Filter(Obj.Id, "") : GetBreadWorksList_All()
@@ -857,7 +857,7 @@ namespace FactPortal.Controllers
         // Просмотр шагов обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult WorkStepInfo(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepInfo(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var WorkStep = GetWorkStepInfo(Id, WorkId);
@@ -865,8 +865,8 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var WRK = _business.Works.FirstOrDefault(x => x.Id == WorkId);
-            var Obj = (WRK != null) ? _business.ServiceObjects.FirstOrDefault(x => x.Id == WRK.ServiceObjectId) : null;
+            var WRK = await _business.Works.FirstOrDefaultAsync(x => x.Id == WorkId);
+            var Obj = (WRK != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == WRK.ServiceObjectId) : null;
             var thisNode = new MvcBreadcrumbNode("WorkStepEdit", "Business", "ViewData.Title")
             {
                 Parent = (Obj != null) ? GetBreadWorksList_Filter(Obj.Id, "") : GetBreadWorksList_All()
@@ -884,7 +884,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
             // Поиск
             var Work = GetWorkStepInfo(Id, WorkId);
@@ -892,8 +892,8 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var WRK = _business.Works.FirstOrDefault(x => x.Id == WorkId);
-            var Obj = (WRK != null) ? _business.ServiceObjects.FirstOrDefault(x => x.Id == WRK.ServiceObjectId) : null;
+            var WRK = await _business.Works.FirstOrDefaultAsync(x => x.Id == WorkId);
+            var Obj = (WRK != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == WRK.ServiceObjectId) : null;
             var thisNode = new MvcBreadcrumbNode("WorkStepEdit", "Business", "ViewData.Title")
             {
                 Parent = (Obj != null) ? GetBreadWorksList_Filter(Obj.Id, "") : GetBreadWorksList_All()
