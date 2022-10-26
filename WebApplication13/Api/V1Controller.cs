@@ -1478,7 +1478,7 @@ namespace FactPortal.Api
                         UserId = j.myUserId,
                         User = Bank.inf_SS(DUsers, j.myUserId),
                         FilesId = j.groupFilesId,
-                        Files = ""
+                        Files = new List<string>()
                     }).ToList()
                 };
 

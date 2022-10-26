@@ -175,9 +175,14 @@ namespace FactPortal.Models
                 var Big = DT.Split(' ');
 
                 var BDate = Big[0].Split('.');
-                var Day = Convert.ToInt32(BDate[0]);
                 var Month = Convert.ToInt32(BDate[1]);
+                var Day = Convert.ToInt32(BDate[0]);
                 var Year = Convert.ToInt32(BDate[2]);
+                if (Day > 31 || Year < 2000)
+                {
+                    Year = Convert.ToInt32(BDate[0]);
+                    Day = Convert.ToInt32(BDate[2]);
+                }
 
                 var DTime = Big[1];
 
@@ -199,9 +204,14 @@ namespace FactPortal.Models
                 var Big = DT.Split(' ');
 
                 var BDate = Big[0].Split('.');
-                var Day = Convert.ToInt32(BDate[2]);
                 var Month = Convert.ToInt32(BDate[1]);
+                var Day = Convert.ToInt32(BDate[2]);
                 var Year = Convert.ToInt32(BDate[0]);
+                if (Day > 31 || Year < 2000)
+                {
+                    Year = Convert.ToInt32(BDate[2]);
+                    Day = Convert.ToInt32(BDate[0]);
+                }
 
                 var DTime = Big[1].Split(':');
                 var Hour = Convert.ToInt32(DTime[0]);
@@ -235,19 +245,26 @@ namespace FactPortal.Models
             if (String.IsNullOrEmpty(DateTo))
                 return GetDTfromString(Date) >= GetDTfromString(DateFrom);
 
-            return GetDTfromString(Date) >= GetDTfromString(DateFrom) && GetDTfromString(Date) <= GetDTfromString(DateTo);
+            var OUT = GetDTfromString(Date) >= GetDTfromString(DateFrom) && GetDTfromString(Date) <= GetDTfromString(DateTo);
+            return OUT;
         } 
 
         // Получить дату из строки
-        public static DateTime GetDTfromString(string Date)
+        public static DateTime GetDTfromString(string DT)
         {
             try
             {
-                var BDate = Date.Split('.');
+                var Big = DT.Split(' ');
 
-                var Year = Convert.ToInt32(BDate[0]);
+                var BDate = Big[0].Split('.');
                 var Month = Convert.ToInt32(BDate[1]);
                 var Day = Convert.ToInt32(BDate[2]);
+                var Year = Convert.ToInt32(BDate[0]);
+                if (Day > 31 || Year < 2000)
+                {
+                    Year = Convert.ToInt32(BDate[2]);
+                    Day = Convert.ToInt32(BDate[0]);
+                }
 
                 return new DateTime(Year, Month, Day);
             } catch

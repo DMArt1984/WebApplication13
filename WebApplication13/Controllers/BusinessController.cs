@@ -1743,6 +1743,16 @@ namespace FactPortal.Controllers
             };
         }
 
+        private MvcBreadcrumbNode GetBreadWork(int WorkId = 0, int ServiceObjectId = 0, string Title = "")
+        {
+            var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
+            return new MvcBreadcrumbNode("WorkInfo", "Business", (Title != "") ? Title : $"Обслуживание № {WorkId}")
+            {
+                Parent = (SO != null) ? GetBreadWorksList_Filter(SO.Id, "Статистика обслуживания") : GetBreadWorksList_All(),
+                RouteValues = new { Id = WorkId, ServiceObjectId = ServiceObjectId }
+            };
+        }
+
         // Крошки: СПИСОК Выполненные шаги
         private MvcBreadcrumbNode GetBreadWorkStepsList_All()
         {
@@ -1758,10 +1768,11 @@ namespace FactPortal.Controllers
             var WRK = _business.Works.FirstOrDefault(x => x.Id == WorkId);
             return new MvcBreadcrumbNode("WorkStepsList", "Business", (Title != "") ? Title : "Шаги обслуживания")
             {
-                Parent = (WRK != null) ? GetBreadWorksList_Filter(ServiceObjectId, (WRK != null) ? $"Обслуживание № {@WorkId}" : "") : GetBreadWorksList_All(),
+                Parent = (WRK != null) ? GetBreadWork(WorkId, ServiceObjectId, $"Обслуживание № {@WorkId}") : GetBreadWorksList_All(),
                 RouteValues = new { WorkId = WorkId, ServiceObjectId = ServiceObjectId }
             };
         }
+
 
         #endregion
 
