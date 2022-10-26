@@ -1,13 +1,14 @@
 ﻿@model WorkInfo
 @using System.Text.RegularExpressions;
 @{
+    //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
         ViewData["Title"] = $"Обслуживание ID {Model.Id}";
     }
     else
     {
-        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое обслуживание";
+        ViewData["Title"] = $"Объект ID {Model.ServiceObjectId} {Model.ServiceObjectTitle}: Новое обслуживание";
     }
 
 }
@@ -19,10 +20,15 @@
             <div class="card-body">
                 <div class="row g-0 d-flex justify-content-start">
 
-                    <div class="col-10 col-md-3 pb-2">
+                    <div class="col-6 col-md-3 pb-2">
                         <small>Объект: </small>
                         <br />
                         @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
+                    </div>
+                    <div class="col-6 col-md-3 pb-2">
+                        <small>Статус: </small>
+                        <br />
+                        @Model.StatusRus()
                     </div>
                 </div>
 
@@ -30,7 +36,17 @@
                 <!-- Обслуживание по шагам -->
                 @if (Model.Steps != null && Model.Steps.Count() > 0)
                 {
-                    @Html.Partial("tbl_WorkSteps_Short", Model.Steps)
+                    @*@Html.Partial("tbl_WorkSteps_Short", Model.Steps)*@
+
+                    <a class="" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId">
+                        Выполненные шаги последнего обслуживания
+                    </a>
+                    <hr />
+                    foreach (var item in Model.Steps.OrderBy(x => x.Index))
+                    {
+                        @Html.Partial("tbl_WorkSteps_InfoCompact", item)
+                        <p></p>
+                    }
                 }
                 <!---->
             </div>

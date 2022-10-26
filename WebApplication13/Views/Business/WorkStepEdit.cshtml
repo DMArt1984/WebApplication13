@@ -3,13 +3,13 @@
 @{
     int FilterSO = Convert.ToInt32(ViewData["SOReturn"]); // выборка по объекту
     int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
-    if (FilterWrk > 0)
+    if (Model.Id > 0)
     {
-        ViewData["Title"] = $"Выполненный шаг ID {Model.Id} по обслуживанию № {FilterWrk}";
+        ViewData["Title"] = $"Выполненный шаг {Model.Index} [ID {Model.Id}] по обслуживанию № {Model.WorkId}";
     }
     else
     {
-        ViewData["Title"] = $"Обслуживание № {FilterWrk}: Новый выполненный шаг";
+        ViewData["Title"] = $"Обслуживание № {Model.WorkId}: Новый выполненный шаг";
     }
 
     //List<myFiles> MF = ViewBag.Files;
@@ -159,7 +159,7 @@
                     <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
                     <input type="number" name="WorkId" class="form-control d-none" value="@FilterWrk" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@FilterSO" readonly />
-                    <p>После этого действия вы не сможете востановить обслуживание</p>
+                    <p>После этого действия вы не сможете востановить шаг. Прикрепленные файлы также будут удалены.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>

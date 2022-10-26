@@ -1,13 +1,14 @@
 ﻿@model WorkInfo
 @using System.Text.RegularExpressions;
 @{
+    //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
         ViewData["Title"] = $"Обслуживание ID {Model.Id}";
     }
     else
     {
-        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое обслуживание";
+        ViewData["Title"] = $"Объект ID {Model.ServiceObjectId} {Model.ServiceObjectTitle}: Новое обслуживание";
     }
 
 }
@@ -29,7 +30,11 @@
                             <br />
                             @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                         </div>
-
+                        <div class="col-10 col-md-3 pb-2">
+                            <small>Статус: </small>
+                            <br />
+                            @Model.StatusRus()
+                        </div>
 
                     </div>
 

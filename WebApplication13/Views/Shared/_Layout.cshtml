@@ -157,8 +157,6 @@
     <!-- base -->
     <script src="~/assets/dm/base.js"></script>
 
-    @RenderSection("Scripts", required: false)
-
     <!-- load -->
     <script type="text/javascript">
         ShowId("load")
@@ -169,6 +167,10 @@
             ShowId("content")
         });
     </script>
+
+    @RenderSection("Scripts", required: false)
+
+
 
 </body>
 </html>

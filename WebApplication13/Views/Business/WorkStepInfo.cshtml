@@ -1,9 +1,10 @@
 ﻿@model WorkStepInfo
 @using System.Text.RegularExpressions;
 @{
+    int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
-        ViewData["Title"] = $"Выполненный шаг ID {Model.Id} по обслуживанию № {Model.WorkId}";
+        ViewData["Title"] = $"Выполненный шаг {Model.Index} [ID {Model.Id}] по обслуживанию № {Model.WorkId}";
     }
     else
     {
@@ -17,64 +18,8 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-body">
-                <div class="row g-0 d-flex justify-content-start">
-                    <div class="col-10 col-md-3 pb-2">
-                        <small>Объект: </small>
-                        <br />
-                        @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
-                    </div>
-                    <div class="col-3 col-md-3 pb-2">
-                        <small>Обслуживание: </small>
-                        <br />
-                        @Html.Partial("_cellWork", new WorkInfo { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId, ServiceObjectTitle = Model.ServiceObjectTitle })
-                    </div>
-                    <hr />
-                    <div class="col-3 col-md-3 pb-2">
-                        <small>Шаг: </small>
-                        <br />
-                        @Model.Index
-                    </div>
-                    <div class="col-10 col-md-3 pb-2">
-                        <small>Сотрудник: </small>
-                        <br />
-                        @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
-                    </div>
-                    <hr />
-                    <div class="col-3 col-md-3 pb-2">
-                        <small>Дата и время начала: </small>
-                        <br />
-                        @Model.DT_Start
-                    </div>
-                    <div class="col-3 col-md-3 pb-2">
-                        <small>Дата и время окончания: </small>
-                        <br />
-                        @Model.DT_Stop
-                    </div>
-                    @if (Model.Id > 0)
-                    {
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Статус: </small>
-                            <br />
-                            @Model.StatusRus()
-                        </div>
-                    }
-                </div>
+            @Html.Partial("tbl_WorkSteps_Info", Model)
 
-                <hr />
-                <!--Файлы-->
-                <div class="col-12 pt-2">
-                    @if (Model.FileLinks.Count > 0)
-                    {
-                        <small class="mb-2">Файлы:</small>
-                        <br />
-                        <div class="d-flex flex-wrap">
-                            @Html.Partial("_FilesH", @Model.FileLinks)
-                        </div>
-                    }
-                </div>
-                <!---->
-            </div>
             <div class="card-footer">
                 <div class="row g-0 d-flex justify-content-start">
                     <!-- закрыть -->

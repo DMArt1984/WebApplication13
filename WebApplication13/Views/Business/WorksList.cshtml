@@ -34,6 +34,7 @@
                     }
                     <th>Начало</th>
                     <th>Выполнено</th>
+                    <th>Статус</th>
                     <th>Шаги</th>
                     <th>Подробнее</th>
                 </tr>
@@ -63,20 +64,21 @@
                     }
                     <td>@DT_Start</td>
                     <td>@DT_Stop</td>
+                    <td>@item.StatusRus()</td>
                     <td>
                         <small>
-                        <ol>
-                            @foreach (var st in item.Steps.OrderBy(x => x.Index))
-                            {
-                                if (st.Status > 0)
+                            <ol>
+                                @foreach (var st in item.Steps.OrderBy(x => x.Index))
                                 {
-                                    var DT = st.DT_Start;
-                                    if (st.DT_Stop != "")
-                                        DT += "/" + st.DT_Stop;
-                                <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                    if (st.Status > 0)
+                                    {
+                                        var DT = st.DT_Start;
+                                        if (st.DT_Stop != "")
+                                            DT += "/" + st.DT_Stop;
+                                        <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                    }
                                 }
-                            }
-                        </ol>
+                            </ol>
                         </small>
                     </td>
                     <td>
@@ -86,9 +88,9 @@
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
                         }
-                        @*<a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
+                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
                             <i class="fas fa-info-circle"></i>
-                        </a>*@
+                        </a>
                         <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
                             <i class="fas fa-align-justify"></i>
                         </a>

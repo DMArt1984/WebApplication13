@@ -25,6 +25,7 @@
                         <th>ID</th>
                         <th>Начало</th>
                         <th>Выполнено</th>
+                        <th>Статус</th>
                         <th>Шаги</th>
                         <th>Подробнее</th>
                     </tr>
@@ -45,12 +46,13 @@
                             }
                         }
 
-                        <tr>
-                            <th>@item.Id</th>
-                            <td>@DT_Start</td>
-                            <td>@DT_Stop</td>
-                            <td>
-                                <small>
+                    <tr>
+                        <th>@item.Id</th>
+                        <td>@DT_Start</td>
+                        <td>@DT_Stop</td>
+                        <td>@item.StatusRus()</td>
+                        <td>
+                            <small>
                                 <ol>
                                     @foreach (var st in item.Steps.OrderBy(x => x.Index))
                                     {
@@ -61,18 +63,21 @@
                                             if (st.DT_Stop != "")
                                                 DT += "/" + st.DT_Stop;
 
-                                        <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                            <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
                                         }
                                     }
                                 </ol>
                                 <small>
-                            </td>
-                            <td>
-                                <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                                    <i class="fas fa-align-justify"></i>
-                                </a>
-                            </td>
-                        </tr>
+                        </td>
+                        <td>
+                            <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                <i class="fas fa-info-circle"></i>
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                <i class="fas fa-align-justify"></i>
+                            </a>
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>

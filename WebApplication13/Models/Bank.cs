@@ -406,6 +406,11 @@ namespace FactPortal.Models
             return Works.ToDictionary(x => x.Id, y => Bank.GetStatusWork(WorkSteps.Where(z => z.WorkId == y.Id).Select(z => z.Status).ToList(), Bank.inf_II(DFinalSteps, y.ServiceObjectId)));
         }
 
+        public static Dictionary<int, string> GetDicSO(List<ServiceObject> SO)
+        {
+            return SO.ToDictionary(x => x.Id, y => y.ObjectTitle);
+        }
+
         // ------------------------
 
         public static int GetLastWorkId(int ServiceObjectId, List<Work> Works)

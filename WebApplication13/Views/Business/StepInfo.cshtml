@@ -1,16 +1,17 @@
 ﻿@model StepInfo
 @using System.Text.RegularExpressions;
 @{
+    //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
-        ViewData["Title"] = $"Шаг {Model.Index} (ID {Model.Id}) : параметры";
+        ViewData["Title"] = $"Шаг {Model.Index} [ID {Model.Id}]";
     }
     else
     {
-        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новый шаг : параметры";
+        ViewData["Title"] = $"Объект ID {Model.ServiceObjectId} {Model.ServiceObjectTitle}: Новый шаг";
     }
 
-    List<myFiles> MF = ViewBag.Files;
+    //List<myFiles> MF = ViewBag.Files;
 
 }
 

@@ -19,27 +19,27 @@
 
 <li class="menu-title d-none">Обслуживание</li>
 <li>
-    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="WorksList">
-        <i class="mdi mdi-list-status"></i>
-        <span>Обслуживание</span>
-    </a>
-</li>
-<li class="d-none">
-    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams">
-        <i class="mdi mdi-sticker-circle-outline"></i>
-        <span>Диаграммы</span>
-    </a>
-</li>
-<li>
     <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="AlertsList">
         <i class="mdi mdi-alert"></i>
         <span>Уведомления</span>
     </a>
 </li>
 <li>
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="WorksList">
+        <i class="mdi mdi-list-status"></i>
+        <span>Обслуживание</span>
+    </a>
+</li>
+<li>
     <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="WorkStepsList">
         <i class="mdi mdi-hand-pointing-right"></i>
         <span>Выполненные шаги</span>
+    </a>
+</li>
+<li class="d-none">
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams">
+        <i class="mdi mdi-sticker-circle-outline"></i>
+        <span>Диаграммы</span>
     </a>
 </li>
 
@@ -102,7 +102,7 @@
     </ul>
 </li>
 
-<li class="">
+<li class="d-none">
     <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="TagsInfo">
         <i class="mdi mdi-texture-box"></i>
         <span>Тест</span>

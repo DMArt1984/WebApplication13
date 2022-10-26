@@ -75,13 +75,23 @@
                         <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
                         <br />
                     </div>
-                    <div class="col-12">
-                        <small>Позиция:</small>
-                        <select id="e_Pos" class="form-select" name="Position" value="0" asp-items="TextLinkID2" onchange="document.getElementById('e_PosInfo').value = this.value;"></select>
-                    </div>
-                    <div class="pt-1">
-                        <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
-                    </div>
+                    @if (Model.Id != 0)
+                    {
+                        <div class="col-12">
+                            <small>Позиция:</small>
+                            <select id="e_Pos" class="form-select" name="Position" value="0" asp-items="TextLinkID2" onchange="document.getElementById('e_PosInfo').value = this.value;"></select>
+                        </div>
+                        <div class="pt-1">
+                            <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <small>Для получения возможности выбора позиции - сохраните новый объект</small>
+                            <input type="number" name="Position" value="0" readonly class="btn btn-default" style="display: none" />
+                        </div>
+                    }
                     <br />
                     @if (Model.Id != 0)
                     {
@@ -124,7 +134,7 @@
                 </div>
                 <div class="modal-body">
                     <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
-                    <p>После этого действия вы не сможете востановить объект с именем @Model.ObjectTitle</p>
+                    <p>После этого действия вы не сможете востановить объект с именем @Model.ObjectTitle . Все связанные элементы (уведомления, шаги и пр.) и файлы также будут удалены!</p>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>

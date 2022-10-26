@@ -1,16 +1,17 @@
 ﻿@model AlertInfo
 @using System.Text.RegularExpressions;
 @{
+    //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
         ViewData["Title"] = $"Уведомление ID {Model.Id}";
     }
     else
     {
-        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое уведомление";
+        ViewData["Title"] = $"Объект ID {Model.ServiceObjectId} {Model.ServiceObjectTitle}: Новое уведомление";
     }
 
-    List<myFiles> MF = ViewBag.Files;
+    //List<myFiles> MF = ViewBag.Files;
 
 }
 

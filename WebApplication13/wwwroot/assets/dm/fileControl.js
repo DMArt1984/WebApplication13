@@ -211,7 +211,9 @@ function BuildFiles(data) {
         req.open("GET", `${GetPathBase()}${element.Path}`, false);
         req.send();
         var fileSize = req.getResponseHeader('content-length') // байт; 
-        if (fileSize < 1024) {
+        if (fileSize < 1) {
+            fileSize = "1 байт"
+        } else if (fileSize < 1024) {
             fileSize = fileSize + " байт"
         } else if (fileSize < 1024 * 1024) {
             fileSize = Math.ceil(fileSize / 1024) + " Кб"

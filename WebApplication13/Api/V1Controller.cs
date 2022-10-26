@@ -703,27 +703,32 @@ namespace FactPortal.Api
                 if (obj == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
+                // удаление файлов
+                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == obj.Id && x.ClaimType.ToLower() == "file").ToListAsync();
+                foreach (var item in ClaimsFiles)
+                    await DeleteFiles(item.ClaimValue);
+
                 // удаление свойств
                 var myClaims = _business.Claims.Where(x => x.ServiceObjectId == obj.Id);
                 _business.Claims.RemoveRange(myClaims);
 
                 // удаление уведомлений
-                var myAlerts = _business.Alerts.Where(x => x.ServiceObjectId == obj.Id);
+                var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
                 foreach (var item in myAlerts)
                     await DeleteFiles(item.groupFilesId);
 
                 _business.Alerts.RemoveRange(myAlerts);
 
                 // удаление шагов
-                var mySteps = _business.Steps.Where(x => x.ServiceObjectId == obj.Id);
+                var mySteps = await _business.Steps.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
                 foreach (var item in mySteps)
                     await DeleteFiles(item.groupFilesId);
 
                 _business.Steps.RemoveRange(mySteps);
 
                 // удаление обслуживаний
-                var myWorks = _business.Works.Where(x => x.ServiceObjectId == obj.Id);
-                var myWorkSteps = _business.WorkSteps.Where(x => myWorks.Select(y => y.Id).Contains(x.WorkId));
+                var myWorks = await _business.Works.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
+                var myWorkSteps = await _business.WorkSteps.Where(x => myWorks.Select(y => y.Id).Contains(x.WorkId)).ToListAsync();
                 foreach (var item in myWorkSteps)
                     await DeleteFiles(item.groupFilesId);
 
@@ -993,6 +998,24 @@ namespace FactPortal.Api
 
         #endregion
 
+        // Получение времени
+        // GET: api/v1/datetime
+        [HttpGet("datetime")]
+        public JsonResult GetDateTime()
+        {
+            try
+            {
+                var UniversalTime = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
+                var LocalTime = Bank.NormDateTime(System.DateTime.Now.ToString());
+
+                return new JsonResult(new { Result = 0, UniversalTime, LocalTime }, jsonOptions);
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source }, jsonOptions);
+            }
+        }
+
         #region InfoUserBussines
 
         // Список всех уведомлений заданного пользователя
@@ -1041,8 +1064,8 @@ namespace FactPortal.Api
         [HttpGet("user/alerts_works")]
         public JsonResult UserAlertsWorks([FromHeader] string db, string UserId = "", string DateFrom ="", string DateTo="")
         {
-            //try
-            //{
+            try
+            {
                 // Проверка достаточности данных
                 if (String.IsNullOrEmpty(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
@@ -1067,10 +1090,12 @@ namespace FactPortal.Api
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 Dictionary<int, int> DFinalSteps = Bank.GetDicFinalStep(_business.ServiceObjects.ToList(), _business.Steps.ToList());
                 Dictionary<int, int> DWorksStatus = Bank.GetDicWorkStatus(Works0, _business.WorkSteps.ToList(), DFinalSteps);
+                Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
                 var AlertsOUT = Alerts0.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
                     Message = j.Message,
                     Status = j.Status,
                     DT = j.DT,
@@ -1094,17 +1119,18 @@ namespace FactPortal.Api
                 var Works2 = Works0.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
                     FinalStep = Bank.inf_II(DFinalSteps, j.Id),
                     Status = Bank.inf_II(DWorksStatus, j.Id),
                     Steps = WorkSteps2.Where(k => k.WorkId == j.Id).ToList()
                 });
 
                 return new JsonResult(new { Result = 0, Alerts = AlertsOUT.OrderBy(x => x.Id), Works = Works2.OrderBy(x => x.ServiceObjectId)}, jsonOptions);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source }, jsonOptions);
-            //}
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source }, jsonOptions);
+            }
         }
 
         #endregion
@@ -1130,11 +1156,13 @@ namespace FactPortal.Api
                 // Словари
                 Dictionary<string,string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
-                
+                Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
+
                 // Вывод
                 var AlertsOUT = Alerts.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
                     Message = j.Message,
                     Status = j.Status,
                     DT = j.DT,
@@ -1192,12 +1220,14 @@ namespace FactPortal.Api
                 // Словари
                 Dictionary<string, string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
+                Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
                 // Вывод
                 var AlertOUT = new
                 {
                     Id = Obj.Id,
                     ServiceObjectId = Obj.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, Obj.ServiceObjectId),
                     Message = Obj.Message,
                     Status = Obj.Status,
                     DT = Obj.DT,
@@ -1269,12 +1299,14 @@ namespace FactPortal.Api
                 // Словари
                 Dictionary<string, string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
+                Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
                 // Вывод
                 var AlertOUT = new
                 {
                     Id = Obj.Id,
                     ServiceObjectId = Obj.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, Obj.ServiceObjectId),
                     Message = Obj.Message,
                     Status = Obj.Status,
                     DT = Obj.DT,
@@ -1349,8 +1381,25 @@ namespace FactPortal.Api
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 Dictionary<int, int> DFinalStep = Bank.GetDicFinalStep(_business.ServiceObjects.ToList(), _business.Steps.ToList());
                 Dictionary<int, int> DWorkStatus = Bank.GetDicWorkStatus(Works_ids, _business.WorkSteps.ToList(), DFinalStep);
+                Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
-                var WorksOUT = Works_ids.Select(x => new {x.Id, x.ServiceObjectId, FinalStep = Bank.inf_II(DFinalStep, x.ServiceObjectId), Status = Bank.inf_II(DWorkStatus, x.Id), Steps = _business.WorkSteps.Where(w => w.WorkId == x.Id).Select(s => new {s.Id, s.WorkId, UserId = s.myUserId, User = Bank.inf_SS(DUsers, s.myUserId), s.Index, s.Status, s.DT_Start, s.DT_Stop, FilesId = s.groupFilesId, Files = Bank.inf_SSList(DFiles, s.groupFilesId) }).ToList() });
+                var WorksOUT = Works_ids.Select(x => new {
+                    x.Id, 
+                    x.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, x.ServiceObjectId),
+                    FinalStep = Bank.inf_II(DFinalStep, x.ServiceObjectId), 
+                    Status = Bank.inf_II(DWorkStatus, x.Id), 
+                    Steps = _business.WorkSteps.Where(w => w.WorkId == x.Id).Select(s => new {
+                        s.Id, 
+                        s.WorkId, 
+                        UserId = s.myUserId, 
+                        User = Bank.inf_SS(DUsers, s.myUserId), 
+                        s.Index, 
+                        s.Status, 
+                        s.DT_Start, 
+                        s.DT_Stop, 
+                        FilesId = s.groupFilesId, 
+                        Files = Bank.inf_SSList(DFiles, s.groupFilesId) }).ToList() });
 
                 return new JsonResult(new { Result = 0, Works = WorksOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
             }
@@ -1403,12 +1452,20 @@ namespace FactPortal.Api
                 // Сохранить
                 _business.SaveChanges();
 
+                // Словари
+                Dictionary<string, string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
+                Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
+                Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
+
+                var FinalStep = _business.Steps.Where(x => x.ServiceObjectId == OneWork.ServiceObjectId).Select(y => y.Index).Distinct().Count();
+
                 // Вывод
                 var WorkOUT = new
                 {
                     Id = OneWork.Id,
-                    ServiceObjectId = OneWork.Id,
-                    FinalStep = 0,
+                    ServiceObjectId = OneWork.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, OneWork.Id),
+                    FinalStep = FinalStep,
                     Status = 0,
                     Steps = WorkSteps.Select(j => new
                     {
@@ -1419,7 +1476,9 @@ namespace FactPortal.Api
                         DT_Start = j.DT_Start,
                         DT_Stop = j.DT_Stop,
                         UserId = j.myUserId,
+                        User = Bank.inf_SS(DUsers, j.myUserId),
                         FilesId = j.groupFilesId,
+                        Files = ""
                     }).ToList()
                 };
 
@@ -1471,7 +1530,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // Удалить выполненные шаги
-                var myWorkSteps = _business.WorkSteps.Where(x => x.WorkId == Obj.Id);
+                var myWorkSteps = await _business.WorkSteps.Where(x => x.WorkId == Obj.Id).ToListAsync();
                 foreach (var item in myWorkSteps)
                     await DeleteFiles(item.groupFilesId);
 
@@ -1958,10 +2017,6 @@ namespace FactPortal.Api
         #endregion
 
 
-        
-
-
-
      #region QR
         // POST: api/v1/getqr
         [HttpPost("getqr")]
@@ -2212,9 +2267,7 @@ namespace FactPortal.Api
         }
         #endregion
 
-        
-
-    #region Other
+        #region Other
         // GET: api/v1/info/Niko
         [HttpGet("info/{login}")]
         public async Task<JsonResult> UserInfo(string login = "", [FromHeader] string password = "")

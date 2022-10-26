@@ -1,13 +1,14 @@
 ﻿@model AlertInfo
 @using System.Text.RegularExpressions;
 @{
+    //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
         ViewData["Title"] = $"Уведомление ID {Model.Id}";
     }
     else
     {
-        ViewData["Title"] = $"{Model.ServiceObjectTitle}: Новое уведомление";
+        ViewData["Title"] = $"Объект ID {Model.ServiceObjectId} {Model.ServiceObjectTitle}: Новое уведомление";
     }
 
     //List<myFiles> MF = ViewBag.Files;
@@ -132,7 +133,7 @@
                 <div class="modal-body">
                     <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
-                    <p>После этого действия вы не сможете востановить уведомление</p>
+                    <p>После этого действия вы не сможете востановить уведомление. Прикрепленные файлы также будут удалены.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>

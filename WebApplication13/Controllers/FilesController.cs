@@ -127,11 +127,11 @@ namespace FactPortal.Controllers
         // Удалить ФАЙЛ
         [HttpPost]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public IActionResult DeleteFile(int Id)
+        public async Task<IActionResult> DeleteFile(int Id)
         {
             try
             {
-                myFiles File = _business.Files.FirstOrDefault(x => x.Id == Id);
+                myFiles File = await _business.Files.FirstOrDefaultAsync(x => x.Id == Id);
                 if (File != null)
                 {
                     string path = _appEnvironment.WebRootPath + File.Path;
@@ -139,7 +139,7 @@ namespace FactPortal.Controllers
                         System.IO.File.Delete(path);
 
                     _business.Files.Remove(File);
-                    _business.SaveChanges();
+                    await _business.SaveChangesAsync();
                 }
             } catch
             {
