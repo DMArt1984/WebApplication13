@@ -1505,7 +1505,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, user.Id),
                 FileLinks = new List<myFiles>(),
-                DT_Start = Bank.LocalDateTime(DateTime.Now.ToUniversalTime().ToString()),
+                DT_Start = Bank.LocalDateTime(Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                 DT_Stop = "",
                 Status = 0,
                 Index = MaxIndex
@@ -1575,6 +1575,9 @@ namespace FactPortal.Controllers
 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
+            //var X1 =  DateTime.Now.ToUniversalTime().ToString();
+            //var X2 = Bank.LocalDateTime(X1);
+
             return new AlertInfo
             {
                 Id = 0,
@@ -1583,7 +1586,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, user.Id),
                 FileLinks = new List<myFiles>(),
-                DT = Bank.LocalDateTime(DateTime.Now.ToUniversalTime().ToString()),
+                DT = Bank.LocalDateTime(Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                 Status = 0,
                 Message = ""
             };

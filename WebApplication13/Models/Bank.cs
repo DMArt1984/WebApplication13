@@ -168,14 +168,20 @@ namespace FactPortal.Models
         // Преобразование даты и времени в строку
         public static string NormDateTime(string DT)
         {
-            // 02.08.2022 11:09:57
+            // 02.08.2022 7:09:57
             // 0123456789
             try
             {
-                var DateAndTime = DT.Split(' ');
-                var D = DateAndTime[0];
-                var T = (DateAndTime.Count() >= 2) ? DateAndTime[1] : "";
-                string NewDT = $"{D.Substring(6, 4)}.{D.Substring(3, 2)}.{D.Substring(0, 2)} {T}";
+                var Big = DT.Split(' ');
+
+                var BDate = Big[0].Split('.');
+                var Day = Convert.ToInt32(BDate[0]);
+                var Month = Convert.ToInt32(BDate[1]);
+                var Year = Convert.ToInt32(BDate[2]);
+
+                var DTime = Big[1];
+
+                string NewDT = $"{Year}.{Month}.{Day} {DTime}";
                 return NewDT;
             } catch
             {
@@ -186,14 +192,27 @@ namespace FactPortal.Models
         // Преобразование строки в локальное время
         public static string LocalDateTime(string DT)
         {
-            // 02.08.2022 11:09:57
+            // 2022.08.02 5:09:57
             // 0123456789
             try
             {
-                var NewDT = new DateTime(Convert.ToInt16(DT.Substring(6, 4)), Convert.ToInt16(DT.Substring(3, 2)), Convert.ToInt16(DT.Substring(0, 2)),
-                    Convert.ToInt16(DT.Substring(11, 2)), Convert.ToInt16(DT.Substring(14, 2)), Convert.ToInt16(DT.Substring(17, 2)));
-               
-                return NormDateTime(NewDT.ToLocalTime().ToString());
+                var Big = DT.Split(' ');
+
+                var BDate = Big[0].Split('.');
+                var Day = Convert.ToInt32(BDate[2]);
+                var Month = Convert.ToInt32(BDate[1]);
+                var Year = Convert.ToInt32(BDate[0]);
+
+                var DTime = Big[1].Split(':');
+                var Hour = Convert.ToInt32(DTime[0]);
+                var Minute = Convert.ToInt32(DTime[1]);
+                var Second = Convert.ToInt32(DTime[2]);
+
+                var NewDT = new DateTime(Year, Month, Day, Hour, Minute, Second);
+                var LocalTime = NewDT.ToLocalTime().ToString();
+                var NormTime = NormDateTime(LocalTime);
+
+                return NormTime;
             }
             catch
             {
@@ -224,10 +243,13 @@ namespace FactPortal.Models
         {
             try
             {
-                int Y = Convert.ToInt32(Date.Substring(0, 4));
-                int M = Convert.ToInt32(Date.Substring(5, 2));
-                int D = Convert.ToInt32(Date.Substring(8, 2));
-                return new DateTime(Y, M, D);
+                var BDate = Date.Split('.');
+
+                var Year = Convert.ToInt32(BDate[0]);
+                var Month = Convert.ToInt32(BDate[1]);
+                var Day = Convert.ToInt32(BDate[2]);
+
+                return new DateTime(Year, Month, Day);
             } catch
             {
                 return DateTime.UtcNow;
