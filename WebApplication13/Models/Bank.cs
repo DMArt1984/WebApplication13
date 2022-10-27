@@ -422,6 +422,11 @@ namespace FactPortal.Models
             return Files.ToDictionary(x => x.Id.ToString(), y => y.Path);
         }
 
+        public static Dictionary<string, string> GetDicFiles(List<myFiles> Files)
+        {
+            return Files.ToDictionary(x => x.Id.ToString(), y => y.Path + ";" + (String.IsNullOrEmpty(y.Description) ? y.Path.Split("/").Last() : y.Description));
+        }
+
         public static Dictionary<int, int> GetDicPos(List<ObjectClaim> Claims)
         {
             return Claims.Where(x => x.ClaimType.ToLower() == "position").ToDictionary(x => x.ServiceObjectId, y => Convert.ToInt32(y.ClaimValue));

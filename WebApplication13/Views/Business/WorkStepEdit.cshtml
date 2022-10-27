@@ -47,59 +47,83 @@
     <div class="col-12">
         <!-- data -->
         <div class="card">
+            <div class="card-body">
+                    
+                <div class="row g-0 d-flex justify-content-start">
+                    <div class="col-3 col-md-3 pb-2">
+                        <small>Объект: </small>
+                        <br />
+                        @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
+                    </div>
+                    <div class="col-3 pb-2">
+                        <small>Обслуживание: </small>
+                        <br />
+                        @Html.Partial("_cellWork", new WorkInfo { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId, ServiceObjectTitle = Model.ServiceObjectTitle })
+                    </div>
+                    <div class="col-6 col-md-3 pb-2">
+                        <small>Сотрудник: </small>
+                        <br />
+                        @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
+                    </div>
+                    <hr />
+                    <div class="col-6 col-md-3 pb-2">
+                        <small>Установленный шаг: </small>
+                        <br />
+                        @Model.Index
+                    </div>
+                    @if (Model.Id > 0)
+                    {
+                        <div class="col-6 col-md-3 pb-2">
+                            <small>Текущий статус: </small>
+                            <br />
+                            @Model.StatusRus()
+                        </div>
+                    }
+                    <hr />
+                    <div class="col-3 pb-2">
+                        <small>Дата и время начала: </small>
+                        <br />
+                        @Model.DT_Start
+                    </div>
+                    <div class="col-3 pb-2">
+                        <small>Дата и время окончания: </small>
+                        <br />
+                        @Model.DT_Stop
+                    </div>
+
+                </div>
+                    <hr />
+
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "work", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новый выполненный шаг</small>
+                    }
+                    <!---->
+                </div>
+        </div>
+
+        <!-- edit -->
+        <div class="card">
             <form id="myform" method="post" enctype="multipart/form-data">
+                <h5 class="card-header bg-soft-light">Редактирование</h5>
                 <div class="card-body">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
                     <input type="number" name="WorkReturn" class="form-control d-none" value="@FilterWrk" readonly />
                     <input type="number" name="SOReturn" class="form-control d-none" value="@FilterSO" readonly />
                     <input type="number" name="WorkId" class="form-control d-none" value="@Model.WorkId" readonly />
-                    <div class="row g-0 d-flex justify-content-start">
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Объект: </small>
-                            <br />
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
-                        </div>
-                        <div class="col-3 pb-2">
-                            <small>Обслуживание: </small>
-                            <br />
-                            @Html.Partial("_cellWork", new WorkInfo { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId, ServiceObjectTitle = Model.ServiceObjectTitle })
-                        </div>
-                        <div class="col-3 pb-2">
-                            <small>Шаг: </small>
-                            <br />
-                            @Model.Index
-                        </div>
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Сотрудник: </small>
-                            <br />
-                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
-                        </div>
-                        <div class="col-3 pb-2">
-                            <small>Дата и время начала: </small>
-                            <br />
-                            @Model.DT_Start
-                        </div>
-                        <div class="col-3 pb-2">
-                            <small>Дата и время окончания: </small>
-                            <br />
-                            @Model.DT_Stop
-                        </div>
-                        @if (Model.Id > 0)
-                        {
-                            <div class="col-10 col-md-3 pb-2">
-                                <small>Статус: </small>
-                                <br />
-                                @Model.StatusRus()
-                            </div>
-                        }
-                    </div>
 
-                    <hr />
                     <div class="col-12 pt-2">
                         @if (ViewBag.Indexes != null)
                         {
-                            <small>Шаг:</small>
+                            <small>Новый установленный шаг:</small>
                             <select class="form-select" name="Index" value="0" asp-items="listIndex"></select>
                         }
                         else
@@ -112,18 +136,6 @@
                         <small>Новый статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
                     </div>
-                    <br />
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "work", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новый выполненный шаг</small>
-                    }
                     <!---->
                 </div>
                 <div class="card-footer">

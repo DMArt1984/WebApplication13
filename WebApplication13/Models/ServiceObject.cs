@@ -137,7 +137,7 @@ namespace FactPortal.Models
                 case 99:
                     return "изменено";
                 default:
-                    return $"статус #{Status.ToString()}";
+                    return $"#{Status.ToString()}";
             }
         }
     }
@@ -164,6 +164,8 @@ namespace FactPortal.Models
         {
             switch (Status)
             {
+                case 0:
+                    return "-";
                 case 1:
                     return "ожидание";
                 case 5:
@@ -171,7 +173,7 @@ namespace FactPortal.Models
                 case 9:
                     return "выполнено";
                 default:
-                    return $"статус #{Status.ToString()}";
+                    return $"#{Status.ToString()}";
             }
         }
 
@@ -216,6 +218,8 @@ namespace FactPortal.Models
         {
             switch (Status)
             {
+                case 0:
+                    return "-";
                 case 1:
                     return "ожидание";
                 case 2:
@@ -231,7 +235,7 @@ namespace FactPortal.Models
                 case 9:
                     return "выполнено";
                 default:
-                    return $"статус #{Status.ToString()}";
+                    return $"#{Status.ToString()}";
             }
         }
 
@@ -271,7 +275,7 @@ namespace FactPortal.Models
                 case 9:
                     return "выполнено";
                 default:
-                    return $"статус #{Status.ToString()}";
+                    return $"#{Status.ToString()}";
             }
         }
     }

@@ -17,13 +17,10 @@
 
 <div class="row">
     <div class="col-12">
+        <!-- data -->
         <div class="card">
-            <form id="myform" method="post" enctype="multipart/form-data">
                 <div class="card-body">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
-                    <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
-                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
+                    
                     <div class="row g-0 d-flex justify-content-start">
                         <div class="col-10 col-md-3 pb-2">
                             <small>Объект: </small>
@@ -31,7 +28,7 @@
                             @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                         </div>
                         <div class="col-10 col-md-3 pb-2">
-                            <small>Шаг: </small>
+                            <small>Установленный шаг: </small>
                             <br />
                             @Model.Index
                         </div>
@@ -39,7 +36,7 @@
                     @if (Model.Id > 0)
                     {
                         <div class="col-12">
-                            <small>Мероприятия: </small>
+                            <small>Текущее описание мероприятий: </small>
                             <br />
                             @if (@Model.Description == "")
                             {
@@ -52,20 +49,6 @@
                         </div>
                     }
                     <hr />
-                    <div class="col-12">
-                        <small>Новый шаг</small>
-                        <input name="Index" value="@Model.Index" asp-for="@Model.Index" class="form-control" required="" placeholder="Введите шаг" />
-                        @*<div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                                <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
-                            </div>*@
-                        <br />
-                    </div>
-                    <div class="col-12 pt-2">
-                        <small>Новые мероприятия:</small>
-                        <br />
-                        <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
-                    </div>
-                    <br />
                     @if (Model.Id != 0)
                     {
                         <!--Файлы-->
@@ -77,6 +60,34 @@
                     {
                         <small>Для получения возможности добавления файлов - сохраните новый шаг</small>
                     }
+                    <!---->
+                </div>
+        </div>
+
+        <!-- edit -->
+        <div class="card">
+            <form id="myform" method="post" enctype="multipart/form-data">
+                <h5 class="card-header bg-soft-light">Редактирование</h5>
+                <div class="card-body">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
+                    <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
+                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
+
+                    <div class="col-12">
+                        <small>Новый шаг</small>
+                        <input name="Index" value="@Model.Index" asp-for="@Model.Index" class="form-control" required="" placeholder="Введите шаг" />
+                        @*<div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
+                    <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
+                </div>*@
+                        <br />
+                    </div>
+                    <div class="col-12 pt-2">
+                        <small>Новое описание мероприятий:</small>
+                        <br />
+                        <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
+                    </div>
+
                     <!---->
                 </div>
                 <div class="card-footer">
@@ -94,6 +105,7 @@
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 

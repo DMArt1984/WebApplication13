@@ -1,5 +1,7 @@
 ﻿@model WorkStepInfo
-
+@{ 
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
+}
 
 <div class="card border border-primary">
     <div class="card-body">
@@ -15,11 +17,14 @@
                 <br />
                 @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
             </div>
-            <div class="col-3 col-md-3 pb-2">
-                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@Model.Id" asp-route-WorkId="@Model.WorkId" asp-route-ServiceObjectId="@Model.ServiceObjectId">
-                    <i class="fas fa-pencil-alt"></i>
-                </a>
-            </div>
+            @if (IsAdmin)
+            {
+                <div class="col-3 col-md-3 pb-2">
+                    <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@Model.Id" asp-route-WorkId="@Model.WorkId" asp-route-ServiceObjectId="@Model.ServiceObjectId">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </div>
+            }
             <hr />
             <div class="col-3 col-md-3 pb-2">
                 <small>Дата и время начала: </small>
@@ -40,18 +45,20 @@
                 </div>
             }
         </div>
-        <hr />
+
         <!--Файлы-->
-        <div class="col-12 pt-2">
-            @if (Model.FileLinks.Count > 0)
-            {
+        @if (Model.FileLinks.Count > 0)
+        {
+            <hr />
+            <div class="col-12 pt-2">
+
                 <small class="mb-2">Файлы:</small>
                 <br />
                 <div class="d-flex flex-wrap">
                     @Html.Partial("_FilesH", @Model.FileLinks)
                 </div>
-            }
-        </div>
+            </div>
+        }
         <!---->
     </div>
 </div>

@@ -63,15 +63,15 @@
                     </td>
                     <td>@Html.Partial("_FilesV", item.FileLinks)</td>
                     <td>
-                        @if (IsAdmin )
+                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkStepInfo" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                            <i class="far fa-eye"></i>
+                        </a>
+                        @if (IsAdmin)
                         {
                             <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
                                 <i class="fas fa-pencil-alt"></i>
                             </a>
                         }
-                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkStepInfo" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                            <i class="fas fa-info-circle"></i>
-                        </a>
                     </td>
                 </tr>
                 }

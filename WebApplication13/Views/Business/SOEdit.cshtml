@@ -54,8 +54,26 @@
 }
 <div class="row">
     <div class="col-12">
+        <!-- data -->
+        <div class="card">
+                <div class="card-body">
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "so", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новый объект</small>
+                    }
+                </div>
+        </div>
+        <!-- edit -->
         <div class="card">
             <form id="myform" method="post" enctype="multipart/form-data">
+                <h5 class="card-header bg-soft-light">Редактирование</h5>
                 <div class="card-body">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="number" name="id" value="@Model.Id" readonly class="btn btn-default" style="display: none" />
@@ -92,18 +110,7 @@
                             <input type="number" name="Position" value="0" readonly class="btn btn-default" style="display: none" />
                         </div>
                     }
-                    <br />
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "so", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новый объект</small>
-                    }
+
                 </div>
                 <div class="card-footer">
                     <div class="row g-0 d-flex justify-content-start">

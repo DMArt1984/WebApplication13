@@ -122,7 +122,7 @@ namespace FactPortal.Controllers
                 // Словари раскрывающие свойства
                 Dictionary<string, string> DUsersName = _context.Users.ToDictionary(x => x.Id, y => y.FullName);
                 Dictionary<string, string> DUsersEmail = _context.Users.ToDictionary(x => x.Id, y => y.Email);
-                Dictionary<string, string> DFiles = GetDicFiles();
+                Dictionary<string, string> DFiles = Bank.GetDicFiles(_business.Files.ToList());
 
                 // Формирование списков для представления
                 // Уведомления
@@ -1287,22 +1287,19 @@ namespace FactPortal.Controllers
             D3 = _context.Users.ToDictionary(x => x.Id, y => y.Email);
         }
 
-        private Dictionary<string, string> GetDicFiles()
-        {
-             return _business.Files.ToDictionary(x => x.Id.ToString(), y => y.Path + ";" + (String.IsNullOrEmpty(y.Description) ? y.Path.Split("/").Last() : y.Description));
-        }
+        
 
-        private Dictionary<int, int> GetDicFinalStep()
-        {
-            var Steps = _business.Steps.ToList();
-            return _business.ServiceObjects.ToDictionary(x => x.Id, y => Steps.Where(z => z.ServiceObjectId == y.Id).Select(m => m.Index).Distinct().Count());
-        }
+        //private Dictionary<int, int> GetDicFinalStep()
+        //{
+        //    var Steps = _business.Steps.ToList();
+        //    return _business.ServiceObjects.ToDictionary(x => x.Id, y => Steps.Where(z => z.ServiceObjectId == y.Id).Select(m => m.Index).Distinct().Count());
+        //}
 
-        private Dictionary<int, int> GetDicWorkStatus(Dictionary<int, int> DFinalSteps)
-        {
-            var WorkSteps = _business.WorkSteps.ToList();
-            return _business.Works.ToDictionary(x => x.Id, y => Bank.GetStatusWork(WorkSteps.Where(z => z.WorkId == y.Id).Select(z => z.Status).ToList(), Bank.inf_II(DFinalSteps, y.ServiceObjectId)));
-        }
+        //private Dictionary<int, int> GetDicWorkStatus(Dictionary<int, int> DFinalSteps)
+        //{
+        //    var WorkSteps = _business.WorkSteps.ToList();
+        //    return _business.Works.ToDictionary(x => x.Id, y => Bank.GetStatusWork(WorkSteps.Where(z => z.WorkId == y.Id).Select(z => z.Status).ToList(), Bank.inf_II(DFinalSteps, y.ServiceObjectId)));
+        //}
 
 
         #region Info
@@ -1320,8 +1317,8 @@ namespace FactPortal.Controllers
             var Files = _business.Files.ToList();
 
             // Словарь [объект - последний шаг]
-            Dictionary<int, int> DFinalStep = GetDicFinalStep();
-            Dictionary<int, int> DWorksStatus = GetDicWorkStatus(DFinalStep);
+            Dictionary<int, int> DFinalStep = Bank.GetDicFinalStep(_business.ServiceObjects.ToList(), _business.Steps.ToList());
+            Dictionary<int, int> DWorksStatus = Bank.GetDicWorkStatus(_business.Works.ToList(), _business.WorkSteps.ToList(), DFinalStep);
 
             var infoWorks = _business.Works.ToList();
             return infoWorks.Where(z => z.ServiceObjectId == ServiceObjectId || ServiceObjectId == 0).Select(x => new WorkInfo
@@ -1706,7 +1703,7 @@ namespace FactPortal.Controllers
         // Крошки: СПИСОК шаги
         private MvcBreadcrumbNode GetBreadStepsList_All()
         {
-            return new MvcBreadcrumbNode("StepsList", "Business", "Шаги : параметры")
+            return new MvcBreadcrumbNode("StepsList", "Business", "Шаги")
             {
                 Parent = GetBreadMain()
             };

@@ -211,7 +211,9 @@ function BuildFiles(data) {
         req.open("GET", `${GetPathBase()}${element.Path}`, false);
         req.send();
         var fileSize = req.getResponseHeader('content-length') // байт; 
-        if (fileSize < 1) {
+        if (fileSize == null) {
+            fileSize = ""
+        } else if (fileSize < 1) {
             fileSize = "1 байт"
         } else if (fileSize < 1024) {
             fileSize = fileSize + " байт"
@@ -222,7 +224,7 @@ function BuildFiles(data) {
         }
         // <button type="button" class="btn btn-outline-light waves-effect">Light</button>
         // <button type="button" class="btn btn-outline-danger waves-effect waves-light">Danger</button>
-        line.innerHTML = `<button type="button" class="btn btn-s btn-outline-danger waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#myModalDelFile" onclick="SetInfo('delfileId',${element.Id})"><i class="fas fa-trash-alt px-1"></i></button> <i class='${GetIcon(element.Name)} text-secondary px-1'></i> <a class="px-1" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a> <span> ~${fileSize}</span>`
+        line.innerHTML = `<button type="button" class="btn btn-s btn-outline-danger waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#myModalDelFile" onclick="SetInfo('delfileId',${element.Id})"><i class="fas fa-trash-alt px-1"></i></button> <i class='${GetIcon(element.Name)} text-secondary px-1'></i> <a class="px-1" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a> <span> ${fileSize}</span>`
         group.appendChild(line)
     }
 

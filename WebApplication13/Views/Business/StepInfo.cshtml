@@ -22,12 +22,12 @@
             <div class="card-body">
 
                 <div class="row g-0 d-flex justify-content-start">
-                    <div class="col-10 col-md-3 pb-2">
+                    <div class="col-12 col-md-3 pb-2">
                         <small>Объект: </small>
                         <br />
                         @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                     </div>
-                    <div class="col-10 col-md-3 pb-2">
+                    <div class="col-12 col-md-3 pb-2">
                         <small>Шаг: </small>
                         <br />
                         @Model.Index
@@ -65,24 +65,15 @@
 
             </div>
             <!---->
-        </div>
-        <div class="card-footer">
-            <div class="row g-0 d-flex justify-content-start">
-                @if (Model.Id != 0)
-                {
-                    <!-- удалить -->
-                    <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
-                }
-                <!-- сохранить -->
-                <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
-                <!-- закрыть -->
-                <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+            <div class="card-footer">
+                <div class="row g-0 d-flex justify-content-start">
+                    <!-- закрыть -->
+                    <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-</div>
-
 
 
 

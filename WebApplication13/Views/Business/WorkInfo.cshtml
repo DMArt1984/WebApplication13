@@ -1,6 +1,7 @@
 ﻿@model WorkInfo
 @using System.Text.RegularExpressions;
 @{
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
@@ -32,16 +33,14 @@
                     </div>
                 </div>
 
-                <hr />
                 <!-- Обслуживание по шагам -->
                 @if (Model.Steps != null && Model.Steps.Count() > 0)
                 {
+                    <hr />
                     @*@Html.Partial("tbl_WorkSteps_Short", Model.Steps)*@
-
-                    <a class="" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId">
+                    <a class="d-none" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId">
                         Выполненные шаги последнего обслуживания
                     </a>
-                    <hr />
                     foreach (var item in Model.Steps.OrderBy(x => x.Index))
                     {
                         @Html.Partial("tbl_WorkSteps_InfoCompact", item)
@@ -52,6 +51,11 @@
             </div>
             <div class="card-footer">
                 <div class="row g-0 d-flex justify-content-start">
+                    <!-- Добавить -->
+                    @if (IsAdmin && (Model.Steps == null || Model.Steps.Count() < Model.FinalStep))
+                    {
+                        <a class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId"><i class="fas fa-plus"></i> Добавить новый выполненный шаг</a>
+                    }
                     <!-- закрыть -->
                     <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
                 </div>
