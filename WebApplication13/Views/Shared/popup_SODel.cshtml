@@ -1,0 +1,33 @@
+﻿
+<div class="d-none" id="delId"></div>
+
+<!-- sample modal content -->
+<div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form class="" asp-controller="Business" asp-action="Delete" method="post">
+                <div class="modal-header bg-dark">
+                    <h5 class="modal-title text-white" id="myModalDelLabel">Удалить объект</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="number" id ="name_id" name="id" value="0" style="display: none" readonly />
+                    <p>После этого действия вы не сможете востановить объект. Все связанные элементы (уведомления, шаги и пр.) и файлы также будут удалены!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<script type="text/javascript">
+    function SetWindow(Value, Title) {
+        document.getElementById("delId").innerText = Value;
+        document.getElementById("myModalDelLabel").innerText = `Удалить объект ${Title} (ID ${Value})`;
+        document.getElementById("name_id").value = Value;
+    }
+</script>

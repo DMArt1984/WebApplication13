@@ -42,54 +42,52 @@
             <tbody>
                 @foreach (var item in Model.OrderByDescending(x => x.Id))
                 {
-                    var Steps = item.Steps.OrderBy(x => x.Index);
-                        var DT_Start = "";
-                        var DT_Stop = "";
-                        if (Steps.Count() >= 1)
-                        {
-                            DT_Start = Steps.First().DT_Start;
-                            if (Steps.Last().Index == item.FinalStep)
-                            {
-                                DT_Stop = Steps.Last().DT_Stop;
-                            }
-                        }
+                    var DT_Stop = (item.Status == 9) ? item.DT_Stop : "";
 
-                <tr>
-                    <th scope="row">@item.Id</th>
-                    @if (FilterSO == 0)
-                    {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        @if (FilterSO == 0)
+                        {
+                            <td>
+                                @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                            </td>
+                        }
+                        <td>@item.DT_Start</td>
+                        <td>@DT_Stop</td>
+                        <td>@item.StatusRus()</td>
                         <td>
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
-                        </td>
-                    }
-                    <td>@DT_Start</td>
-                    <td>@DT_Stop</td>
-                    <td>@item.StatusRus()</td>
-                    <td>
-                        <small>
-                            <ol>
-                                @foreach (var st in item.Steps.OrderBy(x => x.Index))
-                                {
-                                    if (st.Status > 0)
+                            <small>
+                                <ol>
+                                    @foreach (var st in item.Steps.OrderBy(x => x.Index))
                                     {
-                                        var DT = st.DT_Start;
-                                        if (st.DT_Stop != "")
-                                            DT += "/" + st.DT_Stop;
-                                        <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                        if (st.Status > 0)
+                                        {
+                                            var DT = st.DT_Start;
+                                            if (st.DT_Stop != "")
+                                                DT += "/" + st.DT_Stop;
+                                            <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                        }
                                     }
+                                </ol>
+                            </small>
+                        </td>
+                        <td>
+                            <div class="row px-1">
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
+                                    <i class="far fa-eye"></i>
+                                </a>
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                    <i class="fas fa-align-justify"></i>
+                                </a>
+                                @if (IsAdmin)
+                                {
+                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
+                                        <i class="fas fa-trash-alt px-1"></i>
+                                    </a>
                                 }
-                            </ol>
-                        </small>
-                    </td>
-                    <td>
-                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
-                            <i class="far fa-eye"></i>
-                        </a>
-                        <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                            <i class="fas fa-align-justify"></i>
-                        </a>
-                    </td>
-                </tr>
+                            </div>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -103,12 +101,16 @@
     }
 </div>
 
+<!-- sample modal [ myModalDel ] content -->
+@Html.Partial("popup_WorkDel")
+<!-- /.modal -->
 
-    @section Scripts {
-        <!-- Required datatable js -->
-        <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-        <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
 
-        <!-- Datatable init js -->
-        <script src="~/assets/js/pages/datatables.init.js"></script>
-    }
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Datatable init js -->
+    <script src="~/assets/js/pages/datatables.init.js"></script>
+}

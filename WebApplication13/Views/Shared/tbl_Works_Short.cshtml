@@ -22,7 +22,6 @@
             <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                 <thead class="bg-primary text-white">
                     <tr>
-                        <th>ID</th>
                         <th>Начало</th>
                         <th>Выполнено</th>
                         <th>Статус</th>
@@ -34,21 +33,10 @@
                     @foreach (var item in Model.OrderByDescending(x => x.Id))
                     {
 
-                        var Steps = item.Steps.OrderBy(x => x.Index);
-                        var DT_Start = "";
-                        var DT_Stop = "";
-                        if (Steps.Count() >= 1)
-                        {
-                            DT_Start = Steps.First().DT_Start;
-                            if (Steps.Last().Index == item.FinalStep)
-                            {
-                                DT_Stop = Steps.Last().DT_Stop;
-                            }
-                        }
+                        var DT_Stop = (item.Status == 9) ? item.DT_Stop : "";
 
                     <tr>
-                        <th>@item.Id</th>
-                        <td>@DT_Start</td>
+                        <td>@item.DT_Start</td>
                         <td>@DT_Stop</td>
                         <td>@item.StatusRus()</td>
                         <td>
@@ -70,12 +58,14 @@
                                 <small>
                         </td>
                         <td>
-                            <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                                <i class="far fa-eye"></i>
-                            </a>
-                            <a class="btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                                <i class="fas fa-align-justify"></i>
-                            </a>
+                            <div class="row px-1">
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                    <i class="far fa-eye"></i>
+                                </a>
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                    <i class="fas fa-align-justify"></i>
+                                </a>
+                             </div>
                         </td>
                     </tr>
                     }

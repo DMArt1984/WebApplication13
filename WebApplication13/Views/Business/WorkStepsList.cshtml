@@ -6,7 +6,7 @@
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     if (FilterWrk > 0)
     {
-        ViewData["Title"] = $"Выполненные шаги по обслуживанию №{FilterWrk}";
+        ViewData["Title"] = $"Выполненные шаги по обслуживанию ID {FilterWrk}";
     }
     else
     {
@@ -29,9 +29,9 @@
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>ID</th>
                     @if (FilterWrk == 0)
                     {
+                        <th>ID</th>
                         <th>Обслуживание</th>
                     }
                     <th>Шаг</th>
@@ -46,34 +46,40 @@
             <tbody>
                 @foreach (var item in Model.OrderByDescending(x => x.Index))
                 {
-                <tr>
-                    <th scope="row">@item.Id</th>
-                    @if (FilterWrk == 0)
-                    {
-                        <td>
-                            @Html.Partial("_cellWork", new WorkInfo { Id = item.WorkId, ServiceObjectId = item.ServiceObjectId, ServiceObjectTitle = item.ServiceObjectTitle })
-                        </td>
-                    }
-                    <td>@item.Index</td>
-                    <td>@item.DT_Start</td>
-                    <td>@item.DT_Stop</td>
-                    <td>@item.StatusRus()</td>
-                    <td>
-                        @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
-                    </td>
-                    <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                    <td>
-                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkStepInfo" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                            <i class="far fa-eye"></i>
-                        </a>
-                        @if (IsAdmin)
+                    <tr>
+                        @if (FilterWrk == 0)
                         {
-                            <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
-                                <i class="fas fa-pencil-alt"></i>
-                            </a>
+                            <th scope="row">@item.Id</th>
+                            <td>
+                                @Html.Partial("_cellWork", new WorkInfo { Id = item.WorkId, ServiceObjectId = item.ServiceObjectId, ServiceObjectTitle = item.ServiceObjectTitle })
+                            </td>
                         }
-                    </td>
-                </tr>
+                        <td>@item.Index</td>
+                        <td>@item.DT_Start</td>
+                        <td>@item.DT_Stop</td>
+                        <td>@item.StatusRus()</td>
+                        <td>
+                            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                        </td>
+                        <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                        <td>
+                            <div class="row px-1">
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkStepInfo" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                    <i class="far fa-eye"></i>
+                                </a>
+                                @if (IsAdmin)
+                                {
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+
+                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, @item.WorkId, '@item.ServiceObjectTitle', @item.Index)">
+                                        <i class="fas fa-trash-alt px-1"></i>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -86,6 +92,10 @@
         </div>
     }
 </div>
+
+<!-- sample modal [ myModalDel ] content -->
+@Html.Partial("popup_WorkStepDel")
+<!-- /.modal -->
 
 
 @section Scripts {

@@ -31,6 +31,20 @@
                         <br />
                         @Model.StatusRus()
                     </div>
+                    <hr />
+                    <div class="col-6 col-md-3 pb-2">
+                        <small>Дата и время начала: </small>
+                        <br />
+                        @Model.DT_Start
+                    </div>
+                    <div class="col-6 col-md-3 pb-2">
+                        <small>Дата и время выполнения: </small>
+                        <br />
+                        @{ 
+                            var DT_Stop = (Model.Status == 9) ? Model.DT_Stop : "";
+                        }
+                        @DT_Stop
+                    </div>
                 </div>
 
                 <!-- Обслуживание по шагам -->

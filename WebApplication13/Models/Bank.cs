@@ -285,6 +285,36 @@ namespace FactPortal.Models
             return (Status == 9) ? (String.IsNullOrEmpty(DT)) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : DT : "";
         }
 
+        // Получить минимальную дату и время
+        public static string GetMinDT(List<string> DTs)
+        {
+            if (DTs.Count() == 0)
+                return "";
+
+            string MinDT = DTs.First();
+            foreach(var item in DTs)
+            {
+                if (GetDTfromString(MinDT) > GetDTfromString(item))
+                    MinDT = item;
+            }
+            return MinDT;
+        }
+
+        // Получить максимальную дату и время
+        public static string GetMaxDT(List<string> DTs)
+        {
+            if (DTs.Count() == 0)
+                return "";
+
+            string MaxDT = DTs.Last();
+            foreach (var item in DTs)
+            {
+                if (GetDTfromString(MaxDT) < GetDTfromString(item))
+                    MaxDT = item;
+            }
+            return MaxDT;
+        }
+
         // =========================================================================================
 
         // Добавить данные в строку списка 1;5;8 -> 1;5;8;7
@@ -382,21 +412,21 @@ namespace FactPortal.Models
             int CalcStatus = 0; // нет работ
 
             if (Steps.Count() > 0)
-                CalcStatus = 5; // работа
+                CalcStatus = 1; // ожидание
 
-            // ожидание
+            // работа
             foreach (var item in Steps)
             {
-                if (item == 1)
+                if (item == 5)
                 {
-                    CalcStatus = 1;
+                    CalcStatus = 5;
                     break;
                 }
             }
 
             // выполнено
             var Ready = 0;
-            if (CalcStatus != 1 && FinalStep > 0)
+            if (CalcStatus != 5 && FinalStep > 0)
             {
                 foreach (var item in Steps)
                 {

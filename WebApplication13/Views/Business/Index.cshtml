@@ -39,7 +39,7 @@
                     <th>Последнее обслуживание</th>
                     @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
                     {
-                        <th>Редактор</th>
+                        <th>Подробнее</th>
                     }
                 </tr>
             </thead>
@@ -105,10 +105,16 @@
                         @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
                         {
                             <td>
-                                <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
-                                <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
+                                <div class="row px-1">
+                                    <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
+
+                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
+                                        <i class="fas fa-trash-alt px-1"></i>
+                                    </a>
+                                </div>
                             </td>
                         }
                     </tr>
@@ -125,6 +131,9 @@
     }
 </div>
 
+<!-- sample modal [ myModalDel ] content -->
+@Html.Partial("popup_SODel")
+<!-- /.modal -->
 
 
 @section Scripts {
@@ -135,5 +144,5 @@
     <!-- Datatable init js -->
     <script src="~/assets/js/pages/datatables.init.js"></script>
 
-    
+
 }

@@ -56,19 +56,19 @@
     <div class="col-12">
         <!-- data -->
         <div class="card">
-                <div class="card-body">
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "so", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новый объект</small>
-                    }
-                </div>
+            <div class="card-body">
+                @if (Model.Id != 0)
+                {
+                    <!--Файлы-->
+                    <small>Файлы:</small>
+                    @Html.Partial("_FilesControl", new FileFront { category = "so", categoryId = @Model.Id })
+                    <!--------->
+                }
+                else
+                {
+                    <small>Для получения возможности добавления файлов - сохраните новый объект</small>
+                }
+            </div>
         </div>
         <!-- edit -->
         <div class="card">
@@ -117,7 +117,7 @@
                         @if (Model.Id != 0)
                         {
                             <!-- удалить -->
-                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ObjectTitle')"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
                         }
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
@@ -130,27 +130,8 @@
     </div>
 </div>
 
-<!-- sample modal content -->
-<div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form class="" asp-controller="Business" asp-action="Delete" method="post">
-                <div class="modal-header bg-dark">
-                    <h5 class="modal-title text-white" id="myModalLabel">Удалить объект</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
-                    <p>После этого действия вы не сможете востановить объект с именем @Model.ObjectTitle . Все связанные элементы (уведомления, шаги и пр.) и файлы также будут удалены!</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
-                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
+<!-- sample modal [ myModalDel ] content -->
+@Html.Partial("popup_SODel")
 <!-- /.modal -->
 
 @section Scripts {

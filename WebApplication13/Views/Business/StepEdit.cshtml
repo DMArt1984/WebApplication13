@@ -19,49 +19,49 @@
     <div class="col-12">
         <!-- data -->
         <div class="card">
-                <div class="card-body">
-                    
-                    <div class="row g-0 d-flex justify-content-start">
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Объект: </small>
-                            <br />
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
-                        </div>
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Установленный шаг: </small>
-                            <br />
-                            @Model.Index
-                        </div>
+            <div class="card-body">
+
+                <div class="row g-0 d-flex justify-content-start">
+                    <div class="col-10 col-md-3 pb-2">
+                        <small>Объект: </small>
+                        <br />
+                        @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                     </div>
-                    @if (Model.Id > 0)
-                    {
-                        <div class="col-12">
-                            <small>Текущее описание мероприятий: </small>
-                            <br />
-                            @if (@Model.Description == "")
-                            {
-                                <span> - </span>
-                            }
-                            else
-                            {
-                                @Model.Description
-                            }
-                        </div>
-                    }
-                    <hr />
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "step", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новый шаг</small>
-                    }
-                    <!---->
+                    <div class="col-10 col-md-3 pb-2">
+                        <small>Установленный шаг: </small>
+                        <br />
+                        @Model.Index
+                    </div>
                 </div>
+                @if (Model.Id > 0)
+                {
+                    <div class="col-12">
+                        <small>Текущее описание мероприятий: </small>
+                        <br />
+                        @if (@Model.Description == "")
+                        {
+                            <span> - </span>
+                        }
+                        else
+                        {
+                            @Model.Description
+                        }
+                    </div>
+                }
+                <hr />
+                @if (Model.Id != 0)
+                {
+                    <!--Файлы-->
+                    <small>Файлы:</small>
+                    @Html.Partial("_FilesControl", new FileFront { category = "step", categoryId = @Model.Id })
+                    <!--------->
+                }
+                else
+                {
+                    <small>Для получения возможности добавления файлов - сохраните новый шаг</small>
+                }
+                <!---->
+            </div>
         </div>
 
         <!-- edit -->
@@ -78,8 +78,8 @@
                         <small>Новый шаг</small>
                         <input name="Index" value="@Model.Index" asp-for="@Model.Index" class="form-control" required="" placeholder="Введите шаг" />
                         @*<div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                    <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
-                </div>*@
+                                <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
+                            </div>*@
                         <br />
                     </div>
                     <div class="col-12 pt-2">
@@ -95,7 +95,7 @@
                         @if (Model.Id != 0)
                         {
                             <!-- удалить -->
-                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ServiceObjectTitle', @Model.Index)"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
                         }
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
@@ -109,32 +109,10 @@
     </div>
 </div>
 
-
-
-
-<!-- sample modal content -->
-<div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form class="" asp-controller="Business" asp-action="StepDelete" method="post">
-                <div class="modal-header bg-dark">
-                    <h5 class="modal-title text-white" id="myModalLabel">Удалить шаг ID @Model.Id</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
-                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
-                    <p>После этого действия вы не сможете востановить шаг. Прикрепленные файлы также будут удалены.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
-                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
+<!-- sample modal [ myModalDel ] content -->
+@Html.Partial("popup_StepDel")
 <!-- /.modal -->
+
 
 <div class="mb-3 d-none">
     <div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">

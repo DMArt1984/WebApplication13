@@ -161,7 +161,9 @@ namespace FactPortal.Controllers
                             UserEmail = Bank.inf_SS(DUsersEmail, z.myUserId),
                             FileLinks = Bank.inf_SSFiles(Files, z.groupFilesId),
                             ServiceObjectId = myLastWork.ServiceObjectId
-                        }).ToList()
+                        }).ToList(),
+                        DT_Start = Bank.GetMinDT(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(x => Bank.LocalDateTime(x.DT_Start)).ToList()),
+                        DT_Stop = Bank.GetMaxDT(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(x => Bank.LocalDateTime(x.DT_Stop)).ToList())
                     });
                 }
                 
@@ -1341,8 +1343,10 @@ namespace FactPortal.Controllers
                     DT_Stop = Bank.LocalDateTime(w.DT_Stop),
                     Status = w.Status,
                     Index = w.Index
-                }).ToList()
-            }).ToList();
+                }).ToList(),
+                DT_Start = Bank.GetMinDT(_business.WorkSteps.Where(s => s.WorkId == x.Id).Select(x => Bank.LocalDateTime(x.DT_Start)).ToList()),
+                DT_Stop = Bank.GetMaxDT(_business.WorkSteps.Where(s => s.WorkId == x.Id).Select(x => Bank.LocalDateTime(x.DT_Stop)).ToList())
+        }).ToList();
         }
         private async Task<WorkInfo> GetWorkInfo(int Id = 0, int ServiceObjectId = 0)
         {
@@ -1384,6 +1388,8 @@ namespace FactPortal.Controllers
                 Status = y.Status,
                 Index = y.Index
             }).ToList();
+            infoWork.DT_Start = Bank.GetMinDT(infoWork.Steps.Select(x => x.DT_Start).ToList());
+            infoWork.DT_Stop = Bank.GetMaxDT(infoWork.Steps.Select(x => x.DT_Stop).ToList());
 
             return infoWork;
         }
@@ -1743,7 +1749,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWork(int WorkId = 0, int ServiceObjectId = 0, string Title = "")
         {
             var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("WorkInfo", "Business", (Title != "") ? Title : $"Обслуживание № {WorkId}")
+            return new MvcBreadcrumbNode("WorkInfo", "Business", (Title != "") ? Title : $"Обслуживание ID {WorkId}")
             {
                 Parent = (SO != null) ? GetBreadWorksList_Filter(SO.Id, "Статистика обслуживания") : GetBreadWorksList_All(),
                 RouteValues = new { Id = WorkId, ServiceObjectId = ServiceObjectId }
@@ -1765,7 +1771,7 @@ namespace FactPortal.Controllers
             var WRK = _business.Works.FirstOrDefault(x => x.Id == WorkId);
             return new MvcBreadcrumbNode("WorkStepsList", "Business", (Title != "") ? Title : "Шаги обслуживания")
             {
-                Parent = (WRK != null) ? GetBreadWork(WorkId, ServiceObjectId, $"Обслуживание № {@WorkId}") : GetBreadWorksList_All(),
+                Parent = (WRK != null) ? GetBreadWork(WorkId, ServiceObjectId, $"Обслуживание ID {@WorkId}") : GetBreadWorksList_All(),
                 RouteValues = new { WorkId = WorkId, ServiceObjectId = ServiceObjectId }
             };
         }

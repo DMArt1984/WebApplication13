@@ -1078,8 +1078,8 @@ namespace FactPortal.Api
             Alerts0 = Alerts0.Where(x => Bank.DateInRange(x.DT, DateFrom, DateTo)).ToList();
             List<WorkStep> WorkSteps0 = _business.WorkSteps.Where(x => x.myUserId == UserId).ToList();
             WorkSteps0 = WorkSteps0.Where(x => Bank.DateInRange(x.DT_Start, DateFrom, DateTo)).ToList();
-            var WorkSteps_ids = WorkSteps0.Select(x => x.WorkId).Distinct();
-                List<Work> Works0 = _business.Works.Where(x => WorkSteps_ids.Contains(x.Id)).ToList();
+            var Works_ids = WorkSteps0.Select(x => x.WorkId).Distinct();
+                List<Work> Works0 = _business.Works.Where(x => Works_ids.Contains(x.Id)).ToList();
 
                 // Завершаем, если выборка пустая
                 if (Alerts0.Count() == 0 && Works0.Count() == 0)
@@ -1104,7 +1104,7 @@ namespace FactPortal.Api
                     FilesId = j.groupFilesId,
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                 });
-                var WorkSteps2 = WorkSteps0.Select(j => new
+                var WorkSteps2 = _business.WorkSteps.Where(x => Works_ids.Contains(x.WorkId)).Select(j => new
                 {
                     Id = j.Id,
                     WorkId = j.WorkId,

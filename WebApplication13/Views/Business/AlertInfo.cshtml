@@ -1,7 +1,8 @@
 ﻿@model AlertInfo
 @using System.Text.RegularExpressions;
 @{
-    //int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
+    int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     if (Model.Id > 0)
     {
         ViewData["Title"] = $"Уведомление ID {Model.Id}";
@@ -72,8 +73,13 @@
             </div>
             <div class="card-footer">
                 <div class="row g-0 d-flex justify-content-start">
+                    <!-- редактировать -->
+                    @if (IsAdmin)
+                    {
+                        <a asp-action="AlertEdit" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
+                    }
                     <!-- закрыть -->
-                    <a asp-action="AlertsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    <a asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
                 </div>
             </div>
         </div>

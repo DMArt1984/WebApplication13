@@ -1,10 +1,12 @@
 ﻿@model WorkStepInfo
 @using System.Text.RegularExpressions;
 @{
+    int FilterSO = Convert.ToInt32(ViewData["SOReturn"]); // выборка по объекту
     int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     if (Model.Id > 0)
     {
-        ViewData["Title"] = $"Выполненный шаг {Model.Index} [ID {Model.Id}] по обслуживанию № {Model.WorkId}";
+        ViewData["Title"] = $"Выполненный шаг {Model.Index} (ID {Model.Id}) по обслуживанию ID {Model.WorkId}";
     }
     else
     {
@@ -22,8 +24,13 @@
 
             <div class="card-footer">
                 <div class="row g-0 d-flex justify-content-start">
+                    <!-- редактировать -->
+                    @if (IsAdmin)
+                    {
+                        <a asp-action="WorkStepEdit" asp-route-Id="@Model.Id" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
+                    }
                     <!-- закрыть -->
-                    <a asp-action="WorkStepsList" asp-route-WorkId="@ViewData["WorkReturn"]" asp-route-ServiceObjectId="@ViewData["SOReturn"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    <a asp-action="WorkStepsList" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
                 </div>
             </div>
         </div>

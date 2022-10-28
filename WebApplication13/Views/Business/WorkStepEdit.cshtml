@@ -5,7 +5,7 @@
     int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
     if (Model.Id > 0)
     {
-        ViewData["Title"] = $"Выполненный шаг {Model.Index} [ID {Model.Id}] по обслуживанию № {Model.WorkId}";
+        ViewData["Title"] = $"Выполненный шаг {Model.Index} (ID {Model.Id}) по обслуживанию ID {Model.WorkId}";
     }
     else
     {
@@ -48,7 +48,7 @@
         <!-- data -->
         <div class="card">
             <div class="card-body">
-                    
+
                 <div class="row g-0 d-flex justify-content-start">
                     <div class="col-3 col-md-3 pb-2">
                         <small>Объект: </small>
@@ -92,21 +92,21 @@
                     </div>
 
                 </div>
-                    <hr />
+                <hr />
 
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "work", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новый выполненный шаг</small>
-                    }
-                    <!---->
-                </div>
+                @if (Model.Id != 0)
+                {
+                    <!--Файлы-->
+                    <small>Файлы:</small>
+                    @Html.Partial("_FilesControl", new FileFront { category = "work", categoryId = @Model.Id })
+                    <!--------->
+                }
+                else
+                {
+                    <small>Для получения возможности добавления файлов - сохраните новый выполненный шаг</small>
+                }
+                <!---->
+            </div>
         </div>
 
         <!-- edit -->
@@ -143,7 +143,7 @@
                         @if (Model.Id != 0)
                         {
                             <!-- удалить -->
-                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, @Model.WorkId, '@Model.ServiceObjectTitle', @Model.Index)"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
                         }
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
@@ -158,30 +158,10 @@
 </div>
 
 
-<!-- sample modal content -->
-<div id="myModalDel" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form class="" asp-controller="Business" asp-action="WorkStepDelete" method="post">
-                <div class="modal-header bg-dark">
-                    <h5 class="modal-title text-white" id="myModalLabel">Удалить шаг ID @Model.Id обслуживания ID @Model.WorkId</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
-                    <input type="number" name="WorkId" class="form-control d-none" value="@FilterWrk" readonly />
-                    <input type="number" name="ServiceObjectId" class="form-control d-none" value="@FilterSO" readonly />
-                    <p>После этого действия вы не сможете востановить шаг. Прикрепленные файлы также будут удалены.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Удалить</button>
-                    <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Отмена</button>
-                </div>
-            </form>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div>
+<!-- sample modal [ myModalDel ] content -->
+@Html.Partial("popup_WorkStepDel")
 <!-- /.modal -->
+
 
 @section Scripts {
     <!-- files -->

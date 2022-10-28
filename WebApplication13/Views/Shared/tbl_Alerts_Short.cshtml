@@ -23,7 +23,6 @@
                 <table id="datatable-buttons" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                     <thead class="bg-danger text-white">
                         <tr>
-                            <th>ID</th>
                             <th>Дата и время</th>
                             <th>Статус</th>
                             <th>Сотрудник</th>
@@ -35,7 +34,6 @@
                         @foreach (var item in Model.OrderByDescending(x => x.DT))
                         {
                             <tr>
-                                <td>@item.Id</td>
                                 <td>@item.DT</td>
                                 <td>@item.StatusRus()</td>
                                 <td>
