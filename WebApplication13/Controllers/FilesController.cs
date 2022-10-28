@@ -138,10 +138,59 @@ namespace FactPortal.Controllers
                     if ((System.IO.File.Exists(path)))
                         System.IO.File.Delete(path);
 
+                    // удаление файла
                     _business.Files.Remove(File);
+
+                    // удаление ссылок из атрибутов
+                    var Claim = await _business.Claims.FirstOrDefaultAsync(x => x.ClaimType.ToLower() == "file" && x.ClaimValue == Id.ToString());
+                    if (Claim != null)
+                        _business.Claims.Remove(Claim);
+
+                    // удаление ссылок из уведомлений
+                    var DAlerts = _business.Alerts.ToDictionary(x => x.Id, y => y.groupFilesId);
+                    Alert alert = null;
+                    foreach(var item in DAlerts)
+                    {
+                        if (Bank.StringContains(item.Value, Id))
+                        {
+                            alert = _business.Alerts.FirstOrDefault(x => x.Id == item.Key);
+                        }
+                    }
+                    //var Alert = await _business.Alerts.FirstOrDefaultAsync(x => Bank.StringContains(x..., Id)); // НЕ РАБОТАЕТ ВЫЗОВ ФУНКЦИИ! ОЧЕНЬ СТРАННО
+                    if (alert != null)
+                        alert.groupFilesId = Bank.DelItemToStringList(alert.groupFilesId, ";", Id.ToString());
+
+                    // удаление ссылок из шагов
+                    var DSteps = _business.Steps.ToDictionary(x => x.Id, y => y.groupFilesId);
+                    Step step = null;
+                    foreach (var item in DSteps)
+                    {
+                        if (Bank.StringContains(item.Value, Id))
+                        {
+                            step = _business.Steps.FirstOrDefault(x => x.Id == item.Key);
+                        }
+                    }
+                    if (step != null)
+                        step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", Id.ToString());
+
+                    // удаление ссылок из выполненных шагов
+                    var DWorkSteps = _business.Steps.ToDictionary(x => x.Id, y => y.groupFilesId);
+                    WorkStep workstep = null;
+                    foreach (var item in DWorkSteps)
+                    {
+                        if (Bank.StringContains(item.Value, Id))
+                        {
+                            workstep = _business.WorkSteps.FirstOrDefault(x => x.Id == item.Key);
+                        }
+                    }
+                    if (workstep != null)
+                        workstep.groupFilesId = Bank.DelItemToStringList(workstep.groupFilesId, ";", Id.ToString());
+
+                    // Сохранить изменения
                     await _business.SaveChangesAsync();
                 }
-            } catch
+            }
+            catch
             {
 
             }

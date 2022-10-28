@@ -315,6 +315,31 @@ namespace FactPortal.Models
             return MaxDT;
         }
 
+        // ========================
+
+        public static bool StringContains(string Ids="", int Id=0)
+        {
+            return Ids.Split(";").Contains(Id.ToString());
+            
+            //foreach (var item in Ids.Split(';'))
+            //{
+            //    if (item == Id.ToString())
+            //        return true;
+            //}
+            //return false;
+
+            //Ids = ";" + Ids + ";";
+            //return Ids.Contains(";" + Id.ToString() + ";");
+
+            //return false;
+
+        }      
+        
+        public static bool GetFalse()
+        {
+            return false;
+        }
+
         // =========================================================================================
 
         // Добавить данные в строку списка 1;5;8 -> 1;5;8;7

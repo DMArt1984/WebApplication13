@@ -420,7 +420,7 @@ namespace FactPortal.Api
                     Work = new {
                         Id = Bank.inf_II(DLastWorks, m.Id),
                         ServiceObjectId = m.Id,
-                        FinalStep = Bank.inf_II(DFinalSteps, Bank.inf_II(DLastWorks, m.Id)),
+                        FinalStep = Bank.inf_II(DFinalSteps, m.Id), // Bank.inf_II(DLastWorks, m.Id)
                         Status = Bank.inf_II(DWorksStatus, Bank.inf_II(DLastWorks, m.Id)),
                         Steps = WorkSteps.Where(k => k.WorkId == Bank.inf_II(DLastWorks, m.Id)).Select(j => new {
                             Id = j.Id,
@@ -1109,6 +1109,7 @@ namespace FactPortal.Api
                     Id = j.Id,
                     WorkId = j.WorkId,
                     Index = j.Index,
+                    Status = j.Status,
                     DT_Start = j.DT_Start,
                     DT_Stop = j.DT_Stop,
                     UserId = j.myUserId,
@@ -1120,7 +1121,7 @@ namespace FactPortal.Api
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
-                    FinalStep = Bank.inf_II(DFinalSteps, j.Id),
+                    FinalStep = Bank.inf_II(DFinalSteps, j.ServiceObjectId),
                     Status = Bank.inf_II(DWorksStatus, j.Id),
                     Steps = WorkSteps2.Where(k => k.WorkId == j.Id).ToList()
                 });
