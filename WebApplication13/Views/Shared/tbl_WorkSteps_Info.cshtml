@@ -1,66 +1,67 @@
 ﻿@model WorkStepInfo
 
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
 
-
-   <div class="card-body">
-       <div class="row g-0 d-flex justify-content-start">
-           <div class="col-3 col-md-3 pb-2">
-               <small>Объект: </small>
-               <br />
-               @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
-           </div>
-           <div class="col-3 col-md-3 pb-2">
-               <small>Обслуживание: </small>
-               <br />
-               @Html.Partial("_cellWork", new WorkInfo { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId, ServiceObjectTitle = Model.ServiceObjectTitle })
-           </div>
-           <div class="col-6 col-md-3 pb-2">
-               <small>Сотрудник: </small>
-               <br />
-               @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
-           </div>
-           <hr />
-           <div class="col-6 col-md-3 pb-2">
-               <small>Шаг: </small>
-               <br />
-               @Model.Index
-           </div>
-           @if (Model.Id > 0)
-           {
-               <div class="col-6 col-md-3 pb-2">
-                   <small>Статус: </small>
-                   <br />
-                   @Model.StatusRus()
-               </div>
-           }
-           <hr />
-           <div class="col-3 col-md-3 pb-2">
-               <small>Дата и время начала: </small>
-               <br />
-               @Model.DT_Start
-           </div>
-           <div class="col-3 col-md-3 pb-2">
-               <small>Дата и время окончания: </small>
-               <br />
-               @Model.DT_Stop
-           </div>
-
-       </div>
-
-                <hr />
-                <!--Файлы-->
-                <div class="col-12 pt-2">
-                    @if (Model.FileLinks.Count > 0)
-                    {
-                        <small class="mb-2">Файлы:</small>
-                        <br />
-                        <div class="d-flex flex-wrap">
-                            @Html.Partial("_FilesH", @Model.FileLinks)
-                        </div>
-                    }
-                </div>
-                <!---->
+<div class="card-body">
+    <div class="row g-0 d-flex justify-content-start">
+        <div class="col-3 col-md-3 pb-2">
+            <small>Объект: </small>
+            <br />
+            @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
+        </div>
+        <div class="col-3 col-md-3 pb-2">
+            <small>Обслуживание: </small>
+            <br />
+            @Html.Partial("_cellWork", new WorkInfo { Id = Model.WorkId, ServiceObjectId = Model.ServiceObjectId, ServiceObjectTitle = Model.ServiceObjectTitle })
+        </div>
+        <div class="col-6 col-md-3 pb-2">
+            <small>Сотрудник: </small>
+            <br />
+            @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
+        </div>
+        <hr />
+        <div class="col-6 col-md-3 pb-2">
+            <small>Шаг: </small>
+            <br />
+            @Model.Index
+        </div>
+        @if (Model.Id > 0)
+        {
+            <div class="col-6 col-md-3 pb-2">
+                <small>Статус: </small>
+                <br />
+                @Model.StatusRus()
             </div>
+        }
+        <hr />
+        <div class="col-3 col-md-3 pb-2">
+            <small>Дата и время начала: </small>
+            <br />
+            <script>document.write(UTC_To_LocalTime('@Model.DT_Start'));</script>
+        </div>
+        <div class="col-3 col-md-3 pb-2">
+            <small>Дата и время окончания: </small>
+            <br />
+            <script>document.write(UTC_To_LocalTime('@Model.DT_Stop'));</script>
+        </div>
+
+    </div>
+
+    <hr />
+    <!--Файлы-->
+    <div class="col-12 pt-2">
+        @if (Model.FileLinks.Count > 0)
+        {
+            <small class="mb-2">Файлы:</small>
+            <br />
+            <div class="d-flex flex-wrap">
+                @Html.Partial("_FilesH", @Model.FileLinks)
+            </div>
+        }
+    </div>
+    <!---->
+</div>
 
 
 

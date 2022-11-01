@@ -5,6 +5,9 @@
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
 }
 
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
+
 <!-- Таблица -->
 <div class="card">
     <div class="card-body">
@@ -13,7 +16,7 @@
                 <tr>
                     @if (FilterSO == 0)
                     {
-                    <th>ID</th>
+                        <th>ID</th>
                     }
                     <th>Дата и время</th>
                     @if (FilterSO == 0)
@@ -29,13 +32,13 @@
             <tbody>
                 @foreach (var item in Model.OrderByDescending(x => x.DT))
                 {
-                <tr>
+                    <tr>
                         @if (FilterSO == 0)
                         {
                             <th scope="row">@item.Id</th>
                         }
 
-                        <td>@item.DT</td>
+                        <td><script>document.write(UTC_To_LocalTime('@item.DT'));</script></td>
 
                         @if (FilterSO == 0)
                         {

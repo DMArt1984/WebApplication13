@@ -132,7 +132,7 @@ namespace FactPortal.Controllers
                     UserName = Bank.inf_SS(DUsersName, y.myUserId),
                     UserEmail = Bank.inf_SS(DUsersEmail, y.myUserId),
                     FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
-                    DT = Bank.LocalDateTime(y.DT),
+                    DT = (y.DT),
                     Message = y.Message,
                     Status = y.Status,
                     ServiceObjectId = y.ServiceObjectId
@@ -155,15 +155,15 @@ namespace FactPortal.Controllers
                             WorkId = z.WorkId,
                             Index = z.Index,
                             Status = z.Status,
-                            DT_Start = Bank.LocalDateTime(z.DT_Start),
-                            DT_Stop = Bank.LocalDateTime(z.DT_Stop),
+                            DT_Start = (z.DT_Start),
+                            DT_Stop = (z.DT_Stop),
                             UserName = Bank.inf_SS(DUsersName, z.myUserId),
                             UserEmail = Bank.inf_SS(DUsersEmail, z.myUserId),
                             FileLinks = Bank.inf_SSFiles(Files, z.groupFilesId),
                             ServiceObjectId = myLastWork.ServiceObjectId
                         }).ToList(),
-                        DT_Start = Bank.GetMinDT(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(x => Bank.LocalDateTime(x.DT_Start)).ToList()),
-                        DT_Stop = Bank.GetMaxDT(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(x => Bank.LocalDateTime(x.DT_Stop)).ToList())
+                        DT_Start = Bank.GetMinDT(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(x => (x.DT_Start)).ToList()),
+                        DT_Stop = Bank.GetMaxDT(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(x => (x.DT_Stop)).ToList())
                     });
                 }
                 
@@ -897,6 +897,9 @@ namespace FactPortal.Controllers
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
+
+            ViewBag.EnableAdd = (Obj != null) ? WorkSteps.Count() < _business.Steps.Count(x => x.ServiceObjectId == Obj.Id) : true;
+  
             return View(WorkSteps);
         }
 
@@ -940,8 +943,8 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var Work = await GetWorkStepInfo(Id, WorkId);
-            if (Work == null && Id > 0)
+            var WorkStep = await GetWorkStepInfo(Id, WorkId);
+            if (WorkStep == null && Id > 0)
                 return RedirectToAction("WorkStepNull");
 
             // Крошки
@@ -958,8 +961,20 @@ namespace FactPortal.Controllers
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
-            ViewBag.Indexes = GetListSteps(Work.ServiceObjectId);
-            return View(Work);
+
+            List<int> IndexSteps = new List<int> { WorkStep.Index };
+            if (Id == 0)
+            {
+                IndexSteps = GetListSteps(WorkStep.ServiceObjectId);
+                if (WorkId > 0)
+                {
+                    List<int> UsedIndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId).Select(x => x.Index).ToListAsync();
+                    IndexSteps = IndexSteps.Except(UsedIndexSteps).ToList();
+                }
+            }
+            
+            ViewBag.Indexes = IndexSteps;
+            return View(WorkStep);
         }
 
         [HttpPost]
@@ -969,6 +984,15 @@ namespace FactPortal.Controllers
         {
             // Текущий пользователь
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+
+            // Проверка на доступность номера шага (Index)
+            var IndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId && x.Id != Id).Select(x => x.Index).ToListAsync();
+            if (Index == 0 && IndexSteps.Count() > 0 && IndexSteps.Contains(Index)) // Если шаг с таким номером уже существует
+            {
+                // ВЫВЕСТИ СООБЩЕНИЕ!
+                // 5. Вернуться в список
+                return RedirectToAction("WorkStepsList", new { WorkId = WorkReturn, ServiceObjectId = SOReturn });
+            }
 
             // DT_Start
             string DT_Start = Bank.GetWork_DTStart(Status);
@@ -1339,13 +1363,13 @@ namespace FactPortal.Controllers
                     UserName = Bank.inf_SS(DUsersName, w.myUserId),
                     UserEmail = Bank.inf_SS(DUsersEmail, w.myUserId),
                     FileLinks = Bank.inf_SSFiles(Files, w.groupFilesId),
-                    DT_Start = Bank.LocalDateTime(w.DT_Start),
-                    DT_Stop = Bank.LocalDateTime(w.DT_Stop),
+                    DT_Start = (w.DT_Start),
+                    DT_Stop = (w.DT_Stop),
                     Status = w.Status,
                     Index = w.Index
                 }).ToList(),
-                DT_Start = Bank.GetMinDT(_business.WorkSteps.Where(s => s.WorkId == x.Id).Select(x => Bank.LocalDateTime(x.DT_Start)).ToList()),
-                DT_Stop = Bank.GetMaxDT(_business.WorkSteps.Where(s => s.WorkId == x.Id).Select(x => Bank.LocalDateTime(x.DT_Stop)).ToList())
+                DT_Start = Bank.GetMinDT(_business.WorkSteps.Where(s => s.WorkId == x.Id).Select(x => (x.DT_Start)).ToList()),
+                DT_Stop = Bank.GetMaxDT(_business.WorkSteps.Where(s => s.WorkId == x.Id).Select(x => (x.DT_Stop)).ToList())
         }).ToList();
         }
         private async Task<WorkInfo> GetWorkInfo(int Id = 0, int ServiceObjectId = 0)
@@ -1383,8 +1407,8 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, y.myUserId),
                 UserEmail = Bank.inf_SS(DUsersEmail, y.myUserId),
                 FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
-                DT_Start = Bank.LocalDateTime(y.DT_Start),
-                DT_Stop = Bank.LocalDateTime(y.DT_Stop),
+                DT_Start = (y.DT_Start),
+                DT_Stop = (y.DT_Stop),
                 Status = y.Status,
                 Index = y.Index
             }).ToList();
@@ -1442,8 +1466,8 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, y.myUserId),
                 UserEmail = Bank.inf_SS(DUsersEmail, y.myUserId),
                 FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
-                DT_Start = Bank.LocalDateTime(y.DT_Start),
-                DT_Stop = Bank.LocalDateTime(y.DT_Stop),
+                DT_Start = (y.DT_Start),
+                DT_Stop = (y.DT_Stop),
                 Status = y.Status,
                 Index = y.Index
             }).ToList();
@@ -1475,8 +1499,8 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, WorkStep.myUserId),
                 UserEmail = Bank.inf_SS(DUsersEmail, WorkStep.myUserId),
                 FileLinks = Bank.inf_SSFiles(Files, WorkStep.groupFilesId),
-                DT_Start = Bank.LocalDateTime(WorkStep.DT_Start),
-                DT_Stop = Bank.LocalDateTime(WorkStep.DT_Stop),
+                DT_Start = (WorkStep.DT_Start),
+                DT_Stop = (WorkStep.DT_Stop),
                 Status = WorkStep.Status,
                 Index = WorkStep.Index
             };
@@ -1508,7 +1532,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, user.Id),
                 FileLinks = new List<myFiles>(),
-                DT_Start = Bank.LocalDateTime(Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
+                DT_Start = (Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                 DT_Stop = "",
                 Status = 0,
                 Index = MaxIndex
@@ -1535,7 +1559,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, y.myUserId),
                 UserEmail = Bank.inf_SS(DUsersEmail, y.myUserId),
                 FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
-                DT = Bank.LocalDateTime(y.DT),
+                DT = (y.DT),
                 Status = y.Status,
                 Message = y.Message
             }).ToList();
@@ -1563,7 +1587,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, Alert.myUserId),
                 UserEmail = Bank.inf_SS(DUsersEmail, Alert.myUserId),
                 FileLinks = Bank.inf_SSFiles(Files, Alert.groupFilesId),
-                DT = Bank.LocalDateTime(Alert.DT),
+                DT = (Alert.DT),
                 Status = Alert.Status,
                 Message = Alert.Message
             };
@@ -1589,7 +1613,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, user.Id),
                 FileLinks = new List<myFiles>(),
-                DT = Bank.LocalDateTime(Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
+                DT = (Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                 Status = 0,
                 Message = ""
             };

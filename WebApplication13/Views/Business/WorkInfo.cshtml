@@ -14,6 +14,8 @@
 
 }
 
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
 
 <div class="row">
     <div class="col-12">
@@ -35,15 +37,15 @@
                     <div class="col-6 col-md-3 pb-2">
                         <small>Дата и время начала: </small>
                         <br />
-                        @Model.DT_Start
+                        <script>document.write(UTC_To_LocalTime('@Model.DT_Start'));</script>
                     </div>
                     <div class="col-6 col-md-3 pb-2">
                         <small>Дата и время выполнения: </small>
                         <br />
-                        @{ 
+                        @{
                             var DT_Stop = (Model.Status == 9) ? Model.DT_Stop : "";
                         }
-                        @DT_Stop
+                        <script>document.write(UTC_To_LocalTime('@DT_Stop'));</script>
                     </div>
                 </div>
 

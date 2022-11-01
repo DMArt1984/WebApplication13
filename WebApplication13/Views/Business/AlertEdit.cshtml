@@ -24,8 +24,8 @@
         X.Selected = true;
 }
 
-
-
+    <!-- получение локального времени -->
+    <script src="~/assets/dm/localtime.js"></script>
 
 <div class="row">
     <div class="col-12">
@@ -37,7 +37,7 @@
                     <div class="col-3 pb-2">
                         <small>Дата и время: </small>
                         <br />
-                        @Model.DT
+                        <script>document.write(UTC_To_LocalTime('@Model.DT'));</script>
                     </div>
                     <div class="col-10 col-md-3 pb-2">
                         <small>Объект: </small>

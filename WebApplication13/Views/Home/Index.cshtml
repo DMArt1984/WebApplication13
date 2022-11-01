@@ -278,17 +278,17 @@
                     {<a asp-controller="Business" asp-action="objofslist" asp-route-id="@item.ObjectId">@item.ObjectName <small>(id:@item.ObjectId)</small></a>}
                 else
                 {<span class="text-danger me-2">@item.ObjectName</span>}
-            </td>
-            <td> <span class="text-danger me-2"> @item.StatusRus() </span></td>
-            <td>
-                @if (item.UserActive)
-                {<a asp-controller="Admin" asp-action="Profile" asp-route-Email="@item.UserEmail">@item.UserName <small>(@item.UserEmail)</small></a>}
-            else
-            {<span class="text-danger me-2">@item.UserName</span>}
-        </td>
-        <td>@item.Description</td>
-    </tr>
-}
+                </td>
+                <td> <span class="text-danger me-2"> @item.StatusRus() </span></td>
+                <td>
+                    @if (item.UserActive)
+                    {<a asp-controller="Admin" asp-action="Profile" asp-route-Email="@item.UserEmail">@item.UserName <small>(@item.UserEmail)</small></a>}
+                else
+                {<span class="text-danger me-2">@item.UserName</span>}
+                </td>
+                <td>@item.Description</td>
+            </tr>
+        }
     </tbody>
 </table>
 <br>
@@ -321,23 +321,47 @@
                     {<a asp-controller="Business" asp-action="objofslist" asp-route-id="@item.ObjectId">@item.ObjectName <small>(id:@item.ObjectId)</small></a>}
                 else
                 {<span class="text-danger me-2">@item.ObjectName</span>}
-            </td>
-            <td>  <span class="text-success me-2"> @item.StatusRus() </span></td>
-            <td>
-                @if (item.UserActive)
-                {<a asp-controller="Admin" asp-action="Profile" asp-route-Email="@item.UserEmail">@item.UserName <small>(@item.UserEmail)</small></a>}
-            else
-            {<span class="text-danger me-2">@item.UserName</span>}
-        </td>
-        <td>@item.Description</td>
-    </tr>
-}
+                </td>
+                <td>  <span class="text-success me-2"> @item.StatusRus() </span></td>
+                <td>
+                    @if (item.UserActive)
+                    {<a asp-controller="Admin" asp-action="Profile" asp-route-Email="@item.UserEmail">@item.UserName <small>(@item.UserEmail)</small></a>}
+                else
+                {<span class="text-danger me-2">@item.UserName</span>}
+                </td>
+                <td>@item.Description</td>
+            </tr>
+        }
     </tbody>
 </table>
 
-
+@*<p id="x1">@ViewBag.Time</p>
+<p id="servertime"></p>
+<p id="clienttime"></p>*@
 
 @section Scripts {
     <!-- apexcharts js -->
     <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+
+    <!-- получение локального времени -->
+    @*<script src="~/assets/dm/localtime.js"></script>
+
+    <script language="javascript">
+
+        function checkClientTimeZone() {
+            // Set the client time zone
+            var dt = new Date();
+            //alert(dt.toString());
+            var tz = -dt.getTimezoneOffset(); // time zone
+            //alert(tz.toString());
+            document.getElementById('servertime').innerHTML = `<p>${UTC_To_LocalTime('@ViewBag.Time')}</p>`;
+            document.getElementById('clienttime').innerHTML = `<p>${dt.toString()} ${tz.toString()}</p>`;
+        }
+
+        // Attach to the document onload event
+        checkClientTimeZone();
+
+
+    </script>*@
+
 }

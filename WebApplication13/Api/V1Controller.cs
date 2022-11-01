@@ -541,7 +541,7 @@ namespace FactPortal.Api
                     m.Id,
                     m.ObjectTitle,
                     m.ObjectCode,
-                    m.Description,
+                    //m.Description,
                     // Position = _business.Claims.Where(x => x.ServiceObjectId == m.Id && x.ClaimType.ToLower() == "position").Select(y => y.ClaimValue).FirstOrDefault(),
                     Position = m.Claims.Where(x => x.ClaimType.ToLower() == "position").Select(y => y.ClaimValue).FirstOrDefault(),
                     // Alerts = m.Alerts.Count(k => k.ServiceObjectId == m.Id),
@@ -2323,92 +2323,10 @@ namespace FactPortal.Api
             return id;
         }
 
-        // POST: api/v1
-        //[HttpPost]
-        //public string Post([FromBody] string value)
-        //{
-        //    return value;
-        //}
-
-        // PUT: api/v1/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        // DELETE: api/v1/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        
         #endregion
 
-    
-    // ==================================================================================================================
 
-        /*public Object Get_Info_Alert(Alert Obj)
-        {
-            var OUT = new
-            {
-                Id = Obj.Id,
-                ServiceObjectId = Obj.ServiceObjectId,
-                Message = Obj.Message,
-                Status = Obj.Status,
-                DT = Obj.DT,
-                UserId = Obj.myUserId,
-                User = Bank.inf_SS(DUsers, Obj.myUserId),
-                FilesId = Obj.groupFilesId,
-                Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
-            };
-            return OUT;
-        }
-        */
-
-        /*public infWorkStep Get_Info_WorkStep(WorkStep Obj)
-        { 
-            return  new infWorkStep
-            {
-                Id = Obj.Id,
-                WorkId = Obj.WorkId,
-                Index = Obj.Index,
-                DT_Start = Obj.DT_Start,
-                DT_Stop = Obj.DT_Stop,
-                UserId = Obj.myUserId,
-                User = Bank.inf_SS(DUsers, Obj.myUserId),
-                FilesId = Obj.groupFilesId,
-                Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
-            };
-        }*/
-
-        /*public infWork Get_Info_Work(int Id, int ServiceObjectId, int FinalStep, int Status, List<infWorkStep> Steps)
-        {
-            return new infWork
-            {
-                Id = Id,
-                ServiceObjectId = ServiceObjectId,
-                FinalStep = FinalStep,
-                Status = Status,
-                Steps = Steps
-            };
-        }*/
-
-        /*public List<infWorkStep> Get_LIST_infWS(List<WorkStep> WorkSteps)
-        {
-            return WorkSteps.Select(y => Get_Info_WorkStep(y)).ToList();
-        }*/
-
-        /*public infStep Get_Info_Step(Step Obj)
-        {
-            return new infStep
-            {
-                Id = Obj.Id,
-                ServiceObjectId = Obj.ServiceObjectId,
-                Index = Obj.Index,
-                Description = Obj.Description,
-                FilesId = Obj.groupFilesId,
-                Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
-            };
-        }*/
 
     }
 }

@@ -22,6 +22,9 @@
     <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 }
 
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
+
 <div class="card">
     <div class="card-body">
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
@@ -52,8 +55,8 @@
                                 @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
                             </td>
                         }
-                        <td>@item.DT_Start</td>
-                        <td>@DT_Stop</td>
+                        <td><script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script></td>
+                        <td><script>document.write(UTC_To_LocalTime('@DT_Stop'));</script></td>
                         <td>@item.StatusRus()</td>
                         <td>
                             <small>
@@ -62,10 +65,10 @@
                                     {
                                         if (st.Status > 0)
                                         {
-                                            var DT = st.DT_Start;
-                                            if (st.DT_Stop != "")
-                                                DT += "/" + st.DT_Stop;
-                                            <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) @DT</li>
+                                            //var DT = st.DT_Start;
+                                            //if (st.DT_Stop != "")
+                                            //    DT += "/" + st.DT_Stop;
+                                            <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> / <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script></li>
                                         }
                                     }
                                 </ol>

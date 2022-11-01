@@ -9,6 +9,9 @@
     string Title = (FilterWRK > 0) ? $"Выполненные шаги по обслуживанию № {FilterWRK}" : "Выполненные шаги";
 }
 
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
+
 <!-- Таблица -->
 <div id="accordion4">
     <div class="card mb-2">
@@ -41,14 +44,14 @@
                         {
                             <tr>
                                 <th>@item.Index</th>
-                                <td>@item.DT_Start</td>
-                                <td>@item.DT_Stop</td>
+                                <td><script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script></td>
+                                <td><script>document.write(UTC_To_LocalTime('@item.DT_Stop'));</script></td>
                                 <td>@item.StatusRus()</td>
                                 <td>
                                     @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
                                 </td>
                                 <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                                
+
                             </tr>
                         }
                     </tbody>

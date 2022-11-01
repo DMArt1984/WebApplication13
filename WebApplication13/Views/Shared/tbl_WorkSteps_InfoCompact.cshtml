@@ -1,7 +1,10 @@
 ﻿@model WorkStepInfo
-@{ 
+@{
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
 }
+
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
 
 <div class="card border border-primary">
     <div class="card-body">
@@ -29,12 +32,12 @@
             <div class="col-3 col-md-3 pb-2">
                 <small>Дата и время начала: </small>
                 <br />
-                @Model.DT_Start
+                <script>document.write(UTC_To_LocalTime('@Model.DT_Start'));</script>
             </div>
             <div class="col-3 col-md-3 pb-2">
                 <small>Дата и время окончания: </small>
                 <br />
-                @Model.DT_Stop
+                <script>document.write(UTC_To_LocalTime('@Model.DT_Stop'));</script>
             </div>
             @if (Model.Id > 0)
             {

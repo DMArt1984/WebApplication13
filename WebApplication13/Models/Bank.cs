@@ -184,9 +184,12 @@ namespace FactPortal.Models
                     Day = Convert.ToInt32(BDate[2]);
                 }
 
-                var DTime = Big[1];
+                var DTime = Big[1].Split(':');
+                var Hour = Convert.ToInt32(DTime[0]);
+                var Minute = Convert.ToInt32(DTime[1]);
+                var Second = Convert.ToInt32(DTime[2]);
 
-                string NewDT = $"{Year}.{Month}.{Day} {DTime}";
+                string NewDT = $"{Year}.{Month.ToString("D2")}.{Day.ToString("D2")} {Hour.ToString("D2")}:{Minute.ToString("D2")}:{Second.ToString("D2")}";
                 return NewDT;
             } catch
             {
@@ -291,7 +294,7 @@ namespace FactPortal.Models
             if (DTs.Count() == 0)
                 return "";
 
-            string MinDT = DTs.First();
+            string MinDT = DTs.OrderBy(x => x).First();
             foreach(var item in DTs)
             {
                 if (GetDTfromString(MinDT) > GetDTfromString(item))
@@ -306,7 +309,7 @@ namespace FactPortal.Models
             if (DTs.Count() == 0)
                 return "";
 
-            string MaxDT = DTs.Last();
+            string MaxDT = DTs.OrderBy(x => x).Last();
             foreach (var item in DTs)
             {
                 if (GetDTfromString(MaxDT) < GetDTfromString(item))

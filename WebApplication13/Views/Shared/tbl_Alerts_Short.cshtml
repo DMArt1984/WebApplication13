@@ -5,6 +5,9 @@
     int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
 }
 
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
+
 <!-- Таблица -->
 <div id="accordion2">
     <div class="card mb-2">
@@ -34,7 +37,7 @@
                         @foreach (var item in Model.OrderByDescending(x => x.DT))
                         {
                             <tr>
-                                <td>@item.DT</td>
+                                <td><script>document.write(UTC_To_LocalTime('@item.DT'));</script></td>
                                 <td>@item.StatusRus()</td>
                                 <td>
                                     @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
