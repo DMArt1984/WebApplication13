@@ -1943,35 +1943,43 @@ namespace FactPortal.Controllers
         }
 
         // КЛИЕНТ: Получение списка файлов по id
-        public JsonResult GetFiles_forJS(string Ids = "", string category = "", int categoryId = 0)
+        public JsonResult GetFiles_forJS(string Ids = "", string category = "", int categoryId = 0, string DelIds = "")
         {
             try
             {
+                if (!String.IsNullOrEmpty(Ids))
+                    Ids += ";";
+
                 switch (category)
                 {
                     case "so":
                         var Claims = _business.Claims.Where(x => x.ServiceObjectId == categoryId && x.ClaimType.ToLower() == "file").ToList();
                         if (Claims.Count() > 0)
-                            Ids = String.Join(";", Claims.Select(y => y.ClaimValue));
+                            Ids += String.Join(";", Claims.Select(y => y.ClaimValue));
                         break;
                     case "alert":
                         var Alert = _business.Alerts.FirstOrDefault(x => x.Id == categoryId);
                         if (Alert != null)
-                            Ids = Alert.groupFilesId;
+                            Ids += Alert.groupFilesId;
                         break;
                     case "step":
                         var Step = _business.Steps.FirstOrDefault(x => x.Id == categoryId);
                         if (Step != null)
-                            Ids = Step.groupFilesId;
+                            Ids += Step.groupFilesId;
                         break;
                     case "work":
                         var WorkStep = _business.WorkSteps.FirstOrDefault(x => x.Id == categoryId);
                         if (WorkStep != null)
-                            Ids = WorkStep.groupFilesId;
+                            Ids += WorkStep.groupFilesId;
                         break;
                 }
 
-                string[] ID = ((Ids != null)) ? Ids.Split(";") : new string[1];
+                // ID для удаления
+                if (!String.IsNullOrEmpty(DelIds))
+                    Ids = Bank.DelItemToStringList(Ids, ";", DelIds);
+
+                // Выборка файлов
+                string[] ID = ((Ids != null)) ? Ids.Split(";").Distinct().ToArray() : new string[1];
                 List<myFiles> Files = _business.Files.Where(x => ID.Contains(x.Id.ToString())).ToList();
 
                 return new JsonResult(new { Files = Files });
@@ -1985,13 +1993,19 @@ namespace FactPortal.Controllers
         // КЛИЕНТ: Добавление файла
         public async Task<JsonResult> AddFile_forJS(IFormFile file, string category, int categoryId, string description)
         {
+            var ID = 0; // ID нового файла
+
             switch (category.ToLower())
             {
+                case "load":
+                    ID = await AddFile(file, $"/Files/form/", description);
+                    break;
+                
                 case "so":
                     var SO = _business.ServiceObjects.FirstOrDefault(x => x.Id == categoryId);
                     if (SO != null)
                     {
-                        var ID = await AddFile(file, $"/Files/SO{SO.Id}/Info/", description);
+                        ID = await AddFile(file, $"/Files/SO{SO.Id}/Info/", description);
                         if (ID > 0)
                         {
                             var myIDs = _business.Claims.Select(x => x.Id).ToList();
@@ -2005,7 +2019,7 @@ namespace FactPortal.Controllers
                     var Alert = _business.Alerts.FirstOrDefault(x => x.Id == categoryId);
                     if (Alert != null)
                     {
-                        var ID = await AddFile(file, $"/Files/SO{Alert.ServiceObjectId}/Alerts/a{Alert.Id}/", description);
+                        ID = await AddFile(file, $"/Files/SO{Alert.ServiceObjectId}/Alerts/a{Alert.Id}/", description);
                         if (ID > 0)
                             Alert.groupFilesId = Bank.AddItemToStringList(Alert.groupFilesId, ";", ID.ToString());
                     }
@@ -2014,7 +2028,7 @@ namespace FactPortal.Controllers
                     var Step = _business.Steps.FirstOrDefault(x => x.Id == categoryId);
                     if (Step != null)
                     {
-                        var ID = await AddFile(file, $"/Files/SO{Step.ServiceObjectId}/Steps/a{Step.Id}/", description);
+                        ID = await AddFile(file, $"/Files/SO{Step.ServiceObjectId}/Steps/a{Step.Id}/", description);
                         if (ID > 0)
                             Step.groupFilesId = Bank.AddItemToStringList(Step.groupFilesId, ";", ID.ToString());
                     }
@@ -2023,7 +2037,7 @@ namespace FactPortal.Controllers
                     var WorkStep = _business.WorkSteps.FirstOrDefault(x => x.Id == categoryId);
                     if (WorkStep != null)
                     {
-                        var ID = await AddFile(file, $"/Files/Work{WorkStep.WorkId}/a{WorkStep.Id}/", description);
+                        ID = await AddFile(file, $"/Files/Work{WorkStep.WorkId}/a{WorkStep.Id}/", description);
                         if (ID > 0)
                             WorkStep.groupFilesId = Bank.AddItemToStringList(WorkStep.groupFilesId, ";", ID.ToString());
                     }
@@ -2031,7 +2045,7 @@ namespace FactPortal.Controllers
             }
             await _business.SaveChangesAsync();
 
-            return new JsonResult(new { result = 0 });
+            return new JsonResult(new { result = 0, Id = ID });
         }
 
         // КЛИЕНТ: Удаление файла

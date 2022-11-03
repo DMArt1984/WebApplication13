@@ -220,20 +220,7 @@ namespace FactPortal.Controllers
             }
         }
 
-        //public IActionResult view_files(string? Path)
-        //{
-        //    try
-        //    {
-        //        var file = new view_f() { Path = Path };
-        //        return View("view_files", file);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ErrorCatch ec = new ErrorCatch();
-        //        ec.Set(ex, "");
-        //        return RedirectToAction("Error_Catch", ec);
-        //    }
-        //}
+        
 
         [HttpPost]
         public async Task<IActionResult> Index_Video(IFormFile uploadedFile)
@@ -264,7 +251,6 @@ namespace FactPortal.Controllers
         }
 
 
-        
         [HttpPost]
         public async Task<IActionResult> Index_Images(IFormFile uploadedFile)
         {
@@ -339,6 +325,22 @@ namespace FactPortal.Controllers
         {
             return View(ec);
         }
+
+
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult TestLoadDelFiles()
+        {
+
+            var Files = _business.Files.ToList();
+
+            var groupFilesId = _business.Alerts.FirstOrDefault(x => x.groupFilesId != "").groupFilesId;
+
+            var FileLinks = Bank.inf_SSFiles(Files, groupFilesId);
+
+            return View(FileLinks);
+        }
+
 
     }
 }

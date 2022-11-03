@@ -1,0 +1,69 @@
+﻿@model List<myFiles>
+@{
+    ViewData["Title"] = "TestLoadDelFiles";
+}
+
+<h1>TestLoadDelFiles</h1>
+
+@foreach (var item in Model)
+{
+    <p>@item.Id - @item.Name - @item.Path</p>
+}
+
+<!-- info -->
+<hr />
+<div class="" id="base">@ViewContext.HttpContext.Request.PathBase</div>
+<div class="" id="host">@ViewContext.HttpContext.Request.Host</div>
+<div class="" id="category">alert</div>
+<div class="" id="categoryId">1</div>
+<div class="" id="newfiles"></div>
+<div class="" id="delfiles"></div>
+<div class="" id="delfileId"></div>
+
+<!-- control -->
+<hr />
+<div id="a_Work" class="mx-1 md-2">info...</div>
+
+<!-- load files -->
+<!-- HTML5 Input Form Elements -->
+<div id="uplfiles">
+    <div class="d-flex justify-content-between">
+        <input id="fileupload" class="form-control" type="file" name="fileupload" onchange="uploadFile2('load', GetInfo('categoryId'), GetInfoValue('filedesc'))" />
+        <input id="filedesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
+        <br>
+    </div>
+</div>
+
+<div id="message"></div>
+<div id="listfiles">Загрузка данных...</div>
+
+<!-- sample modal content -->
+<div id="myModalDelFile" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title text-white" id="myModalLabel">Удалить файл</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>После этого действия вы не сможете востановить файл</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="SelectDelFile()"><i class="fas fa-trash-alt"></i> Удалить</button>
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+@section Scripts {
+    <!-- files -->
+    <script src="~/assets/dm/fileControl2.js"></script>
+
+    <script type="text/javascript">
+    </script>
+
+}
+

@@ -348,9 +348,12 @@ namespace FactPortal.Models
         // Добавить данные в строку списка 1;5;8 -> 1;5;8;7
         public static string AddItemToStringList(string StringList, string Delim, string Values)
         {
-            List<string> myList  = StringList.Split(Delim).ToList();
-            foreach(var item in Values.Split(Delim))
-                myList.Add(item);
+            List<string> myList  = StringList.Split(Delim).Distinct().ToList();
+            foreach (var item in Values.Split(Delim).Distinct())
+            {
+                if (myList.Contains(item) == false)
+                    myList.Add(item);
+            }
             myList.RemoveAll(x => String.IsNullOrEmpty(x));
             return String.Join(Delim, myList.Distinct());
         }
@@ -358,9 +361,11 @@ namespace FactPortal.Models
         // Удалить данные из строки списка 2;4;8 -> 2;8
         public static string DelItemToStringList(string StringList, string Delim, string Values)
         {
-            List<string> myList = StringList.Split(Delim).ToList();
-            foreach (var item in Values.Split(Delim))
+            List<string> myList = StringList.Split(Delim).Distinct().ToList();
+            foreach (var item in Values.Split(Delim).Distinct())
+            {
                 myList.Remove(item);
+            }
             myList.RemoveAll(x => String.IsNullOrEmpty(x));
             return String.Join(Delim, myList.Distinct());
         }

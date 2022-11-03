@@ -116,6 +116,13 @@
     </a>
 </li>
 
+<li class="">
+    <a class=" waves-effect" asp-area="" asp-controller="Files" asp-action="TestLoadDelFiles">
+        <i class="mdi mdi-texture-box"></i>
+        <span>Тест Загрузка и удаление файлов</span>
+    </a>
+</li>
+
 @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
 {
     <li class="menu-title d-none">Администрирование</li>
