@@ -49,42 +49,10 @@
                         <br />
                         @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })
                     </div>
-                    @if (Model.Id > 0)
-                    {
-                        <div class="col-10 col-md-3 pb-2">
-                            <small>Текущий статус: </small>
-                            <br />
-                            @Model.StatusRus()
-                        </div>
-                    }
+                    
                 </div>
-                @if (Model.Id > 0)
-                {
-                    @*<div class="col-12">
-                            <small>Сообщение: </small>
-                            <br />
-                            @if (@Model.Message == "")
-                            {
-                                <span> - </span>
-                            }
-                            else
-                            {
-                                @Model.Message
-                            }
-                        </div>*@
-                }
-                <hr />
-                @if (Model.Id != 0)
-                {
-                    <!--Файлы-->
-                    <small>Файлы:</small>
-                    @Html.Partial("_FilesControl", new FileFront { category = "alert", categoryId = @Model.Id })
-                    <!--------->
-                }
-                else
-                {
-                    <small>Для получения возможности добавления файлов - сохраните новое уведомление</small>
-                }
+                
+                
             </div>
         </div>
 
@@ -98,15 +66,27 @@
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
 
                     <div class="col-12 pt-2">
-                        <small>Новый статус:</small>
+                        <small>Статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
                     </div>
                     <div class="col-12 pt-2 d-none">
-                        <small>Новое сообщение:</small>
+                        <small>Сообщение:</small>
                         <br />
                         <textarea form="myform" name="Message" rows="5" class="form-control">@Model.Message</textarea>
                     </div>
                     <!---->
+                    <hr />
+                    @if (Model.Id != 0)
+                    {
+                        <!--Файлы-->
+                        <small>Файлы:</small>
+                        @Html.Partial("_FilesControl", new FileFront { category = "alert", categoryId = @Model.Id })
+                        <!--------->
+                    }
+                    else
+                    {
+                        <small>Для получения возможности добавления файлов - сохраните новое уведомление</small>
+                    }
                 </div>
                 <div class="card-footer bg-soft-light">
                     <div class="row g-0 d-flex justify-content-start">

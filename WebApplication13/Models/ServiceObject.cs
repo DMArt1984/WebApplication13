@@ -5,27 +5,6 @@ using System.Threading.Tasks;
 
 namespace FactPortal.Models
 {
-    public enum eWorkStep
-    {
-        Wait = 1, // ожидание
-        Edit = 2, // редактирование
-        Skip = 3, // пропущен
-        Work = 5, // работа
-        Part = 8, // частично
-        Ready = 9, // выполнено
-        Load = 11, // загрузка данных
-    }
-
-    public enum eAlert
-    {
-        New = 0, // новое
-        View = 5, // просмотрено
-        Closed = 9, // закрыто
-        Edit = 10, // редактирование
-        Load = 11, // загрузка данных
-        Change = 99 // изменено
-    }
-
     // Объекты обслуживания: модель
     public class ServiceObject
     {
@@ -203,6 +182,7 @@ namespace FactPortal.Models
         public int Index { get; set; } // Номер шага
         public string Description { get; set; } // Описание
         public List<myFiles> FileLinks { get; set; } // Файлы (10;11;12)
+        public bool EnableDel { get; set; } // разрешение удаления
     }
 
     // Выполнение обслуживания по шагам
@@ -216,30 +196,6 @@ namespace FactPortal.Models
         public string DT_Start { get; set; } // Дата и время начала
         public string DT_Stop { get; set; } // Дата и время начала
         public string groupFilesId { get; set; } // Файлы (10;11;12)
-        public string StatusRus()
-        {
-            switch (Status)
-            {
-                case 0:
-                    return "-";
-                case 1:
-                    return "ожидание";
-                case 2:
-                    return "редактирование";
-                case 3:
-                    return "пропущен";
-                case 11:
-                    return "загрузка данных";
-                case 5:
-                    return "работа";
-                case 8:
-                    return "частично";
-                case 9:
-                    return "выполнено";
-                default:
-                    return $"#{Status.ToString()}";
-            }
-        }
 
     }
 
@@ -261,9 +217,9 @@ namespace FactPortal.Models
             switch (Status)
             {
                 case 0:
-                    return "-";
-                case 1:
                     return "ожидание";
+                case 1:
+                    return "пауза";
                 case 2:
                     return "редактирование";
                 case 3:

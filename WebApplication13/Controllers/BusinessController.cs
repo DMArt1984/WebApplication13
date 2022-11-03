@@ -606,6 +606,7 @@ namespace FactPortal.Controllers
 
             // Вывод
             ViewData["ServiceObjectId"] = ServiceObjectId;
+            ViewBag.EnableAdd = ServiceObjectId > 0;
             return View(Steps);
         }
 
@@ -661,7 +662,7 @@ namespace FactPortal.Controllers
             // Вывод
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
-            //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();          
+            //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();       
             return View(Step);
         }
 
@@ -670,6 +671,15 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Description = "", int ServiceObjectId = 0, int SOReturn = 0)
         {
+            // Проверка на доступность номера шага (Index)
+            var IndexSteps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId && x.Id != Id).Select(x => x.Index).ToListAsync();
+            if (Index == 0 || (IndexSteps.Count() > 0 && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
+            {
+                // ВЫВЕСТИ СООБЩЕНИЕ!
+                // 5. Вернуться в список
+                return RedirectToAction("StepsList", new {ServiceObjectId = SOReturn });
+            }
+
             // Создание нового элемента
             if (Id == 0)
             {
@@ -698,7 +708,6 @@ namespace FactPortal.Controllers
                     return NotFound();
 
                 // 3. Изменение элемента
-                Step.Index = Index;
                 Step.Description = Description;
             }
 
@@ -749,6 +758,8 @@ namespace FactPortal.Controllers
 
             // Вывод
             ViewData["ServiceObjectId"] = ServiceObjectId;
+            var CountSteps = _business.Steps.Count(x => x.ServiceObjectId == ServiceObjectId);
+            ViewBag.EnableAdd = ServiceObjectId > 0 && CountSteps > 0;
             return View(Works);
         }
 
@@ -819,6 +830,11 @@ namespace FactPortal.Controllers
             // Создание нового элемента
             if (Id == 0)
             {
+                // Список шагов для объекта
+                var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).Select(x => x.Index).ToListAsync();
+                if (Steps.Count() == 0)
+                    return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
+
                 var myIDs = _business.Works.Select(x => x.Id).ToList();
                 var newID = Bank.maxID(myIDs);
                 var newWork = new Work
@@ -827,8 +843,30 @@ namespace FactPortal.Controllers
                     ServiceObjectId = ServiceObjectId,
                 };
                 await _business.Works.AddAsync(newWork);
+                await _business.SaveChangesAsync();
 
-            } else // Изменение существующего
+                // Создание шагов для нового обслуживания
+                foreach (var item in Steps)
+                {
+                    var mySIDs = _business.WorkSteps.Select(x => x.Id).ToList();
+                    var newSID = Bank.maxID(mySIDs);
+                    var newWorkStep = new WorkStep
+                    {
+                        Id = newSID,
+                        WorkId = newID,
+                        DT_Start = "", //(Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
+                        DT_Stop = "",
+                        Index = item,
+                        Status = 0,
+                        myUserId = user.Id,
+                        groupFilesId = ""
+                    };
+                    await _business.WorkSteps.AddAsync(newWorkStep);
+                    await _business.SaveChangesAsync();
+                }
+
+            }
+            else // Изменение существующего
             {
                 // 1. Проверка достаточности данных
                 var Work = await _business.Works.FirstOrDefaultAsync(x => x.Id == Id);
@@ -898,7 +936,7 @@ namespace FactPortal.Controllers
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
 
-            ViewBag.EnableAdd = (Obj != null) ? WorkSteps.Count() < _business.Steps.Count(x => x.ServiceObjectId == Obj.Id) : true;
+            //ViewBag.EnableAdd = (Obj != null) ? WorkSteps.Count() < _business.Steps.Count(x => x.ServiceObjectId == Obj.Id) : true;
   
             return View(WorkSteps);
         }
@@ -942,9 +980,13 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
-            // Поиск
+            // Попытка создать новый шаг
+            if (Id == 0)
+                return RedirectToAction("WorkStepNull");
+
+            // Поиск существующего шага
             var WorkStep = await GetWorkStepInfo(Id, WorkId);
-            if (WorkStep == null && Id > 0)
+            if (WorkStep == null)
                 return RedirectToAction("WorkStepNull");
 
             // Крошки
@@ -952,7 +994,6 @@ namespace FactPortal.Controllers
             var Obj = (WRK != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == WRK.ServiceObjectId) : null;
             var thisNode = new MvcBreadcrumbNode("WorkStepEdit", "Business", "ViewData.Title")
             {
-                //Parent = (Obj != null) ? GetBreadWorksList_Filter(Obj.Id, "") : GetBreadWorksList_All()
                 Parent = (Obj != null) ? GetBreadWorkStepsList_Filter(WorkId, ServiceObjectId, "") : GetBreadWorkStepsList_All()
             };
 
@@ -962,18 +1003,17 @@ namespace FactPortal.Controllers
             ViewData["SOReturn"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
 
-            List<int> IndexSteps = new List<int> { WorkStep.Index };
-            if (Id == 0)
-            {
-                IndexSteps = GetListSteps(WorkStep.ServiceObjectId);
-                if (WorkId > 0)
-                {
-                    List<int> UsedIndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId).Select(x => x.Index).ToListAsync();
-                    IndexSteps = IndexSteps.Except(UsedIndexSteps).ToList();
-                }
-            }
-            
-            ViewBag.Indexes = IndexSteps;
+            //List<int> IndexSteps = new List<int> { WorkStep.Index };
+            //if (Id == 0)
+            //{
+            //    IndexSteps = GetListSteps(WorkStep.ServiceObjectId);
+            //    if (WorkId > 0)
+            //    {
+            //        List<int> UsedIndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId).Select(x => x.Index).ToListAsync();
+            //        IndexSteps = IndexSteps.Except(UsedIndexSteps).ToList();
+            //    }
+            //}
+            //ViewBag.Indexes = IndexSteps;
             return View(WorkStep);
         }
 
@@ -987,7 +1027,7 @@ namespace FactPortal.Controllers
 
             // Проверка на доступность номера шага (Index)
             var IndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId && x.Id != Id).Select(x => x.Index).ToListAsync();
-            if (Index == 0 && IndexSteps.Count() > 0 && IndexSteps.Contains(Index)) // Если шаг с таким номером уже существует
+            if (Index == 0 || (IndexSteps.Count() > 0 && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
             {
                 // ВЫВЕСТИ СООБЩЕНИЕ!
                 // 5. Вернуться в список
@@ -1518,8 +1558,7 @@ namespace FactPortal.Controllers
             var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
             var Wrk_Ids = await _business.Works.Select(x => x.Id).Distinct().ToListAsync();
 
-            var ObjWorkStep = _business.WorkSteps.Where(x => x.WorkId == WorkId);
-            var MaxIndex = (ObjWorkStep.Count() > 0) ? ObjWorkStep.Max(x => x.Index) + 1 : 1;
+            var NextIndex = _business.WorkSteps.Where(x => x.WorkId == WorkId).Max(x => x.Index) + 1;
 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
@@ -1535,7 +1574,7 @@ namespace FactPortal.Controllers
                 DT_Start = (Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                 DT_Stop = "",
                 Status = 0,
-                Index = MaxIndex
+                Index = NextIndex
             };
         }
 
@@ -1630,6 +1669,7 @@ namespace FactPortal.Controllers
             //Dictionary<string, string> DFiles = GetDicFiles();
             var SO_Ids = _business.ServiceObjects.Select(x => x.Id).Distinct().ToList();
             var Files = _business.Files.ToList();
+            var DSO_Index = SO_Ids.ToDictionary(x => x, y => _business.Steps.Where(z => z.ServiceObjectId == y).Select(z => z.Index).ToList());
 
             return _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId || ServiceObjectId == 0).Select(y => new StepInfo
             {
@@ -1638,7 +1678,8 @@ namespace FactPortal.Controllers
                 ServiceObjectId = Bank.inf_ListMinus(SO_Ids, y.ServiceObjectId),
                 ServiceObjectTitle = Bank.inf_IS(DObjects, y.ServiceObjectId),
                 Description = y.Description,
-                FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId)
+                FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
+                EnableDel = (DSO_Index.ContainsKey(y.ServiceObjectId)) ? ((DSO_Index[y.ServiceObjectId].Count() > 0) ? DSO_Index[y.ServiceObjectId].Count() == y.Index : false) : false
             }).ToList();
         }
         private async Task<StepInfo> GetStepInfo(int Id = 0, int ServiceObjectId = 0)
@@ -1654,8 +1695,8 @@ namespace FactPortal.Controllers
 
             var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
             var Files = await _business.Files.ToListAsync();
-            var ObjStep = _business.Steps.Where(x => x.ServiceObjectId == Step.ServiceObjectId);
-            var MaxIndex = (ObjStep.Count() > 0) ? ObjStep.Max(x => x.Index) + 1 : 1;
+            var ObjSteps = _business.Steps.Where(x => x.ServiceObjectId == Step.ServiceObjectId);
+            var MaxIndex = (ObjSteps.Count() > 0) ? ObjSteps.Max(x => x.Index) : 0;
             
             return  new StepInfo
             {
@@ -1665,6 +1706,7 @@ namespace FactPortal.Controllers
                 FileLinks = Bank.inf_SSFiles(Files, Step.groupFilesId),
                 Index = Step.Index,
                 Description = Step.Description,
+                EnableDel = Step.Index == MaxIndex
             };
         }
 
@@ -1686,6 +1728,7 @@ namespace FactPortal.Controllers
                 FileLinks = new List<myFiles>(),
                 Index = MaxIndex,
                 Description = "",
+                EnableDel = false
             };
         }
 

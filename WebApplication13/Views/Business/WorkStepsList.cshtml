@@ -76,9 +76,9 @@
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
 
-                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, @item.WorkId, '@item.ServiceObjectTitle', @item.Index)">
+                                    @*<a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, @item.WorkId, '@item.ServiceObjectTitle', @item.Index)">
                                         <i class="fas fa-trash-alt px-1"></i>
-                                    </a>
+                                    </a>*@
                                 }
                             </div>
                         </td>
@@ -88,11 +88,11 @@
         </table>
     </div>
     <!-- Добавить -->
-    @if (IsAdmin && FilterWrk > 0 && ViewBag.EnableAdd)
+    @if (IsAdmin && FilterWrk > 0 ) // && ViewBag.EnableAdd
     {
-        <div class="card-footer">
+        @*<div class="card-footer">
             <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новый выполненный шаг</a>
-        </div>
+        </div>*@
     }
 </div>
 

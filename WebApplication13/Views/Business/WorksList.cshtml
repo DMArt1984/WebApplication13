@@ -5,7 +5,9 @@
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     if (FilterSO > 0)
     {
-        ViewData["Title"] = $"{@Model.First(x => x.ServiceObjectId == FilterSO).ServiceObjectTitle}: Статистика обслуживания";
+        var SO = @Model.FirstOrDefault(x => x.ServiceObjectId == FilterSO);
+        string Title = (SO != null) ? SO.ServiceObjectTitle : "Объект";
+        ViewData["Title"] = $"{Title}: Статистика обслуживания";
     }
     else
     {
@@ -96,7 +98,7 @@
         </table>
     </div>
     <!-- Добавить -->
-    @if (IsAdmin && FilterSO > 0)
+    @if (IsAdmin && FilterSO > 0 && ViewBag.EnableAdd)
     {
         <div class="card-footer">
             <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>

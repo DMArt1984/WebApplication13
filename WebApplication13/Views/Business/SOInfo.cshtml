@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = Model.ObjectTitle;
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
+    bool StepsAvailable = Model.Steps != null && Model.Steps.Count() > 0;
 
     byte[] QRCode(string Text)
     {
@@ -120,6 +121,11 @@ else
         </div>
 
     </div>
+    <!-- редактировать -->
+    @if (IsAdmin)
+    {
+        <a asp-action="SOEdit" asp-route-id="@Model.Id" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
+    }
 </div>
 
 <!-- Шаги и обслуживание -->
@@ -139,7 +145,7 @@ else
     }
     else
     {
-        @if (IsAdmin)
+        @if (IsAdmin && StepsAvailable)
         {
             <div class="mb-2">
                 <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
@@ -150,7 +156,7 @@ else
 
 
     <!-- Шаги -->
-    @if (Model.Steps != null && Model.Steps.Count() > 0)
+    @if (StepsAvailable)
     {
         @Html.Partial("tbl_Steps_Short", Model.Steps)
     }

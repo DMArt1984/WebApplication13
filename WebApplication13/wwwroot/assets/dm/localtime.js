@@ -36,7 +36,7 @@ function UTC_To_LocalTime(DT) {
 
     var jdatetime = new Date(Date.UTC(year, month, day, hour, minute, second))
     //jdatetime.setTime(jdatetime.getTime() + numOfHours * 60 * 60 * 1000);
-    var out = `${jdatetime.getFullYear()}.${jdatetime.getMonth().toString().padStart(2, '0')}.${jdatetime.getDate().toString().padStart(2, '0')} ${jdatetime.getHours().toString().padStart(2, '0')}:${jdatetime.getMinutes().toString().padStart(2, '0')}:${jdatetime.getSeconds().toString().padStart(2, '0')}`
+    var out = `${jdatetime.getDate().toString().padStart(2, '0')}.${jdatetime.getMonth().toString().padStart(2, '0')}.${jdatetime.getFullYear()} ${jdatetime.getHours().toString().padStart(2, '0')}:${jdatetime.getMinutes().toString().padStart(2, '0')}:${jdatetime.getSeconds().toString().padStart(2, '0')}`
 
     //alert(out)
 
