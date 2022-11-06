@@ -333,11 +333,10 @@ namespace FactPortal.Controllers
                     ObjectCode = ObjectCode,
                     Description = Description,
                 });
+                Id = newID;
 
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync();
-
-                Id = newID;
             } 
                 
             // 3. Изменение элемента
@@ -495,8 +494,8 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> AlertInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var Alert = await GetAlertInfo(Id, ServiceObjectId);
-            if (Alert == null || Id == 0)
+            var alert = await GetAlertInfo(Id, ServiceObjectId);
+            if (alert == null || Id == 0)
                 return RedirectToAction("AlertNull");
 
             // Крошки
@@ -510,7 +509,7 @@ namespace FactPortal.Controllers
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
-            return View(Alert);
+            return View(alert);
         }
 
         // Редактирование уведомлений
@@ -520,8 +519,8 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> AlertEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var Alert = await GetAlertInfo(Id, ServiceObjectId);
-            if (Alert == null && Id > 0)
+            var alert = await GetAlertInfo(Id, ServiceObjectId);
+            if (alert == null && Id > 0)
                 return RedirectToAction("AlertNull");
 
             // Крошки
@@ -535,7 +534,7 @@ namespace FactPortal.Controllers
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
-            return View(Alert);
+            return View(alert);
         }
 
         [HttpPost]
@@ -562,27 +561,26 @@ namespace FactPortal.Controllers
                     groupFilesId = ""
                 };
                 await _business.Alerts.AddAsync(newAlert);
+                Id = newID;
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync();
-
-                Id = newID;
             }
 
             // 1. Проверка достаточности данных
-            var Alert = await _business.Alerts.FirstOrDefaultAsync(x => x.Id == Id);
-            if (Alert == null)
+            var alert = await _business.Alerts.FirstOrDefaultAsync(x => x.Id == Id);
+            if (alert == null)
                 return NotFound();
 
             // 3. Изменение элемента
-            Alert.Status = Status;
-            Alert.Message = Message;
-            Alert.DT = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString());
-            Alert.myUserId = (user != null) ? user.Id : "?";
+            alert.Status = Status;
+            alert.Message = Message;
+            alert.DT = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString());
+            alert.myUserId = (user != null) ? user.Id : "?";
 
             // Добавление файлов
             if (!String.IsNullOrEmpty(LoadFileId))
             {
-                    Alert.groupFilesId = Bank.AddItemToStringList(Alert.groupFilesId, ";", LoadFileId);
+                    alert.groupFilesId = Bank.AddItemToStringList(alert.groupFilesId, ";", LoadFileId);
             }
 
             // Удаление файлов
@@ -592,7 +590,7 @@ namespace FactPortal.Controllers
                 {
                     if (await DeleteFile(item))
                     {
-                        Alert.groupFilesId = Bank.DelItemToStringList(Alert.groupFilesId, ";", item.ToString());
+                        alert.groupFilesId = Bank.DelItemToStringList(alert.groupFilesId, ";", item.ToString());
                     }
                     else
                     {
@@ -613,12 +611,12 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> AlertDelete(int Id = 0, int ServiceObjectId = 0)
         {
-            Alert obj = await _business.Alerts.FirstOrDefaultAsync(p => p.Id == Id);
-            if (obj != null)
+            Alert alert = await _business.Alerts.FirstOrDefaultAsync(p => p.Id == Id);
+            if (alert != null)
             {
-                await DeleteFiles(obj.groupFilesId);
+                await DeleteFiles(alert.groupFilesId);
 
-                _business.Alerts.Remove(obj);
+                _business.Alerts.Remove(alert);
                 await _business.SaveChangesAsync();
                 return RedirectToAction("AlertsList", new { ServiceObjectId = ServiceObjectId });
             }
@@ -665,8 +663,8 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> StepInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var Step = await GetStepInfo(Id, ServiceObjectId);
-            if (Step == null && Id > 0)
+            var step = await GetStepInfo(Id, ServiceObjectId);
+            if (step == null && Id > 0)
                 return RedirectToAction("StepNull");
 
             // Крошки
@@ -680,7 +678,7 @@ namespace FactPortal.Controllers
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
-            return View(Step);
+            return View(step);
         }
 
         // Редактирование параметров шагов объекта обслуживания
@@ -690,8 +688,8 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var Step = await GetStepInfo(Id, ServiceObjectId);
-            if (Step == null && Id > 0)
+            var step = await GetStepInfo(Id, ServiceObjectId);
+            if (step == null && Id > 0)
                 return RedirectToAction("StepNull");
 
             // Крошки
@@ -705,13 +703,13 @@ namespace FactPortal.Controllers
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();       
-            return View(Step);
+            return View(step);
         }
 
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Description = "", int ServiceObjectId = 0, int SOReturn = 0)
+        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Description = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Проверка на доступность номера шага (Index)
             var IndexSteps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId && x.Id != Id).Select(x => x.Index).ToListAsync();
@@ -736,22 +734,42 @@ namespace FactPortal.Controllers
                     groupFilesId = ""
                 };
                 await _business.Steps.AddAsync(newStep);
-
+                Id = newID;
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync();
 
-                return RedirectToAction("StepEdit", new { Id = newID, ServiceObjectId = ServiceObjectId });
+            } 
 
-            } else // Изменение существующего
+            // 1. Проверка достаточности данных
+            var step = await _business.Steps.FirstOrDefaultAsync(x => x.Id == Id);
+            if (step == null)
+                return NotFound();
+
+            // 3. Изменение элемента
+            step.Description = Description;
+
+            // Добавление файлов
+            if (!String.IsNullOrEmpty(LoadFileId))
             {
-                // 1. Проверка достаточности данных
-                var Step = await _business.Steps.FirstOrDefaultAsync(x => x.Id == Id);
-                if (Step == null)
-                    return NotFound();
-
-                // 3. Изменение элемента
-                Step.Description = Description;
+                step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", LoadFileId);
             }
+
+            // Удаление файлов
+            if (!String.IsNullOrEmpty(DelFileId))
+            {
+                foreach (var item in DelFileId.Split(';'))
+                {
+                    if (await DeleteFile(item))
+                    {
+                        step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", item.ToString());
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("uploadedFile", $"Ошибка удаления файла #{item}");
+                    }
+                }
+            }
+
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync();
@@ -765,12 +783,12 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> StepDelete(int Id = 0, int ServiceObjectId = 0)
         {
-            Step obj = await _business.Steps.FirstOrDefaultAsync(p => p.Id == Id);
-            if (obj != null)
+            Step step = await _business.Steps.FirstOrDefaultAsync(p => p.Id == Id);
+            if (step != null)
             {
-                await DeleteFiles(obj.groupFilesId);
+                await DeleteFiles(step.groupFilesId);
 
-                _business.Steps.Remove(obj);
+                _business.Steps.Remove(step);
                 await _business.SaveChangesAsync();
                 return RedirectToAction("StepsList", new { ServiceObjectId = ServiceObjectId });
             }
@@ -995,8 +1013,8 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> WorkStepInfo(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var WorkStep = await GetWorkStepInfo(Id, WorkId);
-            if (WorkStep == null || Id == 0)
+            var workStep = await GetWorkStepInfo(Id, WorkId);
+            if (workStep == null || Id == 0)
                 return RedirectToAction("WorkStepNull");
 
             // Крошки
@@ -1013,7 +1031,7 @@ namespace FactPortal.Controllers
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
             //ViewBag.Files = _business.Files.OrderBy(x => x.Path).ToList();
-            return View(WorkStep);
+            return View(workStep);
         }
 
         // Редактирование шагов обслуживания
@@ -1027,8 +1045,8 @@ namespace FactPortal.Controllers
                 return RedirectToAction("WorkStepNull");
 
             // Поиск существующего шага
-            var WorkStep = await GetWorkStepInfo(Id, WorkId);
-            if (WorkStep == null)
+            var workStep = await GetWorkStepInfo(Id, WorkId);
+            if (workStep == null)
                 return RedirectToAction("WorkStepNull");
 
             // Крошки
@@ -1056,13 +1074,13 @@ namespace FactPortal.Controllers
             //    }
             //}
             //ViewBag.Indexes = IndexSteps;
-            return View(WorkStep);
+            return View(workStep);
         }
 
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, int Status = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, int Status = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Текущий пользователь
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -1101,32 +1119,51 @@ namespace FactPortal.Controllers
                     groupFilesId = ""
                 };
                 await _business.WorkSteps.AddAsync(newWorkStep);
+                Id = newID;
 
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync();
-
-                return RedirectToAction("WorkStepEdit", new { Id = newID, WorkId = WorkId, ServiceObjectId = SOReturn });
-
-            } else // Изменение существующего
-            {
-                // 1. Проверка достаточности данных
-
-                var WorkStep = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
-                if (WorkStep == null)
-                    return NotFound();
-
-                var Work = _business.Works.FirstOrDefault(x => x.Id == WorkStep.WorkId);
-                if (Work == null)
-                    return NotFound();
-
-                // 3. Изменение элемента
-                WorkStep.WorkId = WorkId;
-                WorkStep.Status = Status;
-                WorkStep.Index = Index;
-                WorkStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : WorkStep.DT_Start;
-                WorkStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : WorkStep.DT_Stop;
-                WorkStep.myUserId = (user != null) ? user.Id : "?";
             }
+
+            // 1. Проверка достаточности данных
+            var workStep = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
+            if (workStep == null)
+                return NotFound();
+
+            var Work = _business.Works.FirstOrDefault(x => x.Id == workStep.WorkId);
+            if (Work == null)
+                return NotFound();
+
+            // 3. Изменение элемента
+            workStep.WorkId = WorkId;
+            workStep.Status = Status;
+            workStep.Index = Index;
+            workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
+            workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
+            workStep.myUserId = (user != null) ? user.Id : "?";
+
+            // Добавление файлов
+            if (!String.IsNullOrEmpty(LoadFileId))
+            {
+                workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", LoadFileId);
+            }
+
+            // Удаление файлов
+            if (!String.IsNullOrEmpty(DelFileId))
+            {
+                foreach (var item in DelFileId.Split(';'))
+                {
+                    if (await DeleteFile(item))
+                    {
+                        workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", item.ToString());
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("uploadedFile", $"Ошибка удаления файла #{item}");
+                    }
+                }
+            }
+
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync();
@@ -1140,12 +1177,12 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> WorkStepDelete(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
-            WorkStep obj = await _business.WorkSteps.FirstOrDefaultAsync(p => p.Id == Id);
-            if (obj != null)
+            WorkStep workStep = await _business.WorkSteps.FirstOrDefaultAsync(p => p.Id == Id);
+            if (workStep != null)
             {
-                await DeleteFiles(obj.groupFilesId);
+                await DeleteFiles(workStep.groupFilesId);
 
-                _business.WorkSteps.Remove(obj);
+                _business.WorkSteps.Remove(workStep);
                 await _business.SaveChangesAsync();
                 return RedirectToAction("WorkStepsList", new { WorkId = WorkId, ServiceObjectId = ServiceObjectId });
             }
