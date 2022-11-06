@@ -1,24 +1,17 @@
-﻿@model List<myFiles>
-@{
-    ViewData["Title"] = "TestLoadDelFiles";
-}
+﻿@model FileFront
 
-<h1>TestLoadDelFiles</h1>
-
-@foreach (var item in Model)
+@*@foreach (var item in Model)
 {
     <p>@item.Id - @item.Name - @item.Path</p>
-}
+}*@
 
 <!-- info -->
-<hr />
-<div class="" id="base">@ViewContext.HttpContext.Request.PathBase</div>
-<div class="" id="host">@ViewContext.HttpContext.Request.Host</div>
-<div class="" id="category">alert</div>
-<div class="" id="categoryId">1</div>
-<div class="" id="newfiles"></div>
-<div class="" id="delfiles"></div>
-<div class="" id="delfileId"></div>
+<div class="d-none" id="base">@ViewContext.HttpContext.Request.PathBase</div>
+<div class="d-none" id="host">@ViewContext.HttpContext.Request.Host</div>
+<div class="d-none" id="category">@Model.category</div>
+<div class="d-none" id="categoryId">@Model.categoryId</div>
+<div class="d-none" id="delfileId"></div>
+
 
 <!-- control -->
 <hr />
@@ -35,9 +28,18 @@
 </div>
 
 <div id="message"></div>
+<hr />
 <div id="listfiles">Загрузка данных...</div>
 
-<!-- sample modal content -->
+<!-- form -->
+<form id="myform" method="post" enctype="multipart/form-data">
+    <input type="text" id="newfiles" name="LoadFileId" class="form-control d-none" value="" readonly />
+    <input type="text" id="delfiles" name="DelFileId" class="form-control d-none" value="" readonly />
+    <!-- сохранить -->
+    <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+</form>
+
+<!-- sample modal Delete content -->
 <div id="myModalDelFile" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -64,6 +66,5 @@
 
     <script type="text/javascript">
     </script>
-
 }
 

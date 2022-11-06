@@ -5,18 +5,25 @@
 
 getFiles('', GetInfo('category'), GetInfo('categoryId'), '')
 
+// innerText
 function GetInfo(Id) {
     return document.getElementById(Id).innerText;
-}
-
-function GetInfoValue(Id) {
-    return document.getElementById(Id).value;
 }
 
 function SetInfo(Id, Value) {
     document.getElementById(Id).innerText = Value;
 }
 
+// value
+function GetInfoValue(Id) {
+    return document.getElementById(Id).value;
+}
+
+function SetInfoValue(Id, Value) {
+    document.getElementById(Id).value = Value;
+}
+
+// url
 function GetPathHost() {
     var host = document.getElementById('host').innerText;
     return host;
@@ -26,7 +33,6 @@ function GetPathBase() {
     var base = document.getElementById('base').innerText;
     return base;
 }
-
 
 // Загрузить файл
 async function uploadFile2(category, categoryId, description) {
@@ -60,16 +66,16 @@ async function uploadFile2(category, categoryId, description) {
             //console.log(data.categoryId);
             //data.Info.forEach(element => console.log(">"+element));
             //alert('The file has been uploaded successfully.');
-            var Ids = GetInfo("newfiles")
+            var Ids = GetInfoValue("newfiles")
             if (Ids != "") {
                 Ids = Ids.concat(';')
             }
             Ids = Ids.concat(data.Id)
 
-            SetInfo("newfiles", Ids)
+            SetInfoValue("newfiles", Ids)
 
             document.getElementById("message").innerHTML = ""
-            getFiles(Ids, GetInfo('category'), GetInfo('categoryId'), GetInfo('delfiles'))
+            getFiles(Ids, GetInfo('category'), GetInfo('categoryId'), GetInfoValue('delfiles'))
         },
         error: function (error) {
             // handle error
@@ -104,39 +110,17 @@ function SelectDelFile() {
 // Удалить файл
 function DeleteFile(Id) {
 
-    var Ids = GetInfo("delfiles")
+    var Ids = GetInfoValue("delfiles")
     if (Ids != "") {
         Ids = Ids.concat(';')
     }
     Ids = Ids.concat(Id)
 
-    SetInfo("delfiles", Ids)
+    SetInfoValue("delfiles", Ids)
 
-    getFiles(GetInfo('newfiles'), GetInfo('category'), GetInfo('categoryId'), GetInfo('delfiles'))
+    getFiles(GetInfoValue('newfiles'), GetInfo('category'), GetInfo('categoryId'), GetInfoValue('delfiles'))
 }
 
-
-//function DeleteFile(Id, category, categoryId) {
-//    $.ajax({
-//        type: 'get',
-//        url: `${GetPathBase()}/Business/DeleteFile_forJS`,
-//        data: { 'Id': Id, 'category': category, 'categoryId': categoryId },
-//        success: function (result) {
-//            getFiles('', GetInfo('category'), GetInfo('categoryId'), GetInfo('delfiles'))
-//        },
-//        failure: function () {
-//            alert("failure");
-//        },
-//        beforeSend: function () {
-//            HideId("listfiles")
-//            HideId("uplfiles")
-//            document.getElementById("a_Work").innerHTML = "Удаление файла...";
-//        },
-//        complete: function () {
-//            document.getElementById("a_Work").innerHTML = "";
-//        }
-//    });
-//}
 
 // Получение списка файлов с сервера
 async function getFiles(Ids, category, categoryId, DelIds) {

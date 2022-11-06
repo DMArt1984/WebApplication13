@@ -331,14 +331,21 @@ namespace FactPortal.Controllers
         [Breadcrumb("ViewData.Title")]
         public IActionResult TestLoadDelFiles()
         {
+            //var Files = _business.Files.ToList();
+            //var groupFilesId = _business.Alerts.FirstOrDefault(x => x.groupFilesId != "").groupFilesId;
+            //var FileLinks = Bank.inf_SSFiles(Files, groupFilesId);
 
-            var Files = _business.Files.ToList();
+            return View(new FileFront { category = "alert", categoryId = 1 });
+        }
 
-            var groupFilesId = _business.Alerts.FirstOrDefault(x => x.groupFilesId != "").groupFilesId;
+        [HttpPost]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult TestLoadDelFiles(string LoadFileId = null, string DelFileId = null)
+        {
 
-            var FileLinks = Bank.inf_SSFiles(Files, groupFilesId);
+            
 
-            return View(FileLinks);
+            return View();
         }
 
 
