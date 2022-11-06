@@ -376,6 +376,16 @@ namespace FactPortal.Controllers
                 await _business.SaveChangesAsync();
             }
 
+            // Контроль несуществующих ID файлов
+            if (DelFileId == null)
+                DelFileId = "";
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            foreach (var item in _business.Claims.Where(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file"))
+            {
+                if (!files.Contains(item.ClaimValue))
+                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item.ClaimValue);
+            }
+
             // Удаление файлов
             if (!String.IsNullOrEmpty(DelFileId))
             {
@@ -583,6 +593,16 @@ namespace FactPortal.Controllers
                     alert.groupFilesId = Bank.AddItemToStringList(alert.groupFilesId, ";", LoadFileId);
             }
 
+            // Контроль несуществующих ID файлов
+            if (DelFileId == null)
+                DelFileId = "";
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            foreach (var item in alert.groupFilesId.Split(';'))
+            {
+                if (!files.Contains(item))
+                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item);
+            }
+
             // Удаление файлов
             if (!String.IsNullOrEmpty(DelFileId))
             {
@@ -599,6 +619,7 @@ namespace FactPortal.Controllers
                 }
             }
 
+            
             // 4. Сохранение изменений
             await _business.SaveChangesAsync();
 
@@ -752,6 +773,16 @@ namespace FactPortal.Controllers
             if (!String.IsNullOrEmpty(LoadFileId))
             {
                 step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", LoadFileId);
+            }
+
+            // Контроль несуществующих ID файлов
+            if (DelFileId == null)
+                DelFileId = "";
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            foreach (var item in step.groupFilesId.Split(';'))
+            {
+                if (!files.Contains(item))
+                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item);
             }
 
             // Удаление файлов
@@ -1146,6 +1177,16 @@ namespace FactPortal.Controllers
             if (!String.IsNullOrEmpty(LoadFileId))
             {
                 workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", LoadFileId);
+            }
+
+            // Контроль несуществующих ID файлов
+            if (DelFileId == null)
+                DelFileId = "";
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            foreach (var item in workStep.groupFilesId.Split(';'))
+            {
+                if (!files.Contains(item))
+                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item);
             }
 
             // Удаление файлов
