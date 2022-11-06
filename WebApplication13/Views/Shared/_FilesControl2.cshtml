@@ -1,0 +1,50 @@
+﻿@model FileFront
+    
+<!-- form -->
+<input type="text" id="newfiles" name="LoadFileId" class="form-control d-none" value="" readonly />
+<input type="text" id="delfiles" name="DelFileId" class="form-control d-none" value="" readonly />
+
+<!-- info -->
+<div class="d-none" id="base">@ViewContext.HttpContext.Request.PathBase</div>
+<div class="d-none" id="host">@ViewContext.HttpContext.Request.Host</div>
+<div class="d-none" id="category">@Model.category</div>
+<div class="d-none" id="categoryId">@Model.categoryId</div>
+<div class="d-none" id="delfileId"></div>
+
+<!-- control -->
+
+<div id="a_Work" class="mx-1 md-2">info...</div>
+
+<!-- load files -->
+<!-- HTML5 Input Form Elements -->
+<div id="uplfiles">
+    <div class="d-flex justify-content-between">
+        <input id="fileupload" class="form-control" type="file" name="fileupload" onchange="uploadFile2('load', GetInfo('categoryId'), GetInfoValue('filedesc'))" />
+        <input id="filedesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
+        <br>
+    </div>
+</div>
+
+<div id="message"></div>
+<hr />
+<div id="listfiles">Загрузка данных...</div>
+
+<!-- sample modal Delete content -->
+<div id="myModalDelFile" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark">
+                <h5 class="modal-title text-white" id="myModalLabel">Удалить файл</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>После этого действия вы не сможете востановить файл</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="SelectDelFile()"><i class="fas fa-trash-alt"></i> Удалить</button>
+                <button type="button" class="btn btn-secondary waves-effect" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

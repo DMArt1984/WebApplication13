@@ -74,19 +74,12 @@
                         <br />
                         <textarea form="myform" name="Message" rows="5" class="form-control">@Model.Message</textarea>
                     </div>
-                    <!---->
+                    <!--Файлы-->
                     <hr />
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "alert", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новое уведомление</small>
-                    }
+                    <small>Файлы:</small>
+                    @Html.Partial("_FilesControl2", new FileFront { category = "alert", categoryId = @Model.Id })
+                    <!--------->
+
                 </div>
                 <div class="card-footer bg-soft-light">
                     <div class="row g-0 d-flex justify-content-start">
@@ -114,7 +107,7 @@
 
 @section Scripts {
     <!-- files -->
-    <script src="~/assets/dm/fileControl.js"></script>
+    <script src="~/assets/dm/fileControl2.js"></script>
 
     <script type="text/javascript">
     </script>

@@ -103,13 +103,11 @@ async function uploadFile2(category, categoryId, description) {
 }
 
 function SelectDelFile() {
-    
     DeleteFile(GetInfo('delfileId'))
 }
 
 // Удалить файл
 function DeleteFile(Id) {
-
     var Ids = GetInfoValue("delfiles")
     if (Ids != "") {
         Ids = Ids.concat(';')

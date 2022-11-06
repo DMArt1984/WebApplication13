@@ -57,17 +57,7 @@
         <!-- data -->
         <div class="card">
             <div class="card-body">
-                @if (Model.Id != 0)
-                {
-                    <!--Файлы-->
-                    <small>Файлы:</small>
-                    @Html.Partial("_FilesControl", new FileFront { category = "so", categoryId = @Model.Id })
-                    <!--------->
-                }
-                else
-                {
-                    <small>Для получения возможности добавления файлов - сохраните новый объект</small>
-                }
+                
             </div>
         </div>
         <!-- edit -->
@@ -93,23 +83,20 @@
                         <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
                         <br />
                     </div>
-                    @if (Model.Id != 0)
-                    {
-                        <div class="col-12">
-                            <small>Позиция:</small>
-                            <select id="e_Pos" class="form-select" name="Position" value="0" asp-items="TextLinkID2" onchange="document.getElementById('e_PosInfo').value = this.value;"></select>
-                        </div>
-                        <div class="pt-1">
-                            <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="col-12">
-                            <small>Для получения возможности выбора позиции - сохраните новый объект</small>
-                            <input type="number" name="Position" value="0" readonly class="btn btn-default" style="display: none" />
-                        </div>
-                    }
+
+                    <div class="col-12">
+                        <small>Позиция:</small>
+                        <select id="e_Pos" class="form-select" name="Position" value="0" asp-items="TextLinkID2" onchange="document.getElementById('e_PosInfo').value = this.value;"></select>
+                    </div>
+                    <div class="pt-1">
+                        <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
+                    </div>
+
+                    <!--Файлы-->
+                    <hr />
+                    <small>Файлы:</small>
+                    @Html.Partial("_FilesControl2", new FileFront { category = "so", categoryId = @Model.Id })
+                    <!--------->
 
                 </div>
                 <div class="card-footer">
@@ -136,7 +123,7 @@
 
 @section Scripts {
     <!-- files -->
-    <script src="~/assets/dm/fileControl.js"></script>
+    <script src="~/assets/dm/fileControl2.js"></script>
 
     <script type="text/javascript">
 

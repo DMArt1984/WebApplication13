@@ -267,7 +267,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position)
+        public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position, string LoadFileId = null, string DelFileId = null)
         {
             // Возвращаемый объект
             ServiceObjectEdit outServiceObject = new ServiceObjectEdit
@@ -334,41 +334,67 @@ namespace FactPortal.Controllers
                     Description = Description,
                 });
 
-                // Не работает: ошибка ключа, ничего не помогает!!!
-                //var myClaimIDs = await _business.Claims.Select(x => x.Id).ToListAsync();
-                //var newClaimID = Bank.maxID(myClaimIDs);
-                //await _business.Claims.AddAsync(new ObjectClaim { Id = newClaimID, ServiceObjectId = Id, ClaimType = "position", ClaimValue = Position.ToString() });
-
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync();
 
-                return RedirectToAction("SOEdit", new { id = newID });
+                Id = newID;
+            } 
+                
+            // 3. Изменение элемента
+            var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == Id); // объект обслуживания
+            if (SO == null)
+                return NotFound();
 
-            } else
+            var claimPos = await _business.Claims.FirstOrDefaultAsync(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "position"); // позиция
+            if (claimPos != null)
             {
-                // 3. Изменение элемента
-                var SO = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == Id); // объект обслуживания
-                if (SO == null)
-                    return NotFound();
-
-                var claimPos = await _business.Claims.FirstOrDefaultAsync(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "position"); // позиция
-                if (claimPos != null)
-                {
-                    claimPos.ClaimValue = Position.ToString();
-                }
-                else
-                {
-                    var myIDs = await _business.Claims.Select(x => x.Id).ToListAsync();
-                    var newID = Bank.maxID(myIDs);
-                    await _business.Claims.AddAsync(new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "position", ClaimValue = Position.ToString() });
-                }
-
-                SO.ObjectTitle = ObjectTitle;
-                SO.ObjectCode = ObjectCode;
-
-                if (!String.IsNullOrEmpty(Description))
-                    SO.Description = Description;
+                claimPos.ClaimValue = Position.ToString();
             }
+            else
+            {
+                var myIDs = await _business.Claims.Select(x => x.Id).ToListAsync();
+                var newID = Bank.maxID(myIDs);
+                await _business.Claims.AddAsync(new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "position", ClaimValue = Position.ToString() });
+            }
+
+            SO.ObjectTitle = ObjectTitle;
+            SO.ObjectCode = ObjectCode;
+
+            if (!String.IsNullOrEmpty(Description))
+                SO.Description = Description;
+            
+
+            // Добавление файлов
+            if (!String.IsNullOrEmpty(LoadFileId))
+            {
+                foreach (var item in LoadFileId.Split(';'))
+                {
+                    var myIDs = _business.Claims.Select(x => x.Id).ToList();
+                    var newID = Bank.maxID(myIDs);
+                    var fileClaim = new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "file", ClaimValue = item };
+                    _business.Claims.Add(fileClaim);
+                }
+                await _business.SaveChangesAsync();
+            }
+
+            // Удаление файлов
+            if (!String.IsNullOrEmpty(DelFileId))
+            {
+                foreach (var item in DelFileId.Split(';'))
+                {
+                    if (await DeleteFile(item))
+                    {
+                        var claimFile = await _business.Claims.FirstOrDefaultAsync(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file" && x.ClaimValue == item); // файл
+                        if (claimFile != null)
+                            _business.Claims.Remove(claimFile);
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", $"Ошибка удаления файла #{item}");
+                    }
+                }
+            }
+
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync();
@@ -515,7 +541,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0, int SOReturn = 0)
+        public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Текущий пользователь
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -531,32 +557,48 @@ namespace FactPortal.Controllers
                     ServiceObjectId = ServiceObjectId,
                     Status = Status,
                     Message = Message,
-                    DT = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString()),
+                    DT = "", // Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString()),
                     myUserId = user.Id,
                     groupFilesId = ""
                 };
                 await _business.Alerts.AddAsync(newAlert);
-
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync();
 
-                return RedirectToAction("AlertEdit", new { Id = newID, ServiceObjectId = ServiceObjectId });
-
+                Id = newID;
             }
-            else // Изменение существующего элемента
+
+            // 1. Проверка достаточности данных
+            var Alert = await _business.Alerts.FirstOrDefaultAsync(x => x.Id == Id);
+            if (Alert == null)
+                return NotFound();
+
+            // 3. Изменение элемента
+            Alert.Status = Status;
+            Alert.Message = Message;
+            Alert.DT = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString());
+            Alert.myUserId = (user != null) ? user.Id : "?";
+
+            // Добавление файлов
+            if (!String.IsNullOrEmpty(LoadFileId))
             {
+                    Alert.groupFilesId = Bank.AddItemToStringList(Alert.groupFilesId, ";", LoadFileId);
+            }
 
-                // 1. Проверка достаточности данных
-                var Alert = await _business.Alerts.FirstOrDefaultAsync(x => x.Id == Id);
-                if (Alert == null)
-                    return NotFound();
-
-                // 3. Изменение элемента
-                Alert.Status = Status;
-                Alert.Message = Message;
-                Alert.DT = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString());
-                Alert.myUserId = (user != null) ? user.Id : "?";
-
+            // Удаление файлов
+            if (!String.IsNullOrEmpty(DelFileId))
+            {
+                foreach (var item in DelFileId.Split(';'))
+                {
+                    if (await DeleteFile(item))
+                    {
+                        Alert.groupFilesId = Bank.DelItemToStringList(Alert.groupFilesId, ";", item.ToString());
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("uploadedFile", $"Ошибка удаления файла #{item}");
+                    }
+                }
             }
 
             // 4. Сохранение изменений
@@ -1895,6 +1937,16 @@ namespace FactPortal.Controllers
         }
 
         // Удалить файл
+        private async Task<bool> DeleteFile(string Id)
+        {
+            try
+            {
+                return await DeleteFile(Convert.ToInt32(Id));
+            } catch
+            {
+                return false;
+            }
+        }
         private async Task<bool> DeleteFile(int Id)
         {
             try
@@ -1924,7 +1976,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in Ids.Split(";"))
                 {
-                    await DeleteFile(Convert.ToInt32(item));
+                    await DeleteFile(item);
                 }
             }
             return true;
