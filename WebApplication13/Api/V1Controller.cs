@@ -545,7 +545,7 @@ namespace FactPortal.Api
                     // Position = _business.Claims.Where(x => x.ServiceObjectId == m.Id && x.ClaimType.ToLower() == "position").Select(y => y.ClaimValue).FirstOrDefault(),
                     Position = m.Claims.Where(x => x.ClaimType.ToLower() == "position").Select(y => y.ClaimValue).FirstOrDefault(),
                     // Alerts = m.Alerts.Count(k => k.ServiceObjectId == m.Id),
-                    Alerts = m.Alerts.Where(x => x.Status != 9).Count(),
+                    Alerts = m.Alerts.Count(x => x.Status != 9),
                     LastWork = (m.Works.Count() > 0) ? m.Works.OrderBy(n => n.Id).Select(f => new {f.Id, Status = Bank.inf_II(DWorksStatus, f.Id)}).Last() : null,
                     Steps = m.Steps.Count(),
                     Claims = (Claims) ? m.Claims.Select(x => new {x.ClaimType, x.ClaimValue }) : null

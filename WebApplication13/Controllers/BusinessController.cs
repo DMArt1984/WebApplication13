@@ -1449,7 +1449,7 @@ namespace FactPortal.Controllers
                 var PI = ""; // Paths_Id.FirstOrDefault(x => x.Key == item.Id).Value;
                 if (!String.IsNullOrEmpty(PS))
                 {
-                    int Objects = ClaimsPos.Where(x => x == item.Id).Count();
+                    int Objects = ClaimsPos.Count(x => x == item.Id);
                     EL.Add(new EditLevel { IT = item, PathString = (PS != null) ? PS : "", PathId = (PI != null) ? PI : "", Objects = Objects });
                 }
             }
