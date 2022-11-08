@@ -106,6 +106,9 @@
                         {
                             <td>
                                 <div class="row px-1">
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
+                                        <i class="far fa-eye"></i>
+                                    </a>
                                     <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
                                     <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
                                         <i class="fas fa-pencil-alt"></i>

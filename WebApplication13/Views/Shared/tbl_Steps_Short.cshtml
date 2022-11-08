@@ -23,6 +23,7 @@
                 <thead class="bg-secondary text-white">
                     <tr>
                         <th>№ шага</th>
+                        <th>Название</th>
                         <th>Мероприятия</th>
                         <th>Файлы</th>
                     </tr>
@@ -30,15 +31,16 @@
                 <tbody>
                     @foreach (var item in Model.OrderBy(x => x.Index))
                     {
-                        <tr>
-                            <td>@item.Index</td>
-                            <td style="max-width:300px; word-break: break-all">
-                                @item.Description
-                            </td>
-                            <td>
-                                @Html.Partial("_FilesV", item.FileLinks)
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>@item.Index</td>
+                        <td>@item.Title</td>
+                        <td style="max-width:300px; word-break: break-all">
+                            @item.Description
+                        </td>
+                        <td>
+                            @Html.Partial("_FilesV", item.FileLinks)
+                        </td>
+                    </tr>
                     }
                 </tbody>
             </table>

@@ -115,6 +115,10 @@
                 <input name="Index" class="form-control d-none" asp-for="@Model.Index" required="" />
             }
         </div>*@
+                <div class="col-12">
+                    <small>Название:</small>
+                    <input type="text" name="Title" value="@Model.Title" class="form-control" required="" placeholder="Введите название" />
+                </div>
                     <div class="col-12 pt-2">
                         <small>Статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>

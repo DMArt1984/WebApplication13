@@ -154,6 +154,7 @@ namespace FactPortal.Controllers
                             Id = z.Id,
                             WorkId = z.WorkId,
                             Index = z.Index,
+                            Title = z.Title,
                             Status = z.Status,
                             DT_Start = (z.DT_Start),
                             DT_Stop = (z.DT_Stop),
@@ -174,6 +175,7 @@ namespace FactPortal.Controllers
                     FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
                     Description = y.Description,
                     Index = y.Index,
+                    Title = y.Title,
                     ServiceObjectId = y.ServiceObjectId
                 }).ToList() : null;
 
@@ -730,16 +732,16 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Description = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Title = "", string Description = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Проверка на доступность номера шага (Index)
-            var IndexSteps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId && x.Id != Id).Select(x => x.Index).ToListAsync();
-            if (Index == 0 || (IndexSteps.Count() > 0 && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
-            {
-                // ВЫВЕСТИ СООБЩЕНИЕ!
-                // 5. Вернуться в список
-                return RedirectToAction("StepsList", new {ServiceObjectId = SOReturn });
-            }
+            //var IndexSteps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId && x.Id != Id).Select(x => x.Index).ToListAsync();
+            //if (Index == 0 || (IndexSteps.Count() > 0 && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
+            //{
+            //    // ВЫВЕСТИ СООБЩЕНИЕ!
+            //    // 5. Вернуться в список
+            //    return RedirectToAction("StepsList", new {ServiceObjectId = SOReturn });
+            //}
 
             // Создание нового элемента
             if (Id == 0)
@@ -751,6 +753,7 @@ namespace FactPortal.Controllers
                     Id = newID,
                     ServiceObjectId = ServiceObjectId,
                     Index = Index,
+                    Title = (!String.IsNullOrEmpty(Title)) ? Title : $"Шаг #{Index}",
                     Description = Description,
                     groupFilesId = ""
                 };
@@ -767,6 +770,10 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // 3. Изменение элемента
+            //if (Index > 0)
+            //    step.Index = Index;
+            if (!String.IsNullOrEmpty(Title))
+                step.Title = Title;
             step.Description = Description;
 
             // Добавление файлов
@@ -805,6 +812,10 @@ namespace FactPortal.Controllers
             // 4. Сохранение изменений
             await _business.SaveChangesAsync();
 
+            // Переместить шаг
+            if (Index > 0 && step.Index != Index)
+                await MakeInOrderStep(ServiceObjectId, step.Id, Index);
+
             // 5. Вернуться в список
             return RedirectToAction("StepsList", new { ServiceObjectId = SOReturn });
         }
@@ -821,6 +832,10 @@ namespace FactPortal.Controllers
 
                 _business.Steps.Remove(step);
                 await _business.SaveChangesAsync();
+
+                // Переназначить номера шагов, чтобы не было пропусков
+                await MakeInOrderStep(ServiceObjectId);
+
                 return RedirectToAction("StepsList", new { ServiceObjectId = ServiceObjectId });
             }
             return NotFound();
@@ -922,7 +937,7 @@ namespace FactPortal.Controllers
             if (Id == 0)
             {
                 // Список шагов для объекта
-                var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).Select(x => x.Index).ToListAsync();
+                var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync();
                 if (Steps.Count() == 0)
                     return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
 
@@ -947,7 +962,8 @@ namespace FactPortal.Controllers
                         WorkId = newID,
                         DT_Start = "", //(Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                         DT_Stop = "",
-                        Index = item,
+                        Index = item.Index,
+                        Title = item.Title,
                         Status = 0,
                         myUserId = user.Id,
                         groupFilesId = ""
@@ -1111,7 +1127,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, int Status = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Текущий пользователь
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -1145,6 +1161,7 @@ namespace FactPortal.Controllers
                     DT_Start = DT_Start,
                     DT_Stop = DT_Stop,
                     Index = Index,
+                    Title = (!String.IsNullOrEmpty(Title)) ? Title : $"Шаг #{Index}",
                     Status = Status,
                     myUserId = user.Id,
                     groupFilesId = ""
@@ -1169,6 +1186,10 @@ namespace FactPortal.Controllers
             workStep.WorkId = WorkId;
             workStep.Status = Status;
             workStep.Index = Index;
+
+            if (!String.IsNullOrEmpty(Title))
+                workStep.Title = Title;
+
             workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
             workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
             workStep.myUserId = (user != null) ? user.Id : "?";
@@ -1487,6 +1508,62 @@ namespace FactPortal.Controllers
         //    return _business.Works.ToDictionary(x => x.Id, y => Bank.GetStatusWork(WorkSteps.Where(z => z.WorkId == y.Id).Select(z => z.Status).ToList(), Bank.inf_II(DFinalSteps, y.ServiceObjectId)));
         //}
 
+        // Сделать шаги по порядку
+        private async Task<bool> MakeInOrderStep(int ServiceObjectId = 0, int StepId = 0, int SetIndex = 0)
+        {
+            if (ServiceObjectId == 0)
+                return false;
+            
+            // Установка нового номера шага
+            var stepChange = (StepId > 0 && SetIndex > 0) ? _business.Steps.FirstOrDefault(x => x.Id == StepId) : null;
+            if (stepChange != null)
+            {
+                stepChange.Index = SetIndex;
+            }
+            await _business.SaveChangesAsync();
+
+            // Переназначение номеров по порядку
+            var steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync();
+            var Index = 0;
+            bool Flag1 = false;
+            bool Flag2 = false;
+            foreach(var item in steps.OrderBy(y => y.Index))
+            {
+                var step = _business.Steps.FirstOrDefault(x => x.Id == item.Id);
+                if (step != null)
+                {
+                    Index++;
+                    if (stepChange != null)
+                    {
+                        if (item.Id == StepId)
+                        {
+                            Flag1 = true;
+                        }
+
+                        if (Flag1 == false && item.Id != StepId && Index == SetIndex)
+                        {
+                            Flag2 = true;
+                            Index++;
+                        }
+ 
+                    }
+
+                    if (item.Id != StepId)
+                    {
+                        step.Index = Index;
+                    } else
+                    {
+                        step.Index = (Flag2 == true) ? Index - 2 : Index;
+                        if (Flag2 == true)
+                            Index--;
+                    }
+                }
+            }
+            await _business.SaveChangesAsync();
+
+            return true;
+        }
+
 
         #region Info
 
@@ -1570,7 +1647,8 @@ namespace FactPortal.Controllers
                 DT_Start = (y.DT_Start),
                 DT_Stop = (y.DT_Stop),
                 Status = y.Status,
-                Index = y.Index
+                Index = y.Index,
+                Title = y.Title
             }).ToList();
             infoWork.DT_Start = Bank.GetMinDT(infoWork.Steps.Select(x => x.DT_Start).ToList());
             infoWork.DT_Stop = Bank.GetMaxDT(infoWork.Steps.Select(x => x.DT_Stop).ToList());
@@ -1629,7 +1707,8 @@ namespace FactPortal.Controllers
                 DT_Start = (y.DT_Start),
                 DT_Stop = (y.DT_Stop),
                 Status = y.Status,
-                Index = y.Index
+                Index = y.Index,
+                Title = y.Title
             }).ToList();
         }
         private async Task<WorkStepInfo> GetWorkStepInfo(int Id = 0, int WorkId = 0)
@@ -1662,7 +1741,8 @@ namespace FactPortal.Controllers
                 DT_Start = (WorkStep.DT_Start),
                 DT_Stop = (WorkStep.DT_Stop),
                 Status = WorkStep.Status,
-                Index = WorkStep.Index
+                Index = WorkStep.Index,
+                Title = WorkStep.Title
             };
         }
 
@@ -1694,7 +1774,8 @@ namespace FactPortal.Controllers
                 DT_Start = (Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
                 DT_Stop = "",
                 Status = 0,
-                Index = NextIndex
+                Index = NextIndex,
+                Title = $"Шаг #{NextIndex}"
             };
         }
 
@@ -1786,20 +1867,20 @@ namespace FactPortal.Controllers
             Dictionary<string, string> B3;
             GetDicSOU(out DObjects, out B2, out B3);
 
-            //Dictionary<string, string> DFiles = GetDicFiles();
             var SO_Ids = _business.ServiceObjects.Select(x => x.Id).Distinct().ToList();
             var Files = _business.Files.ToList();
-            var DSO_Index = SO_Ids.ToDictionary(x => x, y => _business.Steps.Where(z => z.ServiceObjectId == y).Select(z => z.Index).ToList());
+            //var DSO_Index = SO_Ids.ToDictionary(x => x, y => _business.Steps.Where(z => z.ServiceObjectId == y).Select(z => z.Index).ToList());
 
             return _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId || ServiceObjectId == 0).Select(y => new StepInfo
             {
                 Id = y.Id,
                 Index = y.Index,
+                Title = y.Title,
                 ServiceObjectId = Bank.inf_ListMinus(SO_Ids, y.ServiceObjectId),
                 ServiceObjectTitle = Bank.inf_IS(DObjects, y.ServiceObjectId),
                 Description = y.Description,
                 FileLinks = Bank.inf_SSFiles(Files, y.groupFilesId),
-                EnableDel = (DSO_Index.ContainsKey(y.ServiceObjectId)) ? ((DSO_Index[y.ServiceObjectId].Count() > 0) ? DSO_Index[y.ServiceObjectId].Count() == y.Index : false) : false
+                EnableDel = true //(DSO_Index.ContainsKey(y.ServiceObjectId)) ? ((DSO_Index[y.ServiceObjectId].Count() > 0) ? DSO_Index[y.ServiceObjectId].Count() == y.Index : false) : false
             }).ToList();
         }
         private async Task<StepInfo> GetStepInfo(int Id = 0, int ServiceObjectId = 0)
@@ -1825,8 +1906,9 @@ namespace FactPortal.Controllers
                 ServiceObjectTitle = Bank.inf_IS(DObjects, Step.ServiceObjectId),
                 FileLinks = Bank.inf_SSFiles(Files, Step.groupFilesId),
                 Index = Step.Index,
+                Title = Step.Title,
                 Description = Step.Description,
-                EnableDel = Step.Index == MaxIndex
+                EnableDel = true //Step.Index == MaxIndex
             };
         }
 
@@ -1847,6 +1929,7 @@ namespace FactPortal.Controllers
                 ServiceObjectTitle = Bank.inf_IS(DObjects, ServiceObjectId),
                 FileLinks = new List<myFiles>(),
                 Index = MaxIndex,
+                Title = $"Шаг #{MaxIndex}",
                 Description = "",
                 EnableDel = false
             };

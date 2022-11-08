@@ -16,6 +16,11 @@
                 @Model.Index
             </div>
             <div class="col-6 col-md-3 pb-2">
+                <small>Название: </small>
+                <br />
+                @Model.Title
+            </div>
+            <div class="col-6 col-md-3 pb-2">
                 <small>Сотрудник: </small>
                 <br />
                 @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = Model.UserName, Email = Model.UserEmail })

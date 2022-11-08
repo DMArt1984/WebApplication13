@@ -27,11 +27,11 @@
                         <br />
                         @Html.Partial("_cellSObject", new ServiceObject { Id = Model.ServiceObjectId, ObjectTitle = Model.ServiceObjectTitle, ObjectCode = null })
                     </div>
-                    <div class="col-10 col-md-3 pb-2">
+                    @*<div class="col-10 col-md-3 pb-2">
                         <small>Шаг: </small>
                         <br />
                         @Model.Index
-                    </div>
+                    </div>*@
                 </div>
                 
                 
@@ -46,17 +46,21 @@
                 <div class="card-body">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="number" name="Id" class="form-control d-none" value="@Model.Id" readonly />
-                    <input type="number" name="Index" class="form-control d-none" value="@Model.Index" readonly />
+                    @*<input type="number" name="Index" class="form-control d-none" value="@Model.Index" readonly />*@
                     <input type="number" name="SOReturn" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@Model.ServiceObjectId" readonly />
-
-                    <div class="col-12">
-                        @*<small>Шаг</small>
-                        <input name="Index" value="@Model.Index" asp-for="@Model.Index" class="form-control" required="" placeholder="Введите шаг" />*@
-                        @*<div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
-                <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
-            </div>*@
-                        @*<br />*@
+                    <div class="d-flex justify-content-between">
+                        <div class="col-4">
+                            <small>Шаг</small>
+                            <input name="Index" value="@Model.Index" asp-for="@Model.Index" class="form-control" required="" placeholder="Введите номер шага" />
+                            @*<div class="input-group bootstrap-touchspin bootstrap-touchspin-injected">
+                            <input id="Index" type="text" value="@Model.Index" name="Index" class="form-control">
+                            </div>*@
+                        </div>
+                        <div class="col-6">
+                            <small>Название:</small>
+                            <input type="text" name="Title" value="@Model.Title" class="form-control" required="" placeholder="Введите название" />
+                        </div>
                     </div>
                     <div class="col-12 pt-2">
                         <small>Описание мероприятий:</small>
@@ -64,33 +68,26 @@
                         <textarea form="myform" name="Description" rows="5" class="form-control">@Model.Description</textarea>
                     </div>
                     <hr />
-                    @if (Model.Id != 0)
-                    {
-                        <!--Файлы-->
-                        <small>Файлы:</small>
-                        @Html.Partial("_FilesControl", new FileFront { category = "step", categoryId = @Model.Id })
-                        <!--------->
-                    }
-                    else
-                    {
-                        <small>Для получения возможности добавления файлов - сохраните новый шаг</small>
-                    }
-                    <!---->
-                </div>
-                <div class="card-footer">
-                    <div class="row g-0 d-flex justify-content-start">
-                        @if (Model.Id != 0 && Model.EnableDel)
-                        {
-                            <!-- удалить -->
-                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ServiceObjectTitle', @Model.Index)"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
-                        }
-                        <!-- сохранить -->
-                        <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
-                        <!-- закрыть -->
-                        <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                    <!--Файлы-->
+                    <small>Файлы:</small>
+                    @Html.Partial("_FilesControl2", new FileFront { category = "step", categoryId = @Model.Id })
+                    <!--------->
+
                     </div>
-                </div>
-            </form>
+                    <div class="card-footer">
+                        <div class="row g-0 d-flex justify-content-start">
+                            @if (Model.Id != 0 && Model.EnableDel)
+                            {
+                                <!-- удалить -->
+                                <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ServiceObjectTitle', @Model.Index)"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            }
+                            <!-- сохранить -->
+                            <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <!-- закрыть -->
+                            <a asp-action="StepsList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                        </div>
+                    </div>
+</form>
         </div>
 
     </div>

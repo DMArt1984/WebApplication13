@@ -171,6 +171,7 @@ namespace FactPortal.Models
         public int Index { get; set; } // Номер шага
         public string Description { get; set; } // Описание
         public string groupFilesId { get; set; } // Файлы (10;11;12)
+        public string Title { get; set; } // Название шага
     }
     // Шаги обслуживания: полная информация
     public class StepInfo
@@ -180,6 +181,7 @@ namespace FactPortal.Models
         public string ServiceObjectTitle { get; set; } // Название объекта обслуживания
         public string ServiceObjectCode { get; set; } // Код объекта обслуживания
         public int Index { get; set; } // Номер шага
+        public string Title { get; set; } // Название шага
         public string Description { get; set; } // Описание
         public List<myFiles> FileLinks { get; set; } // Файлы (10;11;12)
         public bool EnableDel { get; set; } // разрешение удаления
@@ -196,6 +198,7 @@ namespace FactPortal.Models
         public string DT_Start { get; set; } // Дата и время начала
         public string DT_Stop { get; set; } // Дата и время начала
         public string groupFilesId { get; set; } // Файлы (10;11;12)
+        public string Title { get; set; } // Название шага
 
     }
 
@@ -206,6 +209,7 @@ namespace FactPortal.Models
         public string ServiceObjectTitle { get; set; } // Название объекта обслуживания
         public int WorkId { get; set; } // ID записи обслуживания
         public int Index { get; set; } // Номер шага
+        public string Title { get; set; } // Название шага
         public string UserName { get; set; } // Персонал: Имя
         public string UserEmail { get; set; } // Персонал: Почта
         public int Status { get; set; } // Статус
