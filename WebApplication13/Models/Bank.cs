@@ -440,15 +440,15 @@ namespace FactPortal.Models
         // --------------------------------------------------------------------------------
 
         // Получение статуса работы
-        public static int GetStatusWork(List<int> Steps, int FinalStep)
+        public static int GetStatusWork(List<int> workSteps, int NeedSteps)
         {
             int CalcStatus = 0; // нет работ
 
-            if (Steps.Count() > 0)
+            if (workSteps.Count() > 0)
                 CalcStatus = 1; // ожидание
 
             // работа
-            foreach (var item in Steps)
+            foreach (var item in workSteps)
             {
                 if (item == 5)
                 {
@@ -459,14 +459,14 @@ namespace FactPortal.Models
 
             // выполнено
             var Ready = 0;
-            if (CalcStatus != 5 && FinalStep > 0)
+            if (CalcStatus != 5 && NeedSteps > 0)
             {
-                foreach (var item in Steps)
+                foreach (var item in workSteps)
                 {
                     if (item == 9)
                         Ready++;
                 }
-                if (Ready == FinalStep)
+                if (Ready == NeedSteps)
                     CalcStatus = 9;
             }
 

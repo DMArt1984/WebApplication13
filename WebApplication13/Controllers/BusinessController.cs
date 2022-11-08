@@ -115,7 +115,7 @@ namespace FactPortal.Controllers
                 // Получение списков из базы
                 var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == SObject.Id && x.Status != 9 ).ToListAsync();
                 var myWorks = await _business.Works.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
-                var myLastWork = (myWorks.Count() > 0) ? myWorks.Last() : null;
+                var myLastWork = (myWorks.Count() > 0) ? myWorks.OrderBy(x => x.Id).Last() : null;
                 var mySteps = await _business.Steps.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
                 var myWorkSteps = await _business.WorkSteps.ToListAsync();
 
@@ -142,13 +142,13 @@ namespace FactPortal.Controllers
                 var Works = new List<WorkInfo>();
                 if (myLastWork != null)
                 {
-                    var FinalStep = (mySteps.Count() >= 1) ? mySteps.OrderBy(k => k.Index).Last().Index : 0;
+                    var NeedSteps = mySteps.Count(); // (mySteps.Count() >= 1) ? mySteps.OrderBy(k => k.Index).Last().Index : 0;
                     Works.Add(new WorkInfo
                     {
                         Id = myLastWork.Id,
                         ServiceObjectId = myLastWork.ServiceObjectId,
-                        FinalStep = FinalStep,
-                        Status = Bank.GetStatusWork(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(z => z.Status).ToList(), FinalStep),
+                        FinalStep = NeedSteps,
+                        Status = Bank.GetStatusWork(myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(z => z.Status).ToList(), NeedSteps),
                         Steps = myWorkSteps.Where(z => z.WorkId == myLastWork.Id).Select(z => new WorkStepInfo
                         {
                             Id = z.Id,
@@ -1623,8 +1623,8 @@ namespace FactPortal.Controllers
 
             var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
             var Files = await _business.Files.ToListAsync();
-            var FinalStep = _business.Steps.Where(x => x.ServiceObjectId == Work.ServiceObjectId).Select(y => y.Index).Distinct().Count();
-            var Status = Bank.GetStatusWork(_business.WorkSteps.Where(x => x.WorkId == Work.Id).Select(y => y.Status).ToList(), FinalStep);
+            var NeedSteps = _business.Steps.Where(x => x.ServiceObjectId == Work.ServiceObjectId).Count();
+            var Status = Bank.GetStatusWork(_business.WorkSteps.Where(x => x.WorkId == Work.Id).Select(y => y.Status).ToList(), NeedSteps);
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             WorkInfo infoWork = new WorkInfo
@@ -1632,7 +1632,7 @@ namespace FactPortal.Controllers
                 Id = Work.Id,
                 ServiceObjectId = Bank.inf_ListMinus(SO_Ids, Work.ServiceObjectId),
                 ServiceObjectTitle = Bank.inf_IS(DObjects, Work.ServiceObjectId),
-                FinalStep = FinalStep,
+                FinalStep = NeedSteps,
                 Status = Status
             };
             infoWork.Steps = _business.WorkSteps.Where(x => x.WorkId == Work.Id).Select(y => new WorkStepInfo
@@ -1664,7 +1664,7 @@ namespace FactPortal.Controllers
             GetDicSOU(out DObjects, out DUsersName, out DUsersEmail);
 
             //var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
-            var FinalStep = _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).Select(y => y.Index).Distinct().Count();
+            var NeedSteps = _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).Count();
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             WorkInfo infoWork = new WorkInfo
@@ -1672,7 +1672,7 @@ namespace FactPortal.Controllers
                 Id = 0,
                 ServiceObjectId = ServiceObjectId,
                 ServiceObjectTitle = Bank.inf_IS(DObjects, ServiceObjectId),
-                FinalStep = FinalStep,
+                FinalStep = NeedSteps,
                 Status = 0
             };
             infoWork.Steps = new List<WorkStepInfo>();

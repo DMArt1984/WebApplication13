@@ -137,7 +137,7 @@ namespace FactPortal.Models
         public string ServiceObjectTitle { get; set; } // Название объекта обслуживания
         public string ServiceObjectCode { get; set; } // Код объекта обслуживания
         public int Status { get; set; } // Статус
-        public int FinalStep { get; set; } // Номер последнего шага (всего шагов)
+        public int FinalStep { get; set; } // Количество шагов для выполнения
         public string DT_Start { get; set; } // Время начала работ
         public string DT_Stop { get; set; } // Время последней работы
         public List<WorkStepInfo> Steps { get; set; } // Шаги выполнения работ
