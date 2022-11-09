@@ -413,6 +413,7 @@ namespace FactPortal.Api
                         Id = j.Id,
                         ServiceObjectId = j.ServiceObjectId,
                         Index = j.Index,
+                        Title = j.Title,
                         Description = j.Description,
                         FilesId = j.groupFilesId,
                         Files = Bank.inf_SSList(DFiles, j.groupFilesId)
@@ -426,6 +427,7 @@ namespace FactPortal.Api
                             Id = j.Id,
                             WorkId = j.WorkId,
                             Index = j.Index,
+                            Title = j.Title,
                             Status = j.Status,
                             DT_Start = j.DT_Start,
                             DT_Stop = j.DT_Stop,
@@ -495,6 +497,7 @@ namespace FactPortal.Api
                         Id = j.Id,
                         ServiceObjectId = j.ServiceObjectId,
                         Index = j.Index,
+                        Title = j.Title,
                         Description = j.Description,
                         FilesId = j.groupFilesId,
                         Files = Bank.inf_SSList(DFiles, j.groupFilesId)
@@ -1109,6 +1112,7 @@ namespace FactPortal.Api
                     Id = j.Id,
                     WorkId = j.WorkId,
                     Index = j.Index,
+                    Title = j.Title,
                     Status = j.Status,
                     DT_Start = j.DT_Start,
                     DT_Stop = j.DT_Stop,
@@ -1396,6 +1400,7 @@ namespace FactPortal.Api
                         UserId = s.myUserId, 
                         User = Bank.inf_SS(DUsers, s.myUserId), 
                         s.Index, 
+                        s.Title,
                         s.Status, 
                         s.DT_Start, 
                         s.DT_Stop, 
@@ -1440,6 +1445,7 @@ namespace FactPortal.Api
                         Id = Id, 
                         WorkId = OneWork.Id, 
                         Index = item.Index, 
+                        Title = item.Title,
                         Status = (item.Index == 1) ? Status : 0, 
                         DT_Start = (item.Index == 1) ? DT : "", 
                         DT_Stop = "", 
@@ -1458,7 +1464,7 @@ namespace FactPortal.Api
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
-                var FinalStep = _business.Steps.Where(x => x.ServiceObjectId == OneWork.ServiceObjectId).Select(y => y.Index).Distinct().Count();
+                var FinalStep = _business.Steps.Count(x => x.ServiceObjectId == OneWork.ServiceObjectId);
 
                 // Вывод
                 var WorkOUT = new
@@ -1473,6 +1479,7 @@ namespace FactPortal.Api
                         Id = j.Id,
                         WorkId = j.WorkId,
                         Index = j.Index,
+                        Title = j.Title,
                         Status = j.Status,
                         DT_Start = j.DT_Start,
                         DT_Stop = j.DT_Stop,
@@ -1577,6 +1584,7 @@ namespace FactPortal.Api
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     Index = j.Index,
+                    Title = j.Title,
                     Description = j.Description,
                     FilesId = j.groupFilesId,
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
@@ -1593,7 +1601,10 @@ namespace FactPortal.Api
         // POST: api/v1/service/step_add
         [HttpPost("service/step_add")]
         public JsonResult StepAdd([FromHeader] string db, [FromForm] int ServiceObjectId = 0,
-             [FromForm] string groupFilesId = "", [FromForm] string Description = "", [FromForm] int Index = 0)
+             [FromForm] string groupFilesId = "",
+             [FromForm] string Description = "",
+             [FromForm] int Index = 0,
+             [FromForm] string Title = "")
         {
             try { 
                 if (String.IsNullOrEmpty(db) || !(ServiceObjectId > 0) || !(Index > 0))
@@ -1612,7 +1623,7 @@ namespace FactPortal.Api
                 }
 
                 // Добавить
-                Step Obj = new Step { Id = Bank.maxID(_business.Steps.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, groupFilesId = String.Join(';', Files), Description = Description, Index = Index };
+                Step Obj = new Step { Id = Bank.maxID(_business.Steps.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, groupFilesId = String.Join(';', Files), Description = Description, Index = Index, Title = Title };
                 _business.Steps.Add(Obj);
                 _business.SaveChanges();
 
@@ -1628,7 +1639,7 @@ namespace FactPortal.Api
         [HttpPost("service/step_change")]
         public async Task<JsonResult> StepChange([FromHeader] string db, [FromForm] int Id = 0,
              [FromForm] string AddFilesId = "", [FromForm] string DelFilesId = "",
-             [FromForm] string Description = "", [FromForm] int Index = 0)
+             [FromForm] string Description = "", [FromForm] int Index = 0, [FromForm] string Title = "")
         {
             try
             {
@@ -1651,15 +1662,16 @@ namespace FactPortal.Api
                 }
 
                 // Поиск                
-                var Obj = _business.Steps.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var step = _business.Steps.FirstOrDefault(x => x.Id == Id);
+                if (step == null)
                     return new JsonResult(jsonStepNotFound, jsonOptions);
 
                 // Изменить
-                Obj.groupFilesId = Bank.DelItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Del));
-                Obj.groupFilesId = Bank.AddItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Add));
-                Obj.Description = (!String.IsNullOrEmpty(Description)) ? Description : Obj.Description;
-                Obj.Index = (Index > 0) ? Index : Obj.Index;
+                step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", String.Join(';', Files_for_Del));
+                step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", String.Join(';', Files_for_Add));
+                step.Description = (!String.IsNullOrEmpty(Description)) ? Description : step.Description;
+                step.Index = (Index > 0) ? Index : step.Index;
+                step.Title = (!String.IsNullOrEmpty(Title)) ? Title : step.Title;
 
                 await _business.SaveChangesAsync();
 
@@ -1667,12 +1679,13 @@ namespace FactPortal.Api
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
 
                 return new JsonResult(new { Result = 0, Step = new {
-                    Id = Obj.Id,
-                    ServiceObjectId = Obj.ServiceObjectId,
-                    Index = Obj.Index,
-                    Description = Obj.Description,
-                    FilesId = Obj.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
+                    Id = step.Id,
+                    ServiceObjectId = step.ServiceObjectId,
+                    Index = step.Index,
+                    Title = step.Title,
+                    Description = step.Description,
+                    FilesId = step.groupFilesId,
+                    Files = Bank.inf_SSList(DFiles, step.groupFilesId)
                 } }, jsonOptions);
             }
             catch (Exception ex)
@@ -1735,6 +1748,7 @@ namespace FactPortal.Api
                     Id = j.Id,
                     WorkId = j.WorkId,
                     Index = j.Index,
+                    Title = j.Title,
                     Status = j.Status,
                     DT_Start = j.DT_Start,
                     DT_Stop = j.DT_Stop,
@@ -1756,6 +1770,7 @@ namespace FactPortal.Api
         public JsonResult WorkStepAdd([FromHeader] string db,
             [FromForm] int WorkId = 0,
             [FromForm] int Index = 0,
+            [FromForm] string Title = "",
             [FromForm] string UserId="",
             [FromForm] string groupFilesId = "",
             [FromForm] int Status = 0)
@@ -1766,7 +1781,8 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // WorkId
-                if (_business.Works.FirstOrDefault(x => x.Id == WorkId) == null)
+                var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
+                if (work == null)
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // UserId
@@ -1787,9 +1803,17 @@ namespace FactPortal.Api
                         return new JsonResult(jsonFileNotFound, jsonOptions);
                 }
 
+                // Title
+                if (String.IsNullOrEmpty(Title))
+                {
+                    var ObjStep = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
+                    if (ObjStep != null)
+                        Title = ObjStep.Title;
+                }
+
                 // Добавить
-                WorkStep Obj = new WorkStep { Id = Bank.maxID(_business.WorkSteps.Select(x => x.Id).ToList()), WorkId = WorkId, myUserId = UserId, groupFilesId = String.Join(';', Files), DT_Start = DT_Start, DT_Stop = DT_Stop, Index = Index, Status = Status };
-                _business.WorkSteps.Add(Obj);
+                WorkStep workStep = new WorkStep { Id = Bank.maxID(_business.WorkSteps.Select(x => x.Id).ToList()), WorkId = WorkId, myUserId = UserId, groupFilesId = String.Join(';', Files), DT_Start = DT_Start, DT_Stop = DT_Stop, Index = Index, Title = Title, Status = Status };
+                _business.WorkSteps.Add(workStep);
                 _business.SaveChanges();
 
                 // Словари
@@ -1797,16 +1821,17 @@ namespace FactPortal.Api
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
 
                 return new JsonResult(new { Result = 0, WorkStep = new {
-                    Id = Obj.Id,
-                    WorkId = Obj.WorkId,
-                    Index = Obj.Index,
-                    Status = Obj.Status,
-                    DT_Start = Obj.DT_Start,
-                    DT_Stop = Obj.DT_Stop,
-                    UserId = Obj.myUserId,
-                    User = Bank.inf_SS(DUsers, Obj.myUserId),
-                    FilesId = Obj.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
+                    Id = workStep.Id,
+                    WorkId = workStep.WorkId,
+                    Index = workStep.Index,
+                    Title = workStep.Title,
+                    Status = workStep.Status,
+                    DT_Start = workStep.DT_Start,
+                    DT_Stop = workStep.DT_Stop,
+                    UserId = workStep.myUserId,
+                    User = Bank.inf_SS(DUsers, workStep.myUserId),
+                    FilesId = workStep.groupFilesId,
+                    Files = Bank.inf_SSList(DFiles, workStep.groupFilesId)
                 } 
                 }, jsonOptions);
             }
@@ -1822,6 +1847,7 @@ namespace FactPortal.Api
             [FromForm] string UserId = "",
             [FromForm] string AddFilesId = "", [FromForm] string DelFilesId = "",
             [FromForm] int Status = 0,
+            [FromForm] string Title = "",
             [FromForm] string DT_Start = "", [FromForm] string DT_Stop = "")
         {
             try
@@ -1855,17 +1881,18 @@ namespace FactPortal.Api
                 }
 
                 // Поиск                
-                var Obj = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var workStep = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
+                if (workStep == null)
                     return new JsonResult(jsonWorkStepNotFound, jsonOptions);
 
                 // Изменить
-                Obj.myUserId = UserId;
-                Obj.groupFilesId = Bank.DelItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Del));
-                Obj.groupFilesId = Bank.AddItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Add));
-                Obj.DT_Start = (DT_Start !="") ? DT_Start : Obj.DT_Start;
-                Obj.DT_Stop = (DT_Stop !="") ? DT_Stop : Obj.DT_Stop;
-                Obj.Status = Status;
+                workStep.myUserId = UserId;
+                workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Del));
+                workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
+                workStep.DT_Start = (DT_Start !="") ? DT_Start : workStep.DT_Start;
+                workStep.DT_Stop = (DT_Stop !="") ? DT_Stop : workStep.DT_Stop;
+                workStep.Status = Status;
+                workStep.Title = (!String.IsNullOrEmpty(Title)) ? Title : workStep.Title;
 
                 await _business.SaveChangesAsync();
 
@@ -1875,16 +1902,17 @@ namespace FactPortal.Api
 
                 return new JsonResult(new { Result = 0, WorkStep = new
                 {
-                    Id = Obj.Id,
-                    WorkId = Obj.WorkId,
-                    Index = Obj.Index,
-                    Status = Obj.Status,
-                    DT_Start = Obj.DT_Start,
-                    DT_Stop = Obj.DT_Stop,
-                    UserId = Obj.myUserId,
-                    User = Bank.inf_SS(DUsers, Obj.myUserId),
-                    FilesId = Obj.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
+                    Id = workStep.Id,
+                    WorkId = workStep.WorkId,
+                    Index = workStep.Index,
+                    Title = workStep.Title,
+                    Status = workStep.Status,
+                    DT_Start = workStep.DT_Start,
+                    DT_Stop = workStep.DT_Stop,
+                    UserId = workStep.myUserId,
+                    User = Bank.inf_SS(DUsers, workStep.myUserId),
+                    FilesId = workStep.groupFilesId,
+                    Files = Bank.inf_SSList(DFiles, workStep.groupFilesId)
                 }
                 }, jsonOptions);
             }
@@ -1899,7 +1927,9 @@ namespace FactPortal.Api
         public JsonResult WorkStepNext([FromHeader] string db, [FromForm] int WorkId = 0,
             [FromForm] string UserId = "",
             [FromForm] string AddFilesId = "", [FromForm] string DelFilesId = "",
-            [FromForm] int Index = 0, [FromForm] int Status = 0, [FromForm] string DT = "")
+            [FromForm] int Index = 0,
+            [FromForm] string Title = "",
+            [FromForm] int Status = 0, [FromForm] string DT = "")
         {
             try
             {
@@ -1907,7 +1937,8 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // WorkId
-                if (_business.Works.FirstOrDefault(x => x.Id == WorkId) == null)
+                var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
+                if (work == null)
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // UserId
@@ -1936,26 +1967,39 @@ namespace FactPortal.Api
                     //    return new JsonResult(jsonFileNotFound, jsonOptions);
                 }
 
-                // Шаг для заданного обслуживания              
-                var Obj = _business.WorkSteps.FirstOrDefault(x => x.WorkId == WorkId && x.Index == Index);
-                if (Obj == null) // требуется создание нового
+                // Title
+                if (String.IsNullOrEmpty(Title))
                 {
-                    WorkStep NewObj = new WorkStep { Id = Bank.maxID(_business.WorkSteps.Select(x => x.Id).ToList()),
+                    var ObjStep = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
+                    if (ObjStep != null)
+                        Title = ObjStep.Title;
+                }
+
+                // Шаг для заданного обслуживания              
+                var workStep = _business.WorkSteps.FirstOrDefault(x => x.WorkId == WorkId && x.Index == Index);
+                if (workStep == null) // требуется создание нового
+                {
+                    WorkStep NewObj = new WorkStep { 
+                        Id = Bank.maxID(_business.WorkSteps.Select(x => x.Id).ToList()),
                         myUserId = UserId,
                         WorkId = WorkId,
                         groupFilesId = Bank.AddItemToStringList("", ";", String.Join(';', Files_for_Add)),
-                        DT_Start = DT_Start, DT_Stop = DT_Stop, Index = Index, Status = Status };
+                        DT_Start = DT_Start, DT_Stop = DT_Stop,
+                        Index = Index, 
+                        Title = Title,
+                        Status = Status };
                     _business.WorkSteps.Add(NewObj);
-                    Obj = NewObj;
+                    workStep = NewObj;
                 } else // изменение существующего
                 {
                     // Изменить
-                    Obj.myUserId = UserId;
-                    Obj.groupFilesId = Bank.DelItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Del));
-                    Obj.groupFilesId = Bank.AddItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Add));
-                    Obj.DT_Start = (DT_Start != "") ? DT_Start : Obj.DT_Start;
-                    Obj.DT_Stop = (DT_Stop != "") ? DT_Stop : Obj.DT_Stop;
-                    Obj.Status = Status;
+                    workStep.myUserId = UserId;
+                    workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Del));
+                    workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
+                    workStep.DT_Start = (DT_Start != "") ? DT_Start : workStep.DT_Start;
+                    workStep.DT_Stop = (DT_Stop != "") ? DT_Stop : workStep.DT_Stop;
+                    workStep.Status = Status;
+                    workStep.Title = Title;
                 }
 
                 // сохранить
@@ -1967,16 +2011,17 @@ namespace FactPortal.Api
 
                 return new JsonResult(new { Result = 0, WorkStep = new
                 {
-                    Id = Obj.Id,
-                    WorkId = Obj.WorkId,
-                    Index = Obj.Index,
-                    Status = Obj.Status,
-                    DT_Start = Obj.DT_Start,
-                    DT_Stop = Obj.DT_Stop,
-                    UserId = Obj.myUserId,
-                    User = Bank.inf_SS(DUsers, Obj.myUserId),
-                    FilesId = Obj.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
+                    Id = workStep.Id,
+                    WorkId = workStep.WorkId,
+                    Index = workStep.Index,
+                    Title = workStep.Title,
+                    Status = workStep.Status,
+                    DT_Start = workStep.DT_Start,
+                    DT_Stop = workStep.DT_Stop,
+                    UserId = workStep.myUserId,
+                    User = Bank.inf_SS(DUsers, workStep.myUserId),
+                    FilesId = workStep.groupFilesId,
+                    Files = Bank.inf_SSList(DFiles, workStep.groupFilesId)
                 }
                 }, jsonOptions);
             }
