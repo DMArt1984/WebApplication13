@@ -389,16 +389,16 @@ namespace FactPortal.Api
                 Dictionary<int, int> DWorksStatus = Bank.GetDicWorkStatus(_business.Works.ToList(), _business.WorkSteps.ToList(), DFinalSteps);
 
                 // добавление к списку атрибутов и оповещений и работ
-                var WorkSteps = _business.WorkSteps.ToList();
-                var Steps = _business.Steps.ToList();
-                var Alerts = _business.Alerts.ToList();
-                var Claims = _business.Claims.ToList();
+                var workSteps = _business.WorkSteps.ToList();
+                var steps = _business.Steps.ToList();
+                var alerts = _business.Alerts.ToList();
+                var claims = _business.Claims.ToList();
 
                 var ListView = (!String.IsNullOrEmpty(ViewClaim)) ? ViewClaim.Split(';').Select(x => x.ToLower()) : null; // список атрибутов, которые необходимо оставить
                 var SObjects2 = SObjects.ToList().Select(m => new
                 { m.Id, m.ObjectTitle, m.ObjectCode, m.Description,
-                    Claims = Claims.Where(w => w.ServiceObjectId == m.Id).Select(w => new { Type = w.ClaimType, Value = w.ClaimValue }).Where(u => String.IsNullOrEmpty(ViewClaim) || ListView.Contains(u.Type.ToLower())).ToList(),
-                    Alerts = Alerts.Where(k => k.ServiceObjectId == m.Id && k.Status != 9).Select(j => new {
+                    Claims = claims.Where(w => w.ServiceObjectId == m.Id).Select(w => new { Type = w.ClaimType, Value = w.ClaimValue }).Where(u => String.IsNullOrEmpty(ViewClaim) || ListView.Contains(u.Type.ToLower())).ToList(),
+                    Alerts = alerts.Where(k => k.ServiceObjectId == m.Id && k.Status != 9).Select(j => new {
                         Id = j.Id,
                         ServiceObjectId = j.ServiceObjectId,
                         Message = j.Message,
@@ -409,7 +409,7 @@ namespace FactPortal.Api
                         FilesId = j.groupFilesId,
                         Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                     }).ToList(),
-                    Steps = Steps.Where(k => k.ServiceObjectId == m.Id).Select(j => new {
+                    Steps = steps.Where(k => k.ServiceObjectId == m.Id).Select(j => new {
                         Id = j.Id,
                         ServiceObjectId = j.ServiceObjectId,
                         Index = j.Index,
@@ -423,7 +423,7 @@ namespace FactPortal.Api
                         ServiceObjectId = m.Id,
                         FinalStep = Bank.inf_II(DFinalSteps, m.Id), // Bank.inf_II(DLastWorks, m.Id)
                         Status = Bank.inf_II(DWorksStatus, Bank.inf_II(DLastWorks, m.Id)),
-                        Steps = WorkSteps.Where(k => k.WorkId == Bank.inf_II(DLastWorks, m.Id)).Select(j => new {
+                        Steps = workSteps.Where(k => k.WorkId == Bank.inf_II(DLastWorks, m.Id)).Select(j => new {
                             Id = j.Id,
                             WorkId = j.WorkId,
                             Index = j.Index,
@@ -467,7 +467,7 @@ namespace FactPortal.Api
                 if (String.IsNullOrEmpty(db) || (Id==0 && String.IsNullOrEmpty(Code)))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var SObject = _business.ServiceObjects.Where(x => (x.Id == Id || Id==0) && (x.ObjectCode == Code || String.IsNullOrEmpty(Code))).FirstOrDefault();
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => (x.Id == Id || Id==0) && (x.ObjectCode == Code || String.IsNullOrEmpty(Code)));
                 if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
@@ -592,16 +592,16 @@ namespace FactPortal.Api
 
                 // объект по коду
 
-                var Obj_fromOldCode = _business.ServiceObjects.Where(x => x.ObjectCode == OldCode).FirstOrDefault();
-                if (Obj_fromOldCode == null)
+                var SObject_fromOldCode = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == OldCode);
+                if (SObject_fromOldCode == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
                 
-                var Obj_fromNewCode = _business.ServiceObjects.Where(x => x.ObjectCode == NewCode).FirstOrDefault();
-                if (Obj_fromNewCode != null)
+                var SObject_fromNewCode = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == NewCode);
+                if (SObject_fromNewCode != null)
                     return new JsonResult(jsonSOExists, jsonOptions);
 
-                Obj_fromOldCode.ObjectCode = NewCode;
-                Obj_fromOldCode.Claims.Add(new ObjectClaim { ClaimType = "old_Code", ClaimValue = OldCode });
+                SObject_fromOldCode.ObjectCode = NewCode;
+                SObject_fromOldCode.Claims.Add(new ObjectClaim { ClaimType = "old_Code", ClaimValue = OldCode });
                 _business.SaveChanges();
 
                 return new JsonResult(new { Result = 0, OldCode, NewCode }, jsonOptions);
@@ -622,12 +622,12 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // объект по коду
-                var Obj_fromCode = _business.ServiceObjects.Where(x => x.ObjectCode == Code).FirstOrDefault();
-                if (Obj_fromCode == null)
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
+                if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
-                var OldTitle = Obj_fromCode.ObjectTitle;
-                Obj_fromCode.ObjectTitle = Title;
+                var OldTitle = SObject.ObjectTitle;
+                SObject.ObjectTitle = Title;
                 _business.SaveChanges();
 
                 return new JsonResult(new { Result = 0, Code, OldTitle, NewTitle = Title }, jsonOptions);
@@ -648,12 +648,12 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // объект по коду
-                var Obj_fromCode = _business.ServiceObjects.Where(x => x.ObjectCode == Code).FirstOrDefault();
-                if (Obj_fromCode == null)
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
+                if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
-                var OldDescription = Obj_fromCode.Description;
-                Obj_fromCode.Description = Description;
+                var OldDescription = SObject.Description;
+                SObject.Description = Description;
                 _business.SaveChanges();
 
                 return new JsonResult(new { Result = 0, Code, OldDescription, NewDescription = Description }, jsonOptions);
@@ -677,15 +677,15 @@ namespace FactPortal.Api
                 if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Title) || String.IsNullOrEmpty(Code))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var OldSO = _business.ServiceObjects.Where(x => x.ObjectCode == Code || x.ObjectTitle == Title).FirstOrDefault();
-                if ( OldSO != null)
+                var Old_SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code || x.ObjectTitle == Title);
+                if ( Old_SObject != null)
                     return new JsonResult(jsonSOExists, jsonOptions);
 
-                ServiceObject NewSO = new ServiceObject {ObjectTitle =Title, ObjectCode = Code, Description = Description };
-                await _business.ServiceObjects.AddAsync(NewSO);
+                ServiceObject New_SObject = new ServiceObject {ObjectTitle =Title, ObjectCode = Code, Description = Description };
+                await _business.ServiceObjects.AddAsync(New_SObject);
                 _business.SaveChanges();
 
-                return new JsonResult(new { Result = 0, ServiceObjects = NewSO }, jsonOptions);
+                return new JsonResult(new { Result = 0, ServiceObjects = New_SObject }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -702,44 +702,44 @@ namespace FactPortal.Api
                 if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var obj = _business.ServiceObjects.Where(x => x.ObjectCode == Code).FirstOrDefault();
-                if (obj == null)
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
+                if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // удаление файлов
-                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == obj.Id && x.ClaimType.ToLower() == "file").ToListAsync();
+                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == SObject.Id && x.ClaimType.ToLower() == "file").ToListAsync();
                 foreach (var item in ClaimsFiles)
                     await DeleteFiles(item.ClaimValue);
 
                 // удаление свойств
-                var myClaims = _business.Claims.Where(x => x.ServiceObjectId == obj.Id);
-                _business.Claims.RemoveRange(myClaims);
+                var claims = _business.Claims.Where(x => x.ServiceObjectId == SObject.Id);
+                _business.Claims.RemoveRange(claims);
 
                 // удаление уведомлений
-                var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
-                foreach (var item in myAlerts)
+                var alerts = await _business.Alerts.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
+                foreach (var item in alerts)
                     await DeleteFiles(item.groupFilesId);
 
-                _business.Alerts.RemoveRange(myAlerts);
+                _business.Alerts.RemoveRange(alerts);
 
                 // удаление шагов
-                var mySteps = await _business.Steps.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
-                foreach (var item in mySteps)
+                var steps = await _business.Steps.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
+                foreach (var item in steps)
                     await DeleteFiles(item.groupFilesId);
 
-                _business.Steps.RemoveRange(mySteps);
+                _business.Steps.RemoveRange(steps);
 
                 // удаление обслуживаний
-                var myWorks = await _business.Works.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
-                var myWorkSteps = await _business.WorkSteps.Where(x => myWorks.Select(y => y.Id).Contains(x.WorkId)).ToListAsync();
-                foreach (var item in myWorkSteps)
+                var works = await _business.Works.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
+                var workSteps = await _business.WorkSteps.Where(x => works.Select(y => y.Id).Contains(x.WorkId)).ToListAsync();
+                foreach (var item in workSteps)
                     await DeleteFiles(item.groupFilesId);
 
-                _business.WorkSteps.RemoveRange(myWorkSteps);
-                _business.Works.RemoveRange(myWorks);
+                _business.WorkSteps.RemoveRange(workSteps);
+                _business.Works.RemoveRange(works);
 
                 // Удаление объекта
-                _business.ServiceObjects.Remove(obj);
+                _business.ServiceObjects.Remove(SObject);
 
                 // сохранить изменения
                 await _business.SaveChangesAsync();
@@ -767,11 +767,11 @@ namespace FactPortal.Api
                 if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code) || String.IsNullOrEmpty(Type) || String.IsNullOrEmpty(Value))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var SO = _business.ServiceObjects.Where(x => x.ObjectCode == Code).FirstOrDefault();
-                if (SO == null)
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
+                if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
-                var ItId = SO.Id;
+                var ItId = SObject.Id;
 
                 Dictionary<string, string> TV = new Dictionary<string, string>();
                 if (!String.IsNullOrEmpty(Separator))
@@ -791,17 +791,17 @@ namespace FactPortal.Api
 
                 foreach (var Item in TV)
                 {
-                    var CL = _business.Claims.Where(x => x.ServiceObjectId == ItId && x.ClaimType == Item.Key).FirstOrDefault();
-                    if (CL == null) // добавление нового атрибута!!!
+                    var claim = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == ItId && x.ClaimType == Item.Key);
+                    if (claim == null) // добавление нового атрибута!!!
                     {
-                        //SO.Claims.Add(new ObjectClaim { ClaimType = Item.Key, ClaimValue = Item.Value });
+                        //SObject.Claims.Add(new ObjectClaim { ClaimType = Item.Key, ClaimValue = Item.Value });
                         var newID = Bank.maxID(myIDs);
                         _business.Claims.Add(new ObjectClaim { Id = newID, ServiceObjectId = ItId, ClaimType = Item.Key, ClaimValue = Item.Value });
                         myIDs.Add(newID);
                     }
                     else
                     {
-                        CL.ClaimValue = Item.Value;
+                        claim.ClaimValue = Item.Value;
                     }
                 }
                 _business.SaveChanges();
@@ -823,20 +823,20 @@ namespace FactPortal.Api
                 if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code) || String.IsNullOrEmpty(Type))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var SO = _business.ServiceObjects.Where(x => x.ObjectCode == Code).FirstOrDefault();
-                if (SO == null)
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
+                if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
-                var ItId = SO.Id;
-                var CL = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == ItId && x.ClaimType == Type);
-                if (CL == null)
+                var ItId = SObject.Id;
+                var claim = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == ItId && x.ClaimType == Type);
+                if (claim == null)
                     return new JsonResult(jsonClaimNotFound, jsonOptions);
 
-                if (CL.ClaimType.ToLower() == "file")
-                    await DeleteFiles(CL.ClaimValue);
+                if (claim.ClaimType.ToLower() == "file")
+                    await DeleteFiles(claim.ClaimValue);
 
 
-                SO.Claims.Remove(CL);
+                SObject.Claims.Remove(claim);
 
                 await _business.SaveChangesAsync();
 
@@ -1034,15 +1034,15 @@ namespace FactPortal.Api
                 if (_context.Users.Where(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
-                var Alerts = _business.Alerts.Where(x => x.myUserId == UserId).ToList();
-                if (Alerts.Count() == 0)
-                    return new JsonResult(new { Result = 0, Alerts = Alerts }, jsonOptions);
+                var alerts = _business.Alerts.Where(x => x.myUserId == UserId).ToList();
+                if (alerts.Count() == 0)
+                    return new JsonResult(new { Result = 0, Alerts = alerts }, jsonOptions);
 
                 // Словари
                 Dictionary<string, string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
 
-                var AlertsOUT = Alerts.Select(j => new {
+                var alertsOUT = alerts.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     Message = j.Message,
@@ -1054,7 +1054,7 @@ namespace FactPortal.Api
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                 });
 
-                return new JsonResult(new { Result = 0, Alerts = AlertsOUT.OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
+                return new JsonResult(new { Result = 0, Alerts = alertsOUT.OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1076,26 +1076,26 @@ namespace FactPortal.Api
                 if (_context.Users.Where(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
-            // Выборка
-            List<Alert> Alerts0 = _business.Alerts.Where(x => x.myUserId == UserId).ToList();
-            Alerts0 = Alerts0.Where(x => Bank.DateInRange(x.DT, DateFrom, DateTo)).ToList();
-            List<WorkStep> WorkSteps0 = _business.WorkSteps.Where(x => x.myUserId == UserId).ToList();
-            WorkSteps0 = WorkSteps0.Where(x => Bank.DateInRange(x.DT_Start, DateFrom, DateTo)).ToList();
-            var Works_ids = WorkSteps0.Select(x => x.WorkId).Distinct();
-                List<Work> Works0 = _business.Works.Where(x => Works_ids.Contains(x.Id)).ToList();
+                // Выборка
+                List<Alert> alerts0 = _business.Alerts.Where(x => x.myUserId == UserId).ToList();
+                alerts0 = alerts0.Where(x => Bank.DateInRange(x.DT, DateFrom, DateTo)).ToList();
+                List<WorkStep> workSteps0 = _business.WorkSteps.Where(x => x.myUserId == UserId).ToList();
+                workSteps0 = workSteps0.Where(x => Bank.DateInRange(x.DT_Start, DateFrom, DateTo)).ToList();
+                var Works_ids = workSteps0.Select(x => x.WorkId).Distinct();
+                List<Work> works0 = _business.Works.Where(x => Works_ids.Contains(x.Id)).ToList();
 
                 // Завершаем, если выборка пустая
-                if (Alerts0.Count() == 0 && Works0.Count() == 0)
-                    return new JsonResult(new { Result = 0, Alerts = Alerts0, Works = Works0 }, jsonOptions);
+                if (alerts0.Count() == 0 && works0.Count() == 0)
+                    return new JsonResult(new { Result = 0, Alerts = alerts0, Works = works0 }, jsonOptions);
 
                 // Словари
                 Dictionary<string, string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 Dictionary<int, int> DFinalSteps = Bank.GetDicFinalStep(_business.ServiceObjects.ToList(), _business.Steps.ToList());
-                Dictionary<int, int> DWorksStatus = Bank.GetDicWorkStatus(Works0, _business.WorkSteps.ToList(), DFinalSteps);
+                Dictionary<int, int> DWorksStatus = Bank.GetDicWorkStatus(works0, _business.WorkSteps.ToList(), DFinalSteps);
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
-                var AlertsOUT = Alerts0.Select(j => new {
+                var alertsOUT = alerts0.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
@@ -1107,7 +1107,7 @@ namespace FactPortal.Api
                     FilesId = j.groupFilesId,
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                 });
-                var WorkSteps2 = _business.WorkSteps.Where(x => Works_ids.Contains(x.WorkId)).Select(j => new
+                var workStepsOUT = _business.WorkSteps.Where(x => Works_ids.Contains(x.WorkId)).Select(j => new
                 {
                     Id = j.Id,
                     WorkId = j.WorkId,
@@ -1121,16 +1121,16 @@ namespace FactPortal.Api
                     FilesId = j.groupFilesId,
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                 });
-                var Works2 = Works0.Select(j => new {
+                var worksOUT = works0.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
                     FinalStep = Bank.inf_II(DFinalSteps, j.ServiceObjectId),
                     Status = Bank.inf_II(DWorksStatus, j.Id),
-                    Steps = WorkSteps2.Where(k => k.WorkId == j.Id).ToList()
+                    Steps = workStepsOUT.Where(k => k.WorkId == j.Id).ToList()
                 });
 
-                return new JsonResult(new { Result = 0, Alerts = AlertsOUT.OrderBy(x => x.Id), Works = Works2.OrderBy(x => x.ServiceObjectId)}, jsonOptions);
+                return new JsonResult(new { Result = 0, Alerts = alertsOUT.OrderBy(x => x.Id), Works = worksOUT.OrderBy(x => x.ServiceObjectId)}, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1153,9 +1153,9 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
-                var Alerts = _business.Alerts.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Count() == 0).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId).ToList();
-                if (Alerts.Count() == 0)
-                    return new JsonResult(new { Result = 0, Alerts }, jsonOptions);
+                var alerts = _business.Alerts.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Count() == 0).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId).ToList();
+                if (alerts.Count() == 0)
+                    return new JsonResult(new { Result = 0, alerts }, jsonOptions);
 
 
                 // Словари
@@ -1164,7 +1164,7 @@ namespace FactPortal.Api
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
                 // Вывод
-                var AlertsOUT = Alerts.Select(j => new {
+                var alertsOUT = alerts.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     ObjectTitle = Bank.inf_IS(DSO, j.ServiceObjectId),
@@ -1177,7 +1177,7 @@ namespace FactPortal.Api
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                 });
 
-                return new JsonResult(new { Result = 0, Alerts = AlertsOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
+                return new JsonResult(new { Result = 0, Alerts = alertsOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1218,8 +1218,8 @@ namespace FactPortal.Api
                 }
 
                 // Добавить
-                Alert Obj = new Alert { Id = Bank.maxID(_business.Alerts.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, myUserId = UserId, groupFilesId = String.Join(';', Files), DT = DT, Message = Message, Status = Status };
-                _business.Alerts.Add(Obj);
+                Alert alert = new Alert { Id = Bank.maxID(_business.Alerts.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, myUserId = UserId, groupFilesId = String.Join(';', Files), DT = DT, Message = Message, Status = Status };
+                _business.Alerts.Add(alert);
                 _business.SaveChanges();
 
                 // Словари
@@ -1228,21 +1228,21 @@ namespace FactPortal.Api
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
                 // Вывод
-                var AlertOUT = new
+                var alertOUT = new
                 {
-                    Id = Obj.Id,
-                    ServiceObjectId = Obj.ServiceObjectId,
-                    ObjectTitle = Bank.inf_IS(DSO, Obj.ServiceObjectId),
-                    Message = Obj.Message,
-                    Status = Obj.Status,
-                    DT = Obj.DT,
-                    UserId = Obj.myUserId,
-                    User = Bank.inf_SS(DUsers, Obj.myUserId),
-                    FilesId = Obj.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
+                    Id = alert.Id,
+                    ServiceObjectId = alert.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, alert.ServiceObjectId),
+                    Message = alert.Message,
+                    Status = alert.Status,
+                    DT = alert.DT,
+                    UserId = alert.myUserId,
+                    User = Bank.inf_SS(DUsers, alert.myUserId),
+                    FilesId = alert.groupFilesId,
+                    Files = Bank.inf_SSList(DFiles, alert.groupFilesId)
                 };
 
-                return new JsonResult(new { Result = 0, Alert = AlertOUT }, jsonOptions);
+                return new JsonResult(new { Result = 0, Alert = alertOUT }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1287,17 +1287,17 @@ namespace FactPortal.Api
                     DT = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // Поиск                
-                var Obj = _business.Alerts.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var alert = _business.Alerts.FirstOrDefault(x => x.Id == Id);
+                if (alert == null)
                     return new JsonResult(jsonAlertNotFound, jsonOptions);
 
                 // Изменить
-                Obj.myUserId = UserId;
-                Obj.groupFilesId = Bank.DelItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Del));
-                Obj.groupFilesId = Bank.AddItemToStringList(Obj.groupFilesId, ";", String.Join(';', Files_for_Add));
-                Obj.DT = DT;
-                Obj.Message = Message;
-                Obj.Status = Status;
+                alert.myUserId = UserId;
+                alert.groupFilesId = Bank.DelItemToStringList(alert.groupFilesId, ";", String.Join(';', Files_for_Del));
+                alert.groupFilesId = Bank.AddItemToStringList(alert.groupFilesId, ";", String.Join(';', Files_for_Add));
+                alert.DT = DT;
+                alert.Message = Message;
+                alert.Status = Status;
 
                 await _business.SaveChangesAsync();
 
@@ -1307,21 +1307,21 @@ namespace FactPortal.Api
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
                 // Вывод
-                var AlertOUT = new
+                var alertOUT = new
                 {
-                    Id = Obj.Id,
-                    ServiceObjectId = Obj.ServiceObjectId,
-                    ObjectTitle = Bank.inf_IS(DSO, Obj.ServiceObjectId),
-                    Message = Obj.Message,
-                    Status = Obj.Status,
-                    DT = Obj.DT,
-                    UserId = Obj.myUserId,
-                    User = Bank.inf_SS(DUsers, Obj.myUserId),
-                    FilesId = Obj.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, Obj.groupFilesId)
+                    Id = alert.Id,
+                    ServiceObjectId = alert.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, alert.ServiceObjectId),
+                    Message = alert.Message,
+                    Status = alert.Status,
+                    DT = alert.DT,
+                    UserId = alert.myUserId,
+                    User = Bank.inf_SS(DUsers, alert.myUserId),
+                    FilesId = alert.groupFilesId,
+                    Files = Bank.inf_SSList(DFiles, alert.groupFilesId)
                 };
 
-                return new JsonResult(new { Result = 0, Alert = AlertOUT }, jsonOptions);
+                return new JsonResult(new { Result = 0, Alert = alertOUT }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1339,18 +1339,18 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
-                var Obj = _business.Alerts.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var alert = _business.Alerts.FirstOrDefault(x => x.Id == Id);
+                if (alert == null)
                     return new JsonResult(jsonAlertNotFound, jsonOptions);
 
                 // Удалить файлы
-                await DeleteFiles(Obj.groupFilesId);
+                await DeleteFiles(alert.groupFilesId);
 
                 // Удалить
-                _business.Alerts.Remove(Obj);
+                _business.Alerts.Remove(alert);
                 await _business.SaveChangesAsync();
 
-                return new JsonResult(new { Result = 0, Alert = Obj }, jsonOptions);
+                return new JsonResult(new { Result = 0, Alert = alert }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1388,7 +1388,7 @@ namespace FactPortal.Api
                 Dictionary<int, int> DWorkStatus = Bank.GetDicWorkStatus(Works_ids, _business.WorkSteps.ToList(), DFinalStep);
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
-                var WorksOUT = Works_ids.Select(x => new {
+                var worksOUT = Works_ids.Select(x => new {
                     x.Id, 
                     x.ServiceObjectId,
                     ObjectTitle = Bank.inf_IS(DSO, x.ServiceObjectId),
@@ -1407,7 +1407,7 @@ namespace FactPortal.Api
                         FilesId = s.groupFilesId, 
                         Files = Bank.inf_SSList(DFiles, s.groupFilesId) }).ToList() });
 
-                return new JsonResult(new { Result = 0, Works = WorksOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
+                return new JsonResult(new { Result = 0, Works = worksOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1432,18 +1432,18 @@ namespace FactPortal.Api
                     DT = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // Добавить работу
-                Work OneWork = new Work { Id = Bank.maxID(_business.Works.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId };
-                _business.Works.Add(OneWork);
+                Work work = new Work { Id = Bank.maxID(_business.Works.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId };
+                _business.Works.Add(work);
 
                 // Добавить шаги для работы
-                var wSteps = _business.Steps.Where(x => x.ServiceObjectId == OneWork.ServiceObjectId).OrderBy(y => y.Index).ToList();
+                var steps = _business.Steps.Where(x => x.ServiceObjectId == work.ServiceObjectId).OrderBy(y => y.Index).ToList();
                 var Id = Bank.maxID(_business.WorkSteps.Select(x => x.Id).ToList());
-                List<WorkStep> WorkSteps = new List<WorkStep>();
-                foreach (var item in wSteps)
+                List<WorkStep> workSteps = new List<WorkStep>();
+                foreach (var item in steps)
                 {
                     WorkStep ObjWS = new WorkStep { 
                         Id = Id, 
-                        WorkId = OneWork.Id, 
+                        WorkId = work.Id, 
                         Index = item.Index, 
                         Title = item.Title,
                         Status = (item.Index == 1) ? Status : 0, 
@@ -1452,7 +1452,7 @@ namespace FactPortal.Api
                         groupFilesId = "", 
                         myUserId = UserId };
                     _business.WorkSteps.Add(ObjWS);
-                    WorkSteps.Add(ObjWS);
+                    workSteps.Add(ObjWS);
                     Id++;
                 }
 
@@ -1464,17 +1464,17 @@ namespace FactPortal.Api
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 Dictionary<int, string> DSO = Bank.GetDicSO(_business.ServiceObjects.ToList());
 
-                var FinalStep = _business.Steps.Count(x => x.ServiceObjectId == OneWork.ServiceObjectId);
+                var FinalStep = _business.Steps.Count(x => x.ServiceObjectId == work.ServiceObjectId);
 
                 // Вывод
-                var WorkOUT = new
+                var workOUT = new
                 {
-                    Id = OneWork.Id,
-                    ServiceObjectId = OneWork.ServiceObjectId,
-                    ObjectTitle = Bank.inf_IS(DSO, OneWork.Id),
+                    Id = work.Id,
+                    ServiceObjectId = work.ServiceObjectId,
+                    ObjectTitle = Bank.inf_IS(DSO, work.Id),
                     FinalStep = FinalStep,
                     Status = 0,
-                    Steps = WorkSteps.Select(j => new
+                    Steps = workSteps.Select(j => new
                     {
                         Id = j.Id,
                         WorkId = j.WorkId,
@@ -1490,7 +1490,7 @@ namespace FactPortal.Api
                     }).ToList()
                 };
 
-                return new JsonResult(new { Result = 0, Work = WorkOUT }, jsonOptions);
+                return new JsonResult(new { Result = 0, Work = workOUT }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1508,14 +1508,14 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
-                var Obj = _business.Works.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var work = _business.Works.FirstOrDefault(x => x.Id == Id);
+                if (work == null)
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // Изменить нечего
                 _business.SaveChanges();
 
-                return new JsonResult(new { Result = 0, Work = Obj }, jsonOptions);
+                return new JsonResult(new { Result = 0, Work = work }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1533,24 +1533,24 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
-                var Obj = _business.Works.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var work = _business.Works.FirstOrDefault(x => x.Id == Id);
+                if (work == null)
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // Удалить выполненные шаги
-                var myWorkSteps = await _business.WorkSteps.Where(x => x.WorkId == Obj.Id).ToListAsync();
+                var myWorkSteps = await _business.WorkSteps.Where(x => x.WorkId == work.Id).ToListAsync();
                 foreach (var item in myWorkSteps)
                     await DeleteFiles(item.groupFilesId);
 
                 _business.WorkSteps.RemoveRange(myWorkSteps);
 
                 // Удалить элемент
-                _business.Works.Remove(Obj);
+                _business.Works.Remove(work);
 
                 // Сохранить изменения
                 await _business.SaveChangesAsync();
 
-                return new JsonResult(new { Result = 0, Work = Obj }, jsonOptions);
+                return new JsonResult(new { Result = 0, Work = work }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1580,7 +1580,7 @@ namespace FactPortal.Api
                 // Словари
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 
-                var StepsOUT = Steps_ids.Select(j => new {
+                var stepsOUT = Steps_ids.Select(j => new {
                     Id = j.Id,
                     ServiceObjectId = j.ServiceObjectId,
                     Index = j.Index,
@@ -1590,7 +1590,7 @@ namespace FactPortal.Api
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)
                 }).ToList();
 
-                return new JsonResult(new { Result = 0, Steps = StepsOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
+                return new JsonResult(new { Result = 0, Steps = stepsOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1623,11 +1623,11 @@ namespace FactPortal.Api
                 }
 
                 // Добавить
-                Step Obj = new Step { Id = Bank.maxID(_business.Steps.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, groupFilesId = String.Join(';', Files), Description = Description, Index = Index, Title = Title };
-                _business.Steps.Add(Obj);
+                Step step = new Step { Id = Bank.maxID(_business.Steps.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId, groupFilesId = String.Join(';', Files), Description = Description, Index = Index, Title = Title };
+                _business.Steps.Add(step);
                 _business.SaveChanges();
 
-                return new JsonResult(new { Result = 0, Work = Obj }, jsonOptions);
+                return new JsonResult(new { Result = 0, Work = step }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1704,18 +1704,18 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
-                var Obj = _business.Steps.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var step = _business.Steps.FirstOrDefault(x => x.Id == Id);
+                if (step == null)
                     return new JsonResult(jsonStepNotFound, jsonOptions);
 
                 // Удалить файлы
-                await DeleteFiles(Obj.groupFilesId);
+                await DeleteFiles(step.groupFilesId);
 
                 // Удалить элемент
-                _business.Steps.Remove(Obj);
+                _business.Steps.Remove(step);
                 await _business.SaveChangesAsync();
 
-                return new JsonResult(new { Result = 0, Step = Obj }, jsonOptions);
+                return new JsonResult(new { Result = 0, Step = step }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1744,7 +1744,7 @@ namespace FactPortal.Api
                 Dictionary<string, string> DUsers = Bank.GetDicUsers(_context.Users.ToList());
                 Dictionary<string, string> DFiles = Bank.GetDicFilesPath(_business.Files.ToList());
                 
-                var WorkStepsOUT = WorkSteps_ids.Select(j => new {
+                var workStepsOUT = WorkSteps_ids.Select(j => new {
                     Id = j.Id,
                     WorkId = j.WorkId,
                     Index = j.Index,
@@ -1757,7 +1757,7 @@ namespace FactPortal.Api
                     FilesId = j.groupFilesId,
                     Files = Bank.inf_SSList(DFiles, j.groupFilesId)});
 
-                return new JsonResult(new { Result = 0, WorkSteps = WorkStepsOUT.OrderBy(x => x.Id).OrderBy(x => x.WorkId) }, jsonOptions);
+                return new JsonResult(new { Result = 0, WorkSteps = workStepsOUT.OrderBy(x => x.Id).OrderBy(x => x.WorkId) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1806,9 +1806,9 @@ namespace FactPortal.Api
                 // Title
                 if (String.IsNullOrEmpty(Title))
                 {
-                    var ObjStep = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
-                    if (ObjStep != null)
-                        Title = ObjStep.Title;
+                    var step = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
+                    if (step != null)
+                        Title = step.Title;
                 }
 
                 // Добавить
@@ -1970,9 +1970,9 @@ namespace FactPortal.Api
                 // Title
                 if (String.IsNullOrEmpty(Title))
                 {
-                    var ObjStep = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
-                    if (ObjStep != null)
-                        Title = ObjStep.Title;
+                    var step = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
+                    if (step != null)
+                        Title = step.Title;
                 }
 
                 // Шаг для заданного обслуживания              
@@ -2041,18 +2041,18 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
-                var Obj = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
-                if (Obj == null)
+                var workStep = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
+                if (workStep == null)
                     return new JsonResult(jsonWorkStepNotFound, jsonOptions);
 
                 // Удалить файлы
-                await DeleteFiles(Obj.groupFilesId);
+                await DeleteFiles(workStep.groupFilesId);
 
                 // Удалить элемент
-                _business.WorkSteps.Remove(Obj);
+                _business.WorkSteps.Remove(workStep);
                 await _business.SaveChangesAsync();
 
-                return new JsonResult(new { Result = 0, WorkStep = Obj }, jsonOptions);
+                return new JsonResult(new { Result = 0, WorkStep = workStep }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -2172,25 +2172,25 @@ namespace FactPortal.Api
                     switch (Category.ToLower())
                     {
                         case "step":
-                            var Step = _business.Steps.FirstOrDefault(x => x.Id == CategoryId);
-                            if (Step == null)
+                            var step = _business.Steps.FirstOrDefault(x => x.Id == CategoryId);
+                            if (step == null)
                                 return new JsonResult(jsonStepNotFound, jsonOptions);
 
-                            Step.groupFilesId = Bank.AddItemToStringList(Step.groupFilesId, ";", file.Id.ToString());
+                            step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", file.Id.ToString());
                             break;
                         case "work":
-                            var WorkStep = _business.WorkSteps.FirstOrDefault(x => x.Id == CategoryId);
-                            if (WorkStep == null)
+                            var workStep = _business.WorkSteps.FirstOrDefault(x => x.Id == CategoryId);
+                            if (workStep == null)
                                 return new JsonResult(jsonWorkNotFound, jsonOptions);
 
-                            WorkStep.groupFilesId = Bank.AddItemToStringList(WorkStep.groupFilesId, ";", file.Id.ToString());
+                            workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", file.Id.ToString());
                             break;
                         case "alert":
-                            var Alert = _business.Alerts.FirstOrDefault(x => x.Id == CategoryId);
-                            if (Alert == null)
+                            var alert = _business.Alerts.FirstOrDefault(x => x.Id == CategoryId);
+                            if (alert == null)
                                 return new JsonResult(jsonAlertNotFound, jsonOptions);
 
-                            Alert.groupFilesId = Bank.AddItemToStringList(Alert.groupFilesId, ";", file.Id.ToString());
+                            alert.groupFilesId = Bank.AddItemToStringList(alert.groupFilesId, ";", file.Id.ToString());
                             break;
                         case "so":
                         default:
