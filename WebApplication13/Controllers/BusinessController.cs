@@ -82,7 +82,7 @@ namespace FactPortal.Controllers
         {
             try
             {
-                var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == id).ConfigureAwait(false); // объект обслуживания
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == id); // объект обслуживания
 
                 if (SObject == null)
                     return NotFound();
@@ -221,13 +221,13 @@ namespace FactPortal.Controllers
                         ObjectCode = "",
                         Description = "",
                         Position = 0,
-                        Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync()
+                        Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync().ConfigureAwait(false)
                     };
                     return View(New_SObject);
                 }
                 else
                 {
-                    var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == id); // объект обслуживания
+                    var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == id); // объект обслуживания
                     if (SObject == null)
                         return NotFound();
 
@@ -243,7 +243,7 @@ namespace FactPortal.Controllers
                         ObjectCode = SObject.ObjectCode,
                         Description = SObject.Description,
                         Position = position,
-                        Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync()
+                        Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync().ConfigureAwait(false)
                     };
                     return View(SObjectOUT);
                 }
@@ -329,22 +329,22 @@ namespace FactPortal.Controllers
                 Id = newID;
 
                 // 4. Сохранение изменений
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
             } 
                 
             // 3. Изменение элемента
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == Id); // объект обслуживания
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == Id); // объект обслуживания
             if (SObject == null)
                 return NotFound();
 
-            var claimPos = await _business.Claims.FirstOrDefaultAsync(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "position"); // позиция
+            var claimPos = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "position"); // позиция
             if (claimPos != null)
             {
                 claimPos.ClaimValue = Position.ToString();
             }
             else
             {
-                var myIDs = await _business.Claims.Select(x => x.Id).ToListAsync();
+                var myIDs = await _business.Claims.Select(x => x.Id).ToListAsync().ConfigureAwait(false);
                 var newID = Bank.maxID(myIDs);
                 await _business.Claims.AddAsync(new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "position", ClaimValue = Position.ToString() });
             }
@@ -366,13 +366,13 @@ namespace FactPortal.Controllers
                     var fileClaim = new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "file", ClaimValue = item };
                     _business.Claims.Add(fileClaim);
                 }
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
             }
 
             // Контроль несуществующих ID файлов
             if (DelFileId == null)
                 DelFileId = "";
-            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync().ConfigureAwait(false);
             foreach (var item in _business.Claims.Where(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file"))
             {
                 if (!files.Contains(item.ClaimValue))
@@ -384,9 +384,9 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item))
+                    if (await DeleteFile(item).ConfigureAwait(false))
                     {
-                        var claimFile = await _business.Claims.FirstOrDefaultAsync(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file" && x.ClaimValue == item); // файл
+                        var claimFile = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file" && x.ClaimValue == item); // файл
                         if (claimFile != null)
                             _business.Claims.Remove(claimFile);
                     }
@@ -399,7 +399,7 @@ namespace FactPortal.Controllers
 
 
             // 4. Сохранение изменений
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // 5. Вернуться в список
             return RedirectToAction("Index");
@@ -411,37 +411,37 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> Delete(int id = 0)
         {
-            ServiceObject obj = await _business.ServiceObjects.FirstOrDefaultAsync(p => p.Id == id);
+            ServiceObject obj = _business.ServiceObjects.FirstOrDefault(p => p.Id == id);
             if (obj != null)
             {
                 // удаление файлов
-                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == obj.Id && x.ClaimType.ToLower() == "file").ToListAsync();
+                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == obj.Id && x.ClaimType.ToLower() == "file").ToListAsync().ConfigureAwait(false);
                 foreach (var item in ClaimsFiles)
-                    await DeleteFiles(item.ClaimValue);
+                    await DeleteFiles(item.ClaimValue).ConfigureAwait(false);
 
                 // удаление свойств
                 var myClaims = _business.Claims.Where(x => x.ServiceObjectId == obj.Id);
                 _business.Claims.RemoveRange(myClaims);
 
                 // удаление уведомлений
-                var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
+                var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == obj.Id).ToListAsync().ConfigureAwait(false);
                 foreach (var item in myAlerts)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.Alerts.RemoveRange(myAlerts);
 
                 // удаление шагов
-                var mySteps = await _business.Steps.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
+                var mySteps = await _business.Steps.Where(x => x.ServiceObjectId == obj.Id).ToListAsync().ConfigureAwait(false);
                 foreach (var item in mySteps)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.Steps.RemoveRange(mySteps);
 
                 // удаление обслуживаний
-                var myWorks = await _business.Works.Where(x => x.ServiceObjectId == obj.Id).ToListAsync();
-                var myWorkSteps = await _business.WorkSteps.Where(x => myWorks.Select(y => y.Id).Contains(x.WorkId)).ToListAsync();
+                var myWorks = await _business.Works.Where(x => x.ServiceObjectId == obj.Id).ToListAsync().ConfigureAwait(false);
+                var myWorkSteps = await _business.WorkSteps.Where(x => myWorks.Select(y => y.Id).Contains(x.WorkId)).ToListAsync().ConfigureAwait(false);
                 foreach (var item in myWorkSteps)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.WorkSteps.RemoveRange(myWorkSteps);
                 _business.Works.RemoveRange(myWorks);
@@ -450,7 +450,7 @@ namespace FactPortal.Controllers
                 _business.ServiceObjects.Remove(obj);
 
                 // сохранить изменения
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
 
                 // возврат к списку
                 return RedirectToAction("Index");
@@ -473,7 +473,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("AlertsList", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadObj(SObject.Id, SObject.ObjectTitle) : GetBreadMain(),
@@ -497,12 +497,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> AlertInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var alert = await GetAlertInfo(Id, ServiceObjectId);
+            var alert = await GetAlertInfo(Id, ServiceObjectId).ConfigureAwait(false);
             if (alert == null || Id == 0)
                 return RedirectToAction("AlertNull");
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("AlertEdit", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadAlertsList_Filter(SObject.Id, "") : GetBreadAlertsList_All()
@@ -521,12 +521,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> AlertEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var alert = await GetAlertInfo(Id, ServiceObjectId);
+            var alert = await GetAlertInfo(Id, ServiceObjectId).ConfigureAwait(false);
             if (alert == null && Id > 0)
                 return RedirectToAction("AlertNull");
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("AlertEdit", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadAlertsList_Filter(SObject.Id, "") : GetBreadAlertsList_All()
@@ -544,7 +544,7 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Текущий пользователь
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             // Создание нового элемента
             if (Id == 0)
@@ -564,11 +564,11 @@ namespace FactPortal.Controllers
                 await _business.Alerts.AddAsync(newAlert);
                 Id = newID;
                 // 4. Сохранение изменений
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
             }
 
             // 1. Проверка достаточности данных
-            var alert = await _business.Alerts.FirstOrDefaultAsync(x => x.Id == Id);
+            var alert = _business.Alerts.FirstOrDefault(x => x.Id == Id);
             if (alert == null)
                 return NotFound();
 
@@ -587,7 +587,7 @@ namespace FactPortal.Controllers
             // Контроль несуществующих ID файлов
             if (DelFileId == null)
                 DelFileId = "";
-            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync().ConfigureAwait(false);
             foreach (var item in alert.groupFilesId.Split(';'))
             {
                 if (!files.Contains(item))
@@ -599,7 +599,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item))
+                    if (await DeleteFile(item).ConfigureAwait(false))
                     {
                         alert.groupFilesId = Bank.DelItemToStringList(alert.groupFilesId, ";", item.ToString());
                     }
@@ -612,7 +612,7 @@ namespace FactPortal.Controllers
 
             
             // 4. Сохранение изменений
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // 5. Вернуться в список
             return RedirectToAction("AlertsList", new { ServiceObjectId = SOReturn });
@@ -623,13 +623,13 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> AlertDelete(int Id = 0, int ServiceObjectId = 0)
         {
-            Alert alert = await _business.Alerts.FirstOrDefaultAsync(p => p.Id == Id);
+            Alert alert = _business.Alerts.FirstOrDefault(p => p.Id == Id);
             if (alert != null)
             {
-                await DeleteFiles(alert.groupFilesId);
+                await DeleteFiles(alert.groupFilesId).ConfigureAwait(false);
 
                 _business.Alerts.Remove(alert);
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
                 return RedirectToAction("AlertsList", new { ServiceObjectId = ServiceObjectId });
             }
             return NotFound();
@@ -649,7 +649,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("StepsList", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadObj(SObject.Id, SObject.ObjectTitle) : GetBreadMain(),
@@ -675,12 +675,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> StepInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var step = await GetStepInfo(Id, ServiceObjectId);
+            var step = await GetStepInfo(Id, ServiceObjectId).ConfigureAwait(false);
             if (step == null && Id > 0)
                 return RedirectToAction("StepNull");
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("StepEdit", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadStepsList_Filter(SObject.Id, "") : GetBreadStepsList_All()
@@ -699,12 +699,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var step = await GetStepInfo(Id, ServiceObjectId);
+            var step = await GetStepInfo(Id, ServiceObjectId).ConfigureAwait(false);
             if (step == null && Id > 0)
                 return RedirectToAction("StepNull");
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("StepEdit", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadStepsList_Filter(SObject.Id, "") : GetBreadStepsList_All()
@@ -747,12 +747,12 @@ namespace FactPortal.Controllers
                 await _business.Steps.AddAsync(newStep);
                 Id = newID;
                 // 4. Сохранение изменений
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
 
             } 
 
             // 1. Проверка достаточности данных
-            var step = await _business.Steps.FirstOrDefaultAsync(x => x.Id == Id);
+            var step = _business.Steps.FirstOrDefault(x => x.Id == Id);
             if (step == null)
                 return NotFound();
 
@@ -770,7 +770,7 @@ namespace FactPortal.Controllers
             // Контроль несуществующих ID файлов
             if (DelFileId == null)
                 DelFileId = "";
-            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync().ConfigureAwait(false);
             foreach (var item in step.groupFilesId.Split(';'))
             {
                 if (!files.Contains(item))
@@ -782,7 +782,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item))
+                    if (await DeleteFile(item).ConfigureAwait(false))
                     {
                         step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", item.ToString());
                     }
@@ -795,11 +795,11 @@ namespace FactPortal.Controllers
 
 
             // 4. Сохранение изменений
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // Переместить шаг
             if (Index > 0 && step.Index != Index)
-                await MakeInOrderStep(ServiceObjectId, step.Id, Index);
+                await MakeInOrderStep(ServiceObjectId, step.Id, Index).ConfigureAwait(false);
 
             // 5. Вернуться в список
             return RedirectToAction("StepsList", new { ServiceObjectId = SOReturn });
@@ -810,16 +810,16 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> StepDelete(int Id = 0, int ServiceObjectId = 0)
         {
-            Step step = await _business.Steps.FirstOrDefaultAsync(p => p.Id == Id);
+            Step step = _business.Steps.FirstOrDefault(p => p.Id == Id);
             if (step != null)
             {
-                await DeleteFiles(step.groupFilesId);
+                await DeleteFiles(step.groupFilesId).ConfigureAwait(false);
 
                 _business.Steps.Remove(step);
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
 
                 // Переназначить номера шагов, чтобы не было пропусков
-                await MakeInOrderStep(ServiceObjectId);
+                await MakeInOrderStep(ServiceObjectId).ConfigureAwait(false);
 
                 return RedirectToAction("StepsList", new { ServiceObjectId = ServiceObjectId });
             }
@@ -840,7 +840,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorksList", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadObj(SObject.Id, SObject.ObjectTitle) : GetBreadMain(),
@@ -866,12 +866,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> WorkInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var work = await GetWorkInfo(Id, ServiceObjectId);
+            var work = await GetWorkInfo(Id, ServiceObjectId).ConfigureAwait(false);
             if (work == null || Id == 0)
                 return RedirectToAction("WorkNull");
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorkInfo", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadWorksList_Filter(SObject.Id, "") : GetBreadWorksList_All()
@@ -890,12 +890,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> WorkEdit(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var work = await GetWorkInfo(Id, ServiceObjectId);
+            var work = await GetWorkInfo(Id, ServiceObjectId).ConfigureAwait(false);
             if (work == null && Id > 0)
                 return RedirectToAction("WorkNull");
 
             // Крошки
-            var SObject = await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == ServiceObjectId);
+            var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorkEdit", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadWorksList_Filter(SObject.Id, "") : GetBreadWorksList_All()
@@ -920,7 +920,7 @@ namespace FactPortal.Controllers
             if (Id == 0)
             {
                 // Список шагов для объекта
-                var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync();
+                var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync().ConfigureAwait(false);
                 if (Steps.Any() == false)
                     return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
 
@@ -932,7 +932,7 @@ namespace FactPortal.Controllers
                     ServiceObjectId = ServiceObjectId,
                 };
                 await _business.Works.AddAsync(newWork);
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
 
                 // Создание шагов для нового обслуживания
                 foreach (var item in Steps)
@@ -952,14 +952,14 @@ namespace FactPortal.Controllers
                         groupFilesId = ""
                     };
                     await _business.WorkSteps.AddAsync(newWorkStep);
-                    await _business.SaveChangesAsync();
+                    await _business.SaveChangesAsync().ConfigureAwait(false);
                 }
 
             }
             else // Изменение существующего
             {
                 // 1. Проверка достаточности данных
-                var Work = await _business.Works.FirstOrDefaultAsync(x => x.Id == Id);
+                var Work = _business.Works.FirstOrDefault(x => x.Id == Id);
                 if (Work == null)
                     return NotFound();
 
@@ -969,7 +969,7 @@ namespace FactPortal.Controllers
             }
 
             // 4. Сохранение изменений
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // 5. Вернуться в список
             return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
@@ -980,20 +980,20 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> WorkDelete(int Id = 0, int ServiceObjectId = 0)
         {
-            Work work = await _business.Works.FirstOrDefaultAsync(p => p.Id == Id);
+            Work work = _business.Works.FirstOrDefault(p => p.Id == Id);
             if (work != null)
             {
                 // Удалить выполненные шаги
-                var myWorkSteps = await _business.WorkSteps.Where(x => x.WorkId == work.Id).ToListAsync();
+                var myWorkSteps = await _business.WorkSteps.Where(x => x.WorkId == work.Id).ToListAsync().ConfigureAwait(false);
                 foreach (var item in myWorkSteps)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.WorkSteps.RemoveRange(myWorkSteps);
 
                 // Удалить элемент
                 _business.Works.Remove(work);
 
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
 
                 return RedirectToAction("WorksList", new { ServiceObjectId = ServiceObjectId });
             }
@@ -1014,8 +1014,8 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // Крошки
-            var work = await _business.Works.FirstOrDefaultAsync(x => x.Id == WorkId).ConfigureAwait(false);
-            var SObject = (work != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == work.ServiceObjectId).ConfigureAwait(false) : null;
+            var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
+            var SObject = (work != null) ? _business.ServiceObjects.FirstOrDefault(x => x.Id == work.ServiceObjectId): null;
             var thisNode = new MvcBreadcrumbNode("WorkStepsList", "Business", "ViewData.Title")
             {
                 //Parent = (SObject != null) ? GetBreadWorksList_Filter(SObject.Id, "") : GetBreadWorksList_All()
@@ -1044,13 +1044,13 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> WorkStepInfo(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var workStep = await GetWorkStepInfo(Id, WorkId);
+            var workStep = await GetWorkStepInfo(Id, WorkId).ConfigureAwait(false);
             if (workStep == null || Id == 0)
                 return RedirectToAction("WorkStepNull");
 
             // Крошки
-            var work = await _business.Works.FirstOrDefaultAsync(x => x.Id == WorkId);
-            var SObject = (work != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == work.ServiceObjectId) : null;
+            var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
+            var SObject = (work != null) ? _business.ServiceObjects.FirstOrDefault(x => x.Id == work.ServiceObjectId) : null;
             var thisNode = new MvcBreadcrumbNode("WorkStepEdit", "Business", "ViewData.Title")
             {
                 Parent = (SObject != null) ? GetBreadWorkStepsList_Filter(WorkId, ServiceObjectId, "") : GetBreadWorkStepsList_All()
@@ -1074,13 +1074,13 @@ namespace FactPortal.Controllers
                 return RedirectToAction("WorkStepNull");
 
             // Поиск существующего шага
-            var workStep = await GetWorkStepInfo(Id, WorkId);
+            var workStep = await GetWorkStepInfo(Id, WorkId).ConfigureAwait(false);
             if (workStep == null)
                 return RedirectToAction("WorkStepNull");
 
             // Крошки
-            var work = await _business.Works.FirstOrDefaultAsync(x => x.Id == WorkId).ConfigureAwait(false);
-            var SObject = (work != null) ? await _business.ServiceObjects.FirstOrDefaultAsync(x => x.Id == work.ServiceObjectId).ConfigureAwait(false) : null;
+            var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
+            var SObject = (work != null) ? _business.ServiceObjects.FirstOrDefault(x => x.Id == work.ServiceObjectId) : null;
             var thisNode = new MvcBreadcrumbNode("WorkStepEdit", "Business", "ViewData.Title")
             {
                 //Parent = (SObject != null) ? GetBreadWorkStepsList_Filter(WorkId, ServiceObjectId, "") : GetBreadWorkStepsList_All()
@@ -1101,10 +1101,10 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             // Текущий пользователь
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             // Проверка на доступность номера шага (Index)
-            var IndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId && x.Id != Id).Select(x => x.Index).ToListAsync();
+            var IndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId && x.Id != Id).Select(x => x.Index).ToListAsync().ConfigureAwait(false);
             if (Index == 0 || (IndexSteps.Any() && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
             {
                 // ВЫВЕСТИ СООБЩЕНИЕ!
@@ -1141,7 +1141,7 @@ namespace FactPortal.Controllers
                 Id = newID;
 
                 // 4. Сохранение изменений
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
             }
 
             // 1. Проверка достаточности данных
@@ -1174,7 +1174,7 @@ namespace FactPortal.Controllers
             // Контроль несуществующих ID файлов
             if (DelFileId == null)
                 DelFileId = "";
-            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync();
+            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync().ConfigureAwait(false);
             foreach (var item in workStep.groupFilesId.Split(';'))
             {
                 if (!files.Contains(item))
@@ -1186,7 +1186,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item))
+                    if (await DeleteFile(item).ConfigureAwait(false))
                     {
                         workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", item.ToString());
                     }
@@ -1199,7 +1199,7 @@ namespace FactPortal.Controllers
 
 
             // 4. Сохранение изменений
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // 5. Вернуться в список
             return RedirectToAction("WorkStepsList", new { WorkId = WorkReturn, ServiceObjectId = SOReturn });
@@ -1210,7 +1210,7 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> WorkStepDelete(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
-            WorkStep workStep = await _business.WorkSteps.FirstOrDefaultAsync(p => p.Id == Id).ConfigureAwait(false);
+            WorkStep workStep = _business.WorkSteps.FirstOrDefault(p => p.Id == Id);
             if (workStep != null)
             {
                 await DeleteFiles(workStep.groupFilesId).ConfigureAwait(false);
@@ -1476,10 +1476,10 @@ namespace FactPortal.Controllers
             {
                 stepChange.Index = SetIndex;
             }
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // Переназначение номеров по порядку
-            var steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync();
+            var steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync().ConfigureAwait(false);
             var Index = 0;
             bool Flag1 = false;
             bool Flag2 = false;
@@ -1515,7 +1515,7 @@ namespace FactPortal.Controllers
                     }
                 }
             }
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             return true;
         }
@@ -1567,20 +1567,20 @@ namespace FactPortal.Controllers
         private async Task<WorkInfo> GetWorkInfo(int Id = 0, int ServiceObjectId = 0)
         {
             // Поиск
-            var work = await _business.Works.FirstOrDefaultAsync(x => x.Id == Id);
+            var work = _business.Works.FirstOrDefault(x => x.Id == Id);
             if (work == null && Id == 0)
-                return  (ServiceObjectId > 0) ? await GetNEWWorkInfo(ServiceObjectId) : null;
+                return  (ServiceObjectId > 0) ? await GetNEWWorkInfo(ServiceObjectId).ConfigureAwait(false) : null;
 
             Dictionary<int, string> DObjects;
             Dictionary<string, string> DUsersName;
             Dictionary<string, string> DUsersEmail;
             GetDicSOU(out DObjects, out DUsersName, out DUsersEmail);
 
-            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
-            var Files = await _business.Files.ToListAsync();
+            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync().ConfigureAwait(false);
+            var Files = await _business.Files.ToListAsync().ConfigureAwait(false);
             var FinalStep = _business.Steps.Where(x => x.ServiceObjectId == work.ServiceObjectId).Count();
             var Status = Bank.GetStatusWork(_business.WorkSteps.Where(x => x.WorkId == work.Id).Select(y => y.Status).ToList(), FinalStep);
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             WorkInfo infoWork = new WorkInfo
             {
@@ -1619,7 +1619,7 @@ namespace FactPortal.Controllers
             GetDicSOU(out DObjects, out DUsersName, out DUsersEmail);
 
             var FinalStep = _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).Count();
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             WorkInfo infoWork = new WorkInfo
             {
@@ -1666,9 +1666,9 @@ namespace FactPortal.Controllers
         }
         private async Task<WorkStepInfo> GetWorkStepInfo(int Id = 0, int WorkId = 0)
         {
-            var workStep = await _business.WorkSteps.FirstOrDefaultAsync(x => x.Id == Id);
+            var workStep = _business.WorkSteps.FirstOrDefault(x => x.Id == Id);
             if (workStep == null && Id == 0)
-                return (WorkId > 0)  ? await GetNEWWorkStepInfo(WorkId) : null;
+                return (WorkId > 0)  ? await GetNEWWorkStepInfo(WorkId).ConfigureAwait(false) : null;
 
             Dictionary<int, string> DObjects;
             Dictionary<string, string> DUsersName;
@@ -1677,10 +1677,10 @@ namespace FactPortal.Controllers
 
             Dictionary<int, int> DWork = _business.Works.ToDictionary(x => x.Id, y => y.ServiceObjectId);
 
-            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
-            var Wrk_Ids = await _business.Works.Select(x => x.Id).Distinct().ToListAsync();
-            var Files = await _business.Files.ToListAsync();
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync().ConfigureAwait(false);
+            var Wrk_Ids = await _business.Works.Select(x => x.Id).Distinct().ToListAsync().ConfigureAwait(false);
+            var Files = await _business.Files.ToListAsync().ConfigureAwait(false);
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             return new WorkStepInfo
             {
@@ -1708,12 +1708,12 @@ namespace FactPortal.Controllers
 
             Dictionary<int, int> DWork = _business.Works.ToDictionary(x => x.Id, y => y.ServiceObjectId);
 
-            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
-            var Wrk_Ids = await _business.Works.Select(x => x.Id).Distinct().ToListAsync();
+            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync().ConfigureAwait(false);
+            var Wrk_Ids = await _business.Works.Select(x => x.Id).Distinct().ToListAsync().ConfigureAwait(false);
 
             var NextIndex = _business.WorkSteps.Where(x => x.WorkId == WorkId).Max(x => x.Index) + 1;
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             return new WorkStepInfo
             {
@@ -1758,9 +1758,9 @@ namespace FactPortal.Controllers
         }
         private async Task<AlertInfo> GetAlertInfo(int Id = 0, int ServiceObjectId = 0)
         {
-            var alert = await _business.Alerts.FirstOrDefaultAsync(x => x.Id == Id);
+            var alert = _business.Alerts.FirstOrDefault(x => x.Id == Id);
             if (alert == null || Id == 0)
-                return (ServiceObjectId > 0) ? await GetNEWAlertInfo(ServiceObjectId) : null;
+                return (ServiceObjectId > 0) ? await GetNEWAlertInfo(ServiceObjectId).ConfigureAwait(false) : null;
 
             Dictionary<int, string> DObjects;
             Dictionary<string, string> DUsersName;
@@ -1792,7 +1792,7 @@ namespace FactPortal.Controllers
             Dictionary<string, string> DUsersEmail;
             GetDicSOU(out DObjects, out DUsersName, out DUsersEmail);
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             return new AlertInfo
             {
@@ -1833,7 +1833,7 @@ namespace FactPortal.Controllers
         }
         private async Task<StepInfo> GetStepInfo(int Id = 0, int ServiceObjectId = 0)
         {
-            var step = await _business.Steps.FirstOrDefaultAsync(x => x.Id == Id);
+            var step = _business.Steps.FirstOrDefault(x => x.Id == Id);
             if (step == null || Id == 0)
                 return (ServiceObjectId > 0) ? GetNEWStepInfo(ServiceObjectId) : null;
 
@@ -1842,10 +1842,10 @@ namespace FactPortal.Controllers
             Dictionary<string, string> DUsersEmail;
             GetDicSOU(out DObjects, out DUsersName, out DUsersEmail);
 
-            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync();
-            var Files = await _business.Files.ToListAsync();
+            var SO_Ids = await _business.ServiceObjects.Select(x => x.Id).Distinct().ToListAsync().ConfigureAwait(false);
+            var Files = await _business.Files.ToListAsync().ConfigureAwait(false);
             var ObjSteps = _business.Steps.Where(x => x.ServiceObjectId == step.ServiceObjectId);
-            var MaxIndex = (ObjSteps.Count() > 0) ? ObjSteps.Max(x => x.Index) : 0;
+            var MaxIndex = (ObjSteps.Any()) ? ObjSteps.Max(x => x.Index) : 0;
             
             return  new StepInfo
             {
@@ -1868,7 +1868,7 @@ namespace FactPortal.Controllers
             GetDicSOU(out DObjects, out DUsersName, out DUsersEmail);
 
             var steps = _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId);
-            var MaxIndex = (steps.Count() > 0) ? steps.Max(x => x.Index) + 1 : 1;
+            var MaxIndex = (steps.Any()) ? steps.Max(x => x.Index) + 1 : 1;
 
             return new StepInfo
             {
@@ -2034,7 +2034,7 @@ namespace FactPortal.Controllers
 
                     };
                     await _business.Files.AddAsync(file);
-                    await _business.SaveChangesAsync();
+                    await _business.SaveChangesAsync().ConfigureAwait(false);
                     return file.Id;
                 }
                 return 0;
@@ -2050,7 +2050,7 @@ namespace FactPortal.Controllers
         {
             try
             {
-                return await DeleteFile(Convert.ToInt32(Id));
+                return await DeleteFile(Convert.ToInt32(Id)).ConfigureAwait(false);
             } catch
             {
                 return false;
@@ -2060,7 +2060,7 @@ namespace FactPortal.Controllers
         {
             try
             {
-                myFiles File = await _business.Files.FirstOrDefaultAsync(x => x.Id == Id);
+                myFiles File = _business.Files.FirstOrDefault(x => x.Id == Id);
                 if (File != null)
                 {
                     string path = _appEnvironment.WebRootPath + File.Path;
@@ -2068,7 +2068,7 @@ namespace FactPortal.Controllers
                         System.IO.File.Delete(path);
 
                     _business.Files.Remove(File);
-                    await _business.SaveChangesAsync();
+                    await _business.SaveChangesAsync().ConfigureAwait(false);
                 }
                 return true;
             }
@@ -2085,7 +2085,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in Ids.Split(";"))
                 {
-                    await DeleteFile(item);
+                    await DeleteFile(item).ConfigureAwait(false);
                 }
             }
             return true;
@@ -2159,14 +2159,14 @@ namespace FactPortal.Controllers
             switch (category.ToLower())
             {
                 case "load":
-                    ID = await AddFile(file, $"/Files/form/", description);
+                    ID = await AddFile(file, $"/Files/form/", description).ConfigureAwait(false);
                     break;
                 
                 case "so":
                     var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == categoryId);
                     if (SObject != null)
                     {
-                        ID = await AddFile(file, $"/Files/SO{SObject.Id}/Info/", description);
+                        ID = await AddFile(file, $"/Files/SO{SObject.Id}/Info/", description).ConfigureAwait(false);
                         if (ID > 0)
                         {
                             var myIDs = _business.Claims.Select(x => x.Id).ToList();
@@ -2180,7 +2180,7 @@ namespace FactPortal.Controllers
                     var alert = _business.Alerts.FirstOrDefault(x => x.Id == categoryId);
                     if (alert != null)
                     {
-                        ID = await AddFile(file, $"/Files/SO{alert.ServiceObjectId}/Alerts/a{alert.Id}/", description);
+                        ID = await AddFile(file, $"/Files/SO{alert.ServiceObjectId}/Alerts/a{alert.Id}/", description).ConfigureAwait(false);
                         if (ID > 0)
                             alert.groupFilesId = Bank.AddItemToStringList(alert.groupFilesId, ";", ID.ToString());
                     }
@@ -2189,7 +2189,7 @@ namespace FactPortal.Controllers
                     var step = _business.Steps.FirstOrDefault(x => x.Id == categoryId);
                     if (step != null)
                     {
-                        ID = await AddFile(file, $"/Files/SO{step.ServiceObjectId}/Steps/a{step.Id}/", description);
+                        ID = await AddFile(file, $"/Files/SO{step.ServiceObjectId}/Steps/a{step.Id}/", description).ConfigureAwait(false);
                         if (ID > 0)
                             step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", ID.ToString());
                     }
@@ -2198,13 +2198,13 @@ namespace FactPortal.Controllers
                     var workStep = _business.WorkSteps.FirstOrDefault(x => x.Id == categoryId);
                     if (workStep != null)
                     {
-                        ID = await AddFile(file, $"/Files/Work{workStep.WorkId}/a{workStep.Id}/", description);
+                        ID = await AddFile(file, $"/Files/Work{workStep.WorkId}/a{workStep.Id}/", description).ConfigureAwait(false);
                         if (ID > 0)
                             workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", ID.ToString());
                     }
                     break;
             }
-            await _business.SaveChangesAsync();
+            await _business.SaveChangesAsync().ConfigureAwait(false);
 
             return new JsonResult(new { result = 0, Id = ID });
         }
@@ -2215,7 +2215,7 @@ namespace FactPortal.Controllers
             var File = _business.Files.FirstOrDefault(x => x.Id == Id);
             if (File != null)
             {
-                await DeleteFile(Id);
+                await DeleteFile(Id).ConfigureAwait(false);
                 //...
                 switch (category.ToLower())
                 {
@@ -2249,7 +2249,7 @@ namespace FactPortal.Controllers
                         break;
                 }
 
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
             }
             return new JsonResult(new { result = 0 });
         }

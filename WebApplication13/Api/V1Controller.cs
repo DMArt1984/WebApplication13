@@ -213,7 +213,7 @@ namespace FactPortal.Api
         {
             try
             {
-                ApplicationUser user = await getUser_fromToken(login, token);
+                ApplicationUser user = await getUser_fromToken(login, token).ConfigureAwait(false);
                 if (user != null)
                 {
                     var values = GetValueUserClaim(user, type);
@@ -374,7 +374,7 @@ namespace FactPortal.Api
                         positions.Add(IdPos);
                         Bank.TreeExpPos(ref positions, ItLevels, IdPos);
                     }
-                    SObjects = SObjects.Where(u => (u.Claims.Where(x => x.ClaimType.ToLower() == "position").Count() == 0) ? false : positions.Contains(Convert.ToInt32(u.Claims.FirstOrDefault(x => x.ClaimType.ToLower() == "position").ClaimValue)));
+                    SObjects = SObjects.Where(u => (u.Claims.Where(x => x.ClaimType.ToLower() == "position").Any() == false) ? false : positions.Contains(Convert.ToInt32(u.Claims.FirstOrDefault(x => x.ClaimType.ToLower() == "position").ClaimValue)));
                 }
 
                 //
@@ -704,33 +704,33 @@ namespace FactPortal.Api
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // удаление файлов
-                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == SObject.Id && x.ClaimType.ToLower() == "file").ToListAsync();
+                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == SObject.Id && x.ClaimType.ToLower() == "file").ToListAsync().ConfigureAwait(false);
                 foreach (var item in ClaimsFiles)
-                    await DeleteFiles(item.ClaimValue);
+                    await DeleteFiles(item.ClaimValue).ConfigureAwait(false);
 
                 // удаление свойств
                 var claims = _business.Claims.Where(x => x.ServiceObjectId == SObject.Id);
                 _business.Claims.RemoveRange(claims);
 
                 // удаление уведомлений
-                var alerts = await _business.Alerts.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
+                var alerts = await _business.Alerts.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync().ConfigureAwait(false);
                 foreach (var item in alerts)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.Alerts.RemoveRange(alerts);
 
                 // удаление шагов
-                var steps = await _business.Steps.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
+                var steps = await _business.Steps.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync().ConfigureAwait(false);
                 foreach (var item in steps)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.Steps.RemoveRange(steps);
 
                 // удаление обслуживаний
-                var works = await _business.Works.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync();
-                var workSteps = await _business.WorkSteps.Where(x => works.Select(y => y.Id).Contains(x.WorkId)).ToListAsync();
+                var works = await _business.Works.Where(x => x.ServiceObjectId == SObject.Id).ToListAsync().ConfigureAwait(false);
+                var workSteps = await _business.WorkSteps.Where(x => works.Select(y => y.Id).Contains(x.WorkId)).ToListAsync().ConfigureAwait(false);
                 foreach (var item in workSteps)
-                    await DeleteFiles(item.groupFilesId);
+                    await DeleteFiles(item.groupFilesId).ConfigureAwait(false);
 
                 _business.WorkSteps.RemoveRange(workSteps);
                 _business.Works.RemoveRange(works);
@@ -739,7 +739,7 @@ namespace FactPortal.Api
                 _business.ServiceObjects.Remove(SObject);
 
                 // сохранить изменения
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
 
                 return new JsonResult(new { Result = 0 }, jsonOptions);
             }
@@ -876,7 +876,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var listIds = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
-                return new JsonResult(new { Result = 0, Positions = _business.Levels.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Count() == 0).OrderBy(x => x.Id).ToList() }, jsonOptions);
+                return new JsonResult(new { Result = 0, Positions = _business.Levels.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Any() == false).OrderBy(x => x.Id).ToList() }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -1206,7 +1206,7 @@ namespace FactPortal.Api
 
                 // groupFilesId
                 var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files.Count() > 0)
+                if (Files.Any())
                 {
                     if (!Files.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1264,7 +1264,7 @@ namespace FactPortal.Api
 
                 // AddFilesId
                 var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Add.Count() > 0)
+                if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1272,7 +1272,7 @@ namespace FactPortal.Api
 
                 // DelFilesId
                 var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Del.Count() > 0)
+                if (Files_for_Del.Any())
                 {
                     await DeleteFiles(DelFilesId);
                 }
@@ -1568,7 +1568,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
-                var Steps_ids = _business.Steps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Count() == 0).ToList().OrderBy(x => x.Index).ToList();
+                var Steps_ids = _business.Steps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Any() == false).ToList().OrderBy(x => x.Index).ToList();
                 if (Steps_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Steps = Steps_ids }, jsonOptions);
 
@@ -1611,7 +1611,7 @@ namespace FactPortal.Api
 
                 // groupFilesId
                 var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files.Count() > 0)
+                if (Files.Any())
                 {
                     if (!Files.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1643,7 +1643,7 @@ namespace FactPortal.Api
 
                 // AddFilesId
                 var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Add.Count() > 0)
+                if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1651,7 +1651,7 @@ namespace FactPortal.Api
 
                 // DelFilesId
                 var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Del.Count() > 0)
+                if (Files_for_Del.Any())
                 {
                     await DeleteFiles(DelFilesId);
                 }
@@ -1792,7 +1792,7 @@ namespace FactPortal.Api
 
                 // groupFilesId
                 var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files.Count() > 0)
+                if (Files.Any())
                 {
                     if (!Files.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1862,7 +1862,7 @@ namespace FactPortal.Api
 
                 // AddFilesId
                 var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Add.Count() > 0)
+                if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1870,7 +1870,7 @@ namespace FactPortal.Api
 
                 // DelFilesId
                 var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Del.Count() > 0)
+                if (Files_for_Del.Any())
                 {
                     await DeleteFiles(DelFilesId);
                 }
@@ -1948,7 +1948,7 @@ namespace FactPortal.Api
 
                 // AddFilesId
                 var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Add.Count() > 0)
+                if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                         return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -1956,7 +1956,7 @@ namespace FactPortal.Api
 
                 // DelFilesId
                 var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
-                if (Files_for_Del.Count() > 0)
+                if (Files_for_Del.Any())
                 {
                     //if (!Files_for_Del.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
                     //    return new JsonResult(jsonFileNotFound, jsonOptions);
@@ -2102,7 +2102,7 @@ namespace FactPortal.Api
                 var Files = (String.IsNullOrEmpty(Path)) ? _business.Files : _business.Files.Where(x => x.Path.Contains(Path));
                 var listIds = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
 
-                return new JsonResult(new { Result = 0, Files = Files.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Count() == 0) }, jsonOptions);
+                return new JsonResult(new { Result = 0, Files = Files.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Any() == false) }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -2156,7 +2156,7 @@ namespace FactPortal.Api
                 // сохраняем файл в заданную папку в каталоге wwwroot
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 {
-                    await uploadedFile.CopyToAsync(fileStream);
+                    await uploadedFile.CopyToAsync(fileStream).ConfigureAwait(false);
                 }
                 myFiles file = new myFiles { Id = Bank.maxID(_business.Files.Select(x => x.Id).ToList()), Name =  uploadedFile.FileName, Path =  path, Description = Description };
                 

@@ -83,7 +83,7 @@ namespace FactPortal.Controllers
                     // сохраняем файл в папку в каталоге wwwroot
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                     {
-                        await uploadedFile.CopyToAsync(fileStream);
+                        await uploadedFile.CopyToAsync(fileStream).ConfigureAwait(false);
                     }
                     myFiles file = new myFiles {
                         Id = Bank.maxID(_business.Files.Select(x => x.Id).ToList()),
@@ -131,7 +131,7 @@ namespace FactPortal.Controllers
         {
             try
             {
-                myFiles File = await _business.Files.FirstOrDefaultAsync(x => x.Id == Id);
+                myFiles File = _business.Files.FirstOrDefault(x => x.Id == Id);
                 if (File != null)
                 {
                     string path = _appEnvironment.WebRootPath + File.Path;
@@ -142,7 +142,7 @@ namespace FactPortal.Controllers
                     _business.Files.Remove(File);
 
                     // удаление ссылок из атрибутов
-                    var Claim = await _business.Claims.FirstOrDefaultAsync(x => x.ClaimType.ToLower() == "file" && x.ClaimValue == Id.ToString());
+                    var Claim = _business.Claims.FirstOrDefault(x => x.ClaimType.ToLower() == "file" && x.ClaimValue == Id.ToString());
                     if (Claim != null)
                         _business.Claims.Remove(Claim);
 
@@ -156,7 +156,7 @@ namespace FactPortal.Controllers
                             alert = _business.Alerts.FirstOrDefault(x => x.Id == item.Key);
                         }
                     }
-                    //var Alert = await _business.Alerts.FirstOrDefaultAsync(x => Bank.StringContains(x..., Id)); // НЕ РАБОТАЕТ ВЫЗОВ ФУНКЦИИ! ОЧЕНЬ СТРАННО
+                    //var Alert = await _business.Alerts.FirstOrDefault(x => Bank.StringContains(x..., Id)); // НЕ РАБОТАЕТ ВЫЗОВ ФУНКЦИИ! ОЧЕНЬ СТРАННО
                     if (alert != null)
                         alert.groupFilesId = Bank.DelItemToStringList(alert.groupFilesId, ";", Id.ToString());
 
@@ -187,7 +187,7 @@ namespace FactPortal.Controllers
                         workstep.groupFilesId = Bank.DelItemToStringList(workstep.groupFilesId, ";", Id.ToString());
 
                     // Сохранить изменения
-                    await _business.SaveChangesAsync();
+                    await _business.SaveChangesAsync().ConfigureAwait(false);
                 }
             }
             catch
@@ -234,7 +234,7 @@ namespace FactPortal.Controllers
                     // сохраняем файл в папку Files в каталоге wwwroot
                     using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                     {
-                        await uploadedFile.CopyToAsync(fileStream);
+                        await uploadedFile.CopyToAsync(fileStream).ConfigureAwait(false);
                     }
                     myFiles file = new myFiles { Id = Bank.maxID(_business.Files.Select(x => x.Id).ToList()), Name = uploadedFile.FileName, Path = path };
                     _business.Files.Add(file);
@@ -263,7 +263,7 @@ namespace FactPortal.Controllers
                     // сохраняем файл в папку Files в каталоге wwwroot
                     using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                     {
-                        await uploadedFile.CopyToAsync(fileStream);
+                        await uploadedFile.CopyToAsync(fileStream).ConfigureAwait(false);
                     }
                     myFiles file = new myFiles { Id = Bank.maxID(_business.Files.Select(x => x.Id).ToList()), Name = uploadedFile.FileName, Path = path };
                     _business.Files.Add(file);
@@ -284,7 +284,7 @@ namespace FactPortal.Controllers
         {
             if (id != null)
             {
-                myFiles files = await _business.Files.FirstOrDefaultAsync(p => p.Id == id);
+                myFiles files = _business.Files.FirstOrDefault(p => p.Id == id);
                 if (files != null)
                 {
                     string Path = _appEnvironment.WebRootPath + files.Path;
@@ -293,7 +293,7 @@ namespace FactPortal.Controllers
                         System.IO.File.Delete(Path);
 
                     _business.Files.Remove(files);
-                    await _business.SaveChangesAsync();
+                    await _business.SaveChangesAsync().ConfigureAwait(false);
                     return RedirectToAction("videofile");
                 }
 
@@ -305,7 +305,7 @@ namespace FactPortal.Controllers
         {
             if (id != null)
             {
-                myFiles files = await _business.Files.FirstOrDefaultAsync(p => p.Name == fileName);
+                myFiles files = _business.Files.FirstOrDefault(p => p.Name == fileName);
                 if (files != null)
                 {
                     string Path = _appEnvironment.WebRootPath + files.Path;
@@ -314,7 +314,7 @@ namespace FactPortal.Controllers
                         System.IO.File.Delete(Path);
 
                     _business.Files.Remove(files);
-                    await _business.SaveChangesAsync();
+                    await _business.SaveChangesAsync().ConfigureAwait(false);
                     return RedirectToAction("videofile");
                 }
 

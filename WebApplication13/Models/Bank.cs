@@ -333,7 +333,7 @@ namespace FactPortal.Models
         // =========================================================================================
 
         // Добавить данные в строку списка 1;5;8 -> 1;5;8;7
-        public static string AddItemToStringList(string StringList, string Delim, string Values)
+        public static string AddItemToStringList(string StringList = "", string Delim = ";", string Values = "")
         {
             List<string> myList  = StringList.Split(Delim).Distinct().ToList();
             foreach (var item in Values.Split(Delim).Distinct())
@@ -346,7 +346,7 @@ namespace FactPortal.Models
         }
 
         // Удалить данные из строки списка 2;4;8 -> 2;8
-        public static string DelItemToStringList(string StringList, string Delim, string Values)
+        public static string DelItemToStringList(string StringList = "", string Delim = ";", string Values = "")
         {
             List<string> myList = StringList.Split(Delim).Distinct().ToList();
             foreach (var item in Values.Split(Delim).Distinct())

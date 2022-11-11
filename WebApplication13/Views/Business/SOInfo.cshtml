@@ -12,7 +12,7 @@
         QRCodeGenerator qrGenerator = new QRCodeGenerator();
         QRCodeData qrCodeData = qrGenerator.CreateQrCode(Text, QRCodeGenerator.ECCLevel.Q);
         BitmapByteQRCode qrCode2 = new BitmapByteQRCode(qrCodeData);
-        byte[] qrCodeAsBitmapByteArr = qrCode2.GetGraphic(3);
+        byte[] qrCodeAsBitmapByteArr = qrCode2.GetGraphic(20);
         return qrCodeAsBitmapByteArr;
     }
 }

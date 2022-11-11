@@ -95,7 +95,7 @@ namespace FactPortal.Controllers
                 foreach (var company in myCompanies)
                 {
                     System.Security.Claims.Claim claimCompany = new System.Security.Claims.Claim("Company", company.Value);
-                    var usersC = await _userManager.GetUsersForClaimAsync(claimCompany);
+                    var usersC = await _userManager.GetUsersForClaimAsync(claimCompany).ConfigureAwait(false);
                     foreach (var one in usersC)
                     {
                         users.Add(one);
@@ -107,8 +107,8 @@ namespace FactPortal.Controllers
 
                 foreach(var item in uniusers)
                 {
-                    var uclaims = await _userManager.GetClaimsAsync(item);
-                    var uroles = await _userManager.GetRolesAsync(item);
+                    var uclaims = await _userManager.GetClaimsAsync(item).ConfigureAwait(false);
+                    var uroles = await _userManager.GetRolesAsync(item).ConfigureAwait(false);
                     UInf.Add(new UserInfo { User = item, Claims = uclaims.OrderBy(y => y.Type), Roles = uroles.OrderBy(z => z) });
                 }
                 return View(UInf);
@@ -158,16 +158,16 @@ namespace FactPortal.Controllers
                     // Регистрация нового пользователя
                     var user = new ApplicationUser { UserName = NewUserData.Email, Email = NewUserData.Email };
                     user.Id = DateTimeOffset.Now.ToUnixTimeSeconds().ToString();
-                    var result = await _userManager.CreateAsync(user, NewUserData.Password);
+                    var result = await _userManager.CreateAsync(user, NewUserData.Password).ConfigureAwait(false);
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("Пользователь создал новую учетную запись с паролем.");
-                        await _userManager.AddToRoleAsync(user, ERoles.Basic.ToString()); // добавляем базовую роль (права)
+                        await _userManager.AddToRoleAsync(user, ERoles.Basic.ToString()).ConfigureAwait(false); // добавляем базовую роль (права)
                                                                                           //var Company_Cookie = _httpContextAccessor.HttpContext.Request.Cookies["company"]; // компания в браузере
                                                                                           //if (Company_Cookie == null)
                                                                                           //    Company_Cookie = "";
                         System.Security.Claims.Claim cl = new System.Security.Claims.Claim("Company", NewUserData.Company);
-                        await _userManager.AddClaimAsync(user, cl); // добавляем компанию
+                        await _userManager.AddClaimAsync(user, cl).ConfigureAwait(false); // добавляем компанию
 
                         // Подтверждение почты
                         if (NewUserData.SendMail)
@@ -409,7 +409,7 @@ namespace FactPortal.Controllers
             }
 
             // Обновить
-            await _userManager.UpdateAsync(user);
+            await _userManager.UpdateAsync(user).ConfigureAwait(false);
             //return RedirectToAction("Profile", new {Email = user.Email, ViewEditor = false });
             return RedirectToAction("Index");
         }

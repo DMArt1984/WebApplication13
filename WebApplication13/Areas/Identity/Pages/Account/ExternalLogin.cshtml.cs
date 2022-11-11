@@ -75,7 +75,7 @@ namespace FactPortal.Areas.Identity.Pages.Account
                 ErrorMessage = $"Ошибка от внешнего провайдера: {remoteError}";
                 return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
             }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
+            var info = await _signInManager.GetExternalLoginInfoAsync().ConfigureAwait(false);
             if (info == null)
             {
                 ErrorMessage = "Ошибка при загрузке внешней информации для входа.";
