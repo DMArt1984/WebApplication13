@@ -146,9 +146,9 @@ namespace FactPortal.Models
             switch (Status)
             {
                 case 0:
-                    return "-";
-                case 1:
                     return "ожидание";
+                case 1:
+                    return "пауза";
                 case 5:
                     return "работа";
                 case 9:

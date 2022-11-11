@@ -67,7 +67,7 @@ namespace FactPortal.Controllers
                 {
                     var ObjectName = "Объект удален";
                     var ObjectActive = false;
-                    if (B1.Where(x => x.Key == item.ServiceObjectId).Count() > 0)
+                    if (B1.Where(x => x.Key == item.ServiceObjectId).Any())
                     {
                         ObjectName = B1[item.ServiceObjectId];
                         ObjectActive = true;

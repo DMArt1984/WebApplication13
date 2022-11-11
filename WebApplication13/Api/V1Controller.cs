@@ -84,12 +84,12 @@ namespace FactPortal.Api
         // Получить пользователя по логину и паролю
         private async Task<ApplicationUser> getUser_fromPassword(string login, string password)
         {
-            if (login != "")
+            if (!String.IsNullOrEmpty(login))
             {
-                var user = (login.Contains("@")) ? await _userManager.FindByEmailAsync(login) : await _userManager.FindByNameAsync(login);
+                var user = (login.Contains("@")) ? await _userManager.FindByEmailAsync(login).ConfigureAwait(false) : await _userManager.FindByNameAsync(login).ConfigureAwait(false);
                 if (user != null)
                 {
-                    bool OK = await _signInManager.UserManager.CheckPasswordAsync(user, password);
+                    bool OK = await _signInManager.UserManager.CheckPasswordAsync(user, password).ConfigureAwait(false);
                     return (OK) ? user : null;
                 }
                 return null;
@@ -100,12 +100,12 @@ namespace FactPortal.Api
         // Получить пользователя по логину и токену
         private async Task<ApplicationUser> getUser_fromToken(string login, string token)
         {
-            if (login != "")
+            if (!String.IsNullOrEmpty(login))
             {
-                var user = (login.Contains("@")) ? await _userManager.FindByEmailAsync(login) : await _userManager.FindByNameAsync(login);
+                var user = (login.Contains("@")) ? await _userManager.FindByEmailAsync(login).ConfigureAwait(false) : await _userManager.FindByNameAsync(login).ConfigureAwait(false);
                 if (user != null)
                 {
-                    bool OK = await _userManager.VerifyUserTokenAsync(user, "Invitation", "Invitation", token);
+                    bool OK = await _userManager.VerifyUserTokenAsync(user, "Invitation", "Invitation", token).ConfigureAwait(false);
                     return (OK) ? user : null;
                 }
                 return null;
@@ -151,7 +151,7 @@ namespace FactPortal.Api
                 //var unAllNames = _context.Users.Select(x => x.UserName); // имена всех пользователей
                 var uUsers = from u in _context.Users select new { Id = u.Id, UserName = u.UserName};
             
-                if (role != "") // если нужны пользователи только заданной роли
+                if (!String.IsNullOrEmpty(role)) // если нужны пользователи только заданной роли
                 {
                     var uRoles = from r in _context.Roles select new { Id = r.Id, Name = r.Name, NormName = r.NormalizedName };
                     var uUserRole = from x in _context.UserRoles select new { UserId = x.UserId, RoleId = x.RoleId };
@@ -175,12 +175,12 @@ namespace FactPortal.Api
             try {
                 if (!String.IsNullOrEmpty(login) && !String.IsNullOrEmpty(password))
                 { 
-                    ApplicationUser user = await getUser_fromPassword(login, password);
+                    ApplicationUser user = await getUser_fromPassword(login, password).ConfigureAwait(false);
                     if (user != null)
                     {
-                        var userRoles = await _userManager.GetRolesAsync(user);
+                        var userRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                         var infoUserRoles = from r in userRoles select new { Type = r };
-                        var userClaims = await _userManager.GetClaimsAsync(user);
+                        var userClaims = await _userManager.GetClaimsAsync(user).ConfigureAwait(false);
                         var claimDB = userClaims.FirstOrDefault(x => x.Type.ToLower() == "company");
                         var UserDB = (claimDB != null) ? claimDB.Value : null;
 
@@ -188,9 +188,9 @@ namespace FactPortal.Api
 
                         //var token = _userManager.CreateSecurityTokenAsync(user).Result;
                         // create a token    
-                        string token = await _userManager.GenerateUserTokenAsync(user, "Invitation", "Invitation");
+                        string token = await _userManager.GenerateUserTokenAsync(user, "Invitation", "Invitation").ConfigureAwait(false);
                         // verify it
-                        bool OK = await _userManager.VerifyUserTokenAsync(user, "Invitation", "Invitation", token);
+                        bool OK = await _userManager.VerifyUserTokenAsync(user, "Invitation", "Invitation", token).ConfigureAwait(false);
 
                         var infoUser = new { Result = 0, Id = user.Id, Login = user.UserName, Token = token, user.FullName, user.Email, Phone = user.PhoneNumber, Roles = infoUserRoles, db = UserDB, Claims = infoUserClaims, BinPhoto = user.Photo };
 
@@ -239,10 +239,10 @@ namespace FactPortal.Api
         {
             if (!String.IsNullOrEmpty(login) && !String.IsNullOrEmpty(curPassword) && !String.IsNullOrEmpty(curPassword))
             {
-                ApplicationUser user = await getUser_fromPassword(login, curPassword);
+                ApplicationUser user = await getUser_fromPassword(login, curPassword).ConfigureAwait(false);
                 if (user != null)
                 {
-                    await _userManager.ChangePasswordAsync(user, curPassword, newPassword);
+                    await _userManager.ChangePasswordAsync(user, curPassword, newPassword).ConfigureAwait(false);
                     return new JsonResult(new { Result = 0, Login = user.UserName}, jsonOptions);
                 }
             }
@@ -258,8 +258,8 @@ namespace FactPortal.Api
                 if (!String.IsNullOrEmpty(Email))
                 {
                     var infoUserEmail = new { Result = 0, Message = "Инструкции придут на указанную почту", Email };
-                    var user = await _userManager.FindByEmailAsync(Email);
-                    if (user != null && (await _userManager.IsEmailConfirmedAsync(user)))
+                    var user = await _userManager.FindByEmailAsync(Email).ConfigureAwait(false);
+                    if (user != null && (await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false)))
                     {
                         // For more information on how to enable account confirmation and password reset please 
                         // visit https://go.microsoft.com/fwlink/?LinkID=532713
@@ -274,7 +274,7 @@ namespace FactPortal.Api
                         // мой отправщик писем
                         try
                         {
-                            await SimpleMail.SendAsync("Восстановление пароля на портале МойЗавод", SimpleMail.ForgotEmail(Email, HtmlEncoder.Default.Encode(callbackUrl)), Email);
+                            await SimpleMail.SendAsync("Восстановление пароля на портале МойЗавод", SimpleMail.ForgotEmail(Email, HtmlEncoder.Default.Encode(callbackUrl)), Email).ConfigureAwait(false);
                         } catch (Exception ex)
                         {
                             infoUserEmail = new { Result = 0, Message = $"Ошибка отправки письма: {ex.HResult} - {ex.Message}", Email };
@@ -348,7 +348,7 @@ namespace FactPortal.Api
                 // 2) фильтр на атрибуты
                 if (!String.IsNullOrEmpty(FilterClaim))
                 {
-                    SObjects = SObjects.Where(x => x.Claims.Count() > 0);
+                    SObjects = SObjects.Where(x => x.Claims.Any());
                     if (SObjects == null)
                         return new JsonResult(new { Result = 0, ServiceObjects = SObjects }, jsonOptions);
 
@@ -546,8 +546,8 @@ namespace FactPortal.Api
                     Position = m.Claims.Where(x => x.ClaimType.ToLower() == "position").Select(y => y.ClaimValue).FirstOrDefault(),
                     // Alerts = m.Alerts.Count(k => k.ServiceObjectId == m.Id),
                     Alerts = m.Alerts.Count(x => x.Status != 9),
-                    LastWork = (m.Works.Count() > 0) ? m.Works.OrderBy(n => n.Id).Select(f => new {f.Id, Status = Bank.inf_II(DWorksStatus, f.Id)}).Last() : null,
-                    Steps = m.Steps.Count(),
+                    LastWork = (m.Works.Any()) ? m.Works.OrderBy(n => n.Id).Select(f => new {f.Id, Status = Bank.inf_II(DWorksStatus, f.Id)}).Last() : null,
+                    Steps = m.Steps.Count,
                     Claims = (Claims) ? m.Claims.Select(x => new {x.ClaimType, x.ClaimValue }) : null
                 }
                     ).ToList();
@@ -1030,7 +1030,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 var alerts = _business.Alerts.Where(x => x.myUserId == UserId).ToList();
-                if (alerts.Count() == 0)
+                if (!alerts.Any())
                     return new JsonResult(new { Result = 0, Alerts = alerts }, jsonOptions);
 
                 // Словари
@@ -1080,7 +1080,7 @@ namespace FactPortal.Api
                 List<Work> works0 = _business.Works.Where(x => Works_ids.Contains(x.Id)).ToList();
 
                 // Завершаем, если выборка пустая
-                if (alerts0.Count() == 0 && works0.Count() == 0)
+                if (!alerts0.Any() && !works0.Any())
                     return new JsonResult(new { Result = 0, Alerts = alerts0, Works = works0 }, jsonOptions);
 
                 // Словари
@@ -1148,8 +1148,8 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
-                var alerts = _business.Alerts.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Count() == 0).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId).ToList();
-                if (alerts.Count() == 0)
+                var alerts = _business.Alerts.Where(x => listIDs.Any(y => y == x.Id.ToString()) || !listIDs.Any()).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId).ToList();
+                if (!alerts.Any())
                     return new JsonResult(new { Result = 0, alerts }, jsonOptions);
 
 
@@ -1373,7 +1373,7 @@ namespace FactPortal.Api
                 
                 var Works_user = _business.Works.Where(x => String.IsNullOrEmpty(UserId) || list_user.Any(y => y == x.Id));
                 var Works_ids = Works_user.Where(x => String.IsNullOrEmpty(Ids) || list_IDs.Any(y => y == x.Id.ToString())).ToList();
-                if (Works_ids.Count() == 0)
+                if (Works_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Works = Works_ids }, jsonOptions);
 
                 // Словари
@@ -1569,7 +1569,7 @@ namespace FactPortal.Api
 
                 var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
                 var Steps_ids = _business.Steps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Count() == 0).ToList().OrderBy(x => x.Index).ToList();
-                if (Steps_ids.Count() == 0)
+                if (Steps_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Steps = Steps_ids }, jsonOptions);
 
                 // Словари
@@ -1731,8 +1731,8 @@ namespace FactPortal.Api
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
-                var WorkSteps_ids = _business.WorkSteps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Count() == 0).ToList();
-                if (WorkSteps_ids.Count() == 0)
+                var WorkSteps_ids = _business.WorkSteps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || !listIDs.Any()).ToList();
+                if (WorkSteps_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Works = WorkSteps_ids }, jsonOptions);
 
                 // Словари
@@ -1884,8 +1884,8 @@ namespace FactPortal.Api
                 workStep.myUserId = UserId;
                 workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Del));
                 workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
-                workStep.DT_Start = (DT_Start !="") ? DT_Start : workStep.DT_Start;
-                workStep.DT_Stop = (DT_Stop !="") ? DT_Stop : workStep.DT_Stop;
+                workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
+                workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
                 workStep.Status = Status;
                 workStep.Title = (!String.IsNullOrEmpty(Title)) ? Title : workStep.Title;
 
@@ -1991,8 +1991,8 @@ namespace FactPortal.Api
                     workStep.myUserId = UserId;
                     workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Del));
                     workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
-                    workStep.DT_Start = (DT_Start != "") ? DT_Start : workStep.DT_Start;
-                    workStep.DT_Stop = (DT_Stop != "") ? DT_Stop : workStep.DT_Stop;
+                    workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
+                    workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
                     workStep.Status = Status;
                     workStep.Title = Title;
                 }
@@ -2099,7 +2099,7 @@ namespace FactPortal.Api
                 if (String.IsNullOrEmpty(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var Files = (Path == "") ? _business.Files : _business.Files.Where(x => x.Path.Contains(Path));
+                var Files = (String.IsNullOrEmpty(Path)) ? _business.Files : _business.Files.Where(x => x.Path.Contains(Path));
                 var listIds = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
 
                 return new JsonResult(new { Result = 0, Files = Files.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Count() == 0) }, jsonOptions);
@@ -2315,12 +2315,12 @@ namespace FactPortal.Api
         {
             if (!String.IsNullOrEmpty(login) && !String.IsNullOrEmpty(password))
             {
-                ApplicationUser user = await getUser_fromPassword(login, password);
+                ApplicationUser user = await getUser_fromPassword(login, password).ConfigureAwait(false);
                 if (user != null)
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
+                    var userRoles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
                     var infoUserRoles = from r in userRoles select new { Type = r };
-                    var userClaims = await _userManager.GetClaimsAsync(user);
+                    var userClaims = await _userManager.GetClaimsAsync(user).ConfigureAwait(false);
                     var infoUserClaims = from r in userClaims select new { Type = r.Type, Value = r.Value };
                     var infoUser = new { Result = 0, Login = user.UserName, user.FullName, user.Email, Phone = user.PhoneNumber, Roles = infoUserRoles, Claims = infoUserClaims, BinPhoto = user.Photo };
 

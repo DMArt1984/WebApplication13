@@ -142,7 +142,7 @@ namespace FactPortal.Controllers
                 var worksOUT = new List<WorkInfo>();
                 if (LastWork != null)
                 {
-                    var FinalStep = steps.Count(); // (mySteps.Count() >= 1) ? mySteps.OrderBy(k => k.Index).Last().Index : 0;
+                    var FinalStep = steps.Count; // (mySteps.Count() >= 1) ? mySteps.OrderBy(k => k.Index).Last().Index : 0;
                     worksOUT.Add(new WorkInfo
                     {
                         Id = LastWork.Id,
@@ -921,7 +921,7 @@ namespace FactPortal.Controllers
             {
                 // Список шагов для объекта
                 var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync();
-                if (Steps.Count() == 0)
+                if (Steps.Any() == false)
                     return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
 
                 var myIDs = _business.Works.Select(x => x.Id).ToList();
@@ -1105,7 +1105,7 @@ namespace FactPortal.Controllers
 
             // Проверка на доступность номера шага (Index)
             var IndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId && x.Id != Id).Select(x => x.Index).ToListAsync();
-            if (Index == 0 || (IndexSteps.Count() > 0 && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
+            if (Index == 0 || (IndexSteps.Any() && IndexSteps.Contains(Index))) // Если шаг с таким номером уже существует
             {
                 // ВЫВЕСТИ СООБЩЕНИЕ!
                 // 5. Вернуться в список
@@ -1210,13 +1210,13 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> WorkStepDelete(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
-            WorkStep workStep = await _business.WorkSteps.FirstOrDefaultAsync(p => p.Id == Id);
+            WorkStep workStep = await _business.WorkSteps.FirstOrDefaultAsync(p => p.Id == Id).ConfigureAwait(false);
             if (workStep != null)
             {
-                await DeleteFiles(workStep.groupFilesId);
+                await DeleteFiles(workStep.groupFilesId).ConfigureAwait(false);
 
                 _business.WorkSteps.Remove(workStep);
-                await _business.SaveChangesAsync();
+                await _business.SaveChangesAsync().ConfigureAwait(false);
                 return RedirectToAction("WorkStepsList", new { WorkId = WorkId, ServiceObjectId = ServiceObjectId });
             }
             return NotFound();
@@ -1396,10 +1396,10 @@ namespace FactPortal.Controllers
         {
             Dictionary<int, string> Dic = new Dictionary<int, string>();
             Bank.GetChildPosRec(ref Dic, _business.Levels, Id);
-            if (Dic.Count() == 0)
+            if (Dic.Any() == false)
                 return new ContentResult { Content = "", ContentType = "text/html" };
 
-            string StringChild = Dic.Count().ToString() + " элементов: " + String.Join(';', Dic.Select(x => x.Value));
+            string StringChild = Dic.Count.ToString() + " элементов: " + String.Join(';', Dic.Select(x => x.Value));
             if (StringChild.Length > 100)
                 StringChild = StringChild.Substring(0, 100) + "...";
 
@@ -1897,7 +1897,7 @@ namespace FactPortal.Controllers
         // Крошки: Объект обслуживания
         private MvcBreadcrumbNode GetBreadObj(int ServiceObjectId = 0, string Title = "")
         {
-            return new MvcBreadcrumbNode("SOInfo", "Business", (Title != "") ? Title : "Объект обслуживания")
+            return new MvcBreadcrumbNode("SOInfo", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Объект обслуживания")
             {
                 Parent = GetBreadMain(),
                 RouteValues = new { Id = ServiceObjectId }
@@ -1917,7 +1917,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadAlertsList_Filter(int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("AlertsList", "Business", (Title != "") ? Title : "Уведомления от сотрудников")
+            return new MvcBreadcrumbNode("AlertsList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Уведомления от сотрудников")
             {
                 Parent = (SObject != null) ? GetBreadObj(ServiceObjectId, (SObject != null) ? SObject.ObjectTitle : "") : GetBreadMain(),
                 RouteValues = new { ServiceObjectId = ServiceObjectId }
@@ -1937,7 +1937,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadStepsList_Filter(int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("StepsList", "Business", (Title != "") ? Title : "Шаги объекта")
+            return new MvcBreadcrumbNode("StepsList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Шаги объекта")
             {
                 Parent = (SObject != null) ? GetBreadObj(ServiceObjectId, (SObject != null) ? SObject.ObjectTitle : "") : GetBreadMain(),
                 RouteValues = new { ServiceObjectId = ServiceObjectId }
@@ -1957,7 +1957,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWorksList_Filter(int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("WorksList", "Business", (Title != "") ? Title : "Статистика обслуживания")
+            return new MvcBreadcrumbNode("WorksList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Статистика обслуживания")
             {
                 Parent = (SObject != null) ? GetBreadObj(ServiceObjectId, (SObject != null) ? SObject.ObjectTitle : "") : GetBreadMain(),
                 RouteValues = new { ServiceObjectId = ServiceObjectId }
@@ -1967,7 +1967,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWork(int WorkId = 0, int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("WorkInfo", "Business", (Title != "") ? Title : $"Обслуживание ID {WorkId}")
+            return new MvcBreadcrumbNode("WorkInfo", "Business", (!String.IsNullOrEmpty(Title)) ? Title : $"Обслуживание ID {WorkId}")
             {
                 Parent = (SObject != null) ? GetBreadWorksList_Filter(SObject.Id, "Статистика обслуживания") : GetBreadWorksList_All(),
                 RouteValues = new { Id = WorkId, ServiceObjectId = ServiceObjectId }
@@ -1987,7 +1987,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWorkStepsList_Filter(int WorkId, int ServiceObjectId = 0, string Title = "")
         {
             var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
-            return new MvcBreadcrumbNode("WorkStepsList", "Business", (Title != "") ? Title : "Выполненные шаги")
+            return new MvcBreadcrumbNode("WorkStepsList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Выполненные шаги")
             {
                 Parent = (work != null) ? GetBreadWork(WorkId, ServiceObjectId, $"Обслуживание ID {@WorkId}") : GetBreadWorksList_All(),
                 RouteValues = new { WorkId = WorkId, ServiceObjectId = ServiceObjectId }
@@ -2115,7 +2115,7 @@ namespace FactPortal.Controllers
                 {
                     case "so":
                         var claims = _business.Claims.Where(x => x.ServiceObjectId == categoryId && x.ClaimType.ToLower() == "file").ToList();
-                        if (claims.Count() > 0)
+                        if (claims.Any())
                             Ids += String.Join(";", claims.Select(y => y.ClaimValue));
                         break;
                     case "alert":

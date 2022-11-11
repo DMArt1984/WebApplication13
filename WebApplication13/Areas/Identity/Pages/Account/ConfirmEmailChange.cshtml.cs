@@ -34,14 +34,14 @@ namespace FactPortal.Areas.Identity.Pages.Account
                 return RedirectToPage("/Index");
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
             if (user == null)
             {
                 return NotFound($"Не удалось загрузить пользователя с ID '{userId}'.");
             }
 
             code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-            var result = await _userManager.ChangeEmailAsync(user, email, code);
+            var result = await _userManager.ChangeEmailAsync(user, email, code).ConfigureAwait(false);
             if (!result.Succeeded)
             {
                 StatusMessage = "Ошибка при изменении email.";
@@ -50,14 +50,14 @@ namespace FactPortal.Areas.Identity.Pages.Account
 
             // In our UI email and user name are one and the same, so when we update the email
             // we need to update the user name.
-            var setUserNameResult = await _userManager.SetUserNameAsync(user, email);
+            var setUserNameResult = await _userManager.SetUserNameAsync(user, email).ConfigureAwait(false);
             if (!setUserNameResult.Succeeded)
             {
                 StatusMessage = "Ошибка смены имени пользователя.";
                 return Page();
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync(user).ConfigureAwait(false);
             StatusMessage = "Спасибо, что подтвердили изменение email.";
             return Page();
         }

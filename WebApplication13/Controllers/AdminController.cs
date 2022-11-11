@@ -87,8 +87,8 @@ namespace FactPortal.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                var myUser = await _userManager.FindByNameAsync(myName);
-                var myClaims = await _userManager.GetClaimsAsync(myUser);
+                var myUser = await _userManager.FindByNameAsync(myName).ConfigureAwait(false);
+                var myClaims = await _userManager.GetClaimsAsync(myUser).ConfigureAwait(false);
                 var myCompanies = myClaims.Where(x => x.Type == "Company");
                 
                 List<ApplicationUser> users = new List<ApplicationUser>();
@@ -175,7 +175,7 @@ namespace FactPortal.Controllers
                             try
                             {
                                 // Ссылка для подтверждения Email
-                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
                                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                                 var callbackUrl = Url.Page(
                                     "/Account/ConfirmEmail",
@@ -183,7 +183,7 @@ namespace FactPortal.Controllers
                                     values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                                     protocol: Request.Scheme);
                                 // отправка письма
-                                await SimpleMail.SendAsync("Регистрация на портале МойЗавод", SimpleMail.ConfirmEmail(NewUserData.Email, HtmlEncoder.Default.Encode(callbackUrl)), NewUserData.Email);
+                                await SimpleMail.SendAsync("Регистрация на портале МойЗавод", SimpleMail.ConfirmEmail(NewUserData.Email, HtmlEncoder.Default.Encode(callbackUrl)), NewUserData.Email).ConfigureAwait(false);
                             }
                             catch (Exception ex)
                             {
@@ -240,7 +240,7 @@ namespace FactPortal.Controllers
             try
             {
                 // получение пользователя для профиля
-                var user = (String.IsNullOrEmpty(Email)) ? await _userManager.FindByIdAsync(_userManager.GetUserId(User)) : await _userManager.FindByEmailAsync(Email);
+                var user = (String.IsNullOrEmpty(Email)) ? await _userManager.FindByIdAsync(_userManager.GetUserId(User)).ConfigureAwait(false) : await _userManager.FindByEmailAsync(Email).ConfigureAwait(false);
                 if (user == null)
                     return RedirectToAction("Index");
 
@@ -271,7 +271,7 @@ namespace FactPortal.Controllers
                 //    DataListCompany = listCompany
                 //};
 
-                var UI = await GetUserInfoAsync(user, ViewEditor, await IsEnableEditor(user));
+                var UI = await GetUserInfoAsync(user, ViewEditor, await IsEnableEditor(user).ConfigureAwait(false)).ConfigureAwait(false);
 
                 return View(UI);
 
@@ -286,12 +286,12 @@ namespace FactPortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Profile(UserInfo UI)
         {
-            var user = await _userManager.FindByIdAsync(UI.User.Id);
+            var user = await _userManager.FindByIdAsync(UI.User.Id).ConfigureAwait(false);
             if (user == null)
                 return RedirectToAction("Index");
 
-            UI.Claims = await _userManager.GetClaimsAsync(user);
-            UI.Roles = await _userManager.GetRolesAsync(user);
+            UI.Claims = await _userManager.GetClaimsAsync(user).ConfigureAwait(false);
+            UI.Roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
 
             // Аватар
             if (UI.Edit.RemoveAvatar)
@@ -304,7 +304,7 @@ namespace FactPortal.Controllers
                 {
                     using (var dataStream = new System.IO.MemoryStream()) // только System.IO.MemoryStream()
                     {
-                        await UI.Edit.Avatar.CopyToAsync(dataStream);
+                        await UI.Edit.Avatar.CopyToAsync(dataStream).ConfigureAwait(false);
                         user.Photo = dataStream.ToArray();
                     }
                 }
@@ -313,43 +313,43 @@ namespace FactPortal.Controllers
             // Email и Логин
             if (user.Email != UI.Edit.Email)
             {
-                var fnd1 = await _userManager.FindByEmailAsync(UI.Edit.Email);
-                var fnd2 = await _userManager.FindByNameAsync(UI.Edit.Email);
+                var fnd1 = await _userManager.FindByEmailAsync(UI.Edit.Email).ConfigureAwait(false);
+                var fnd2 = await _userManager.FindByNameAsync(UI.Edit.Email).ConfigureAwait(false);
                 if (fnd1 == null && fnd2 == null)
                 {
-                    await _userManager.SetEmailAsync(user, UI.Edit.Email);
-                    await _userManager.SetUserNameAsync(user, UI.Edit.Email);
+                    await _userManager.SetEmailAsync(user, UI.Edit.Email).ConfigureAwait(false);
+                    await _userManager.SetUserNameAsync(user, UI.Edit.Email).ConfigureAwait(false);
                 } else
                 {
                     ModelState.AddModelError("Edit.Email", $"Email ({UI.Edit.Email}) уже существует");
-                    return View(await GetUserInfoAsync(user, true, true));
+                    return View(await GetUserInfoAsync(user, true, true).ConfigureAwait(false));
                 }
             }
 
             // Подтверждение почты
-            if (UI.Edit.ConfirmEmail != await _userManager.IsEmailConfirmedAsync(user))
+            if (UI.Edit.ConfirmEmail != await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false))
             {
                 if (UI.Edit.ConfirmEmail)
                 {
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var result = await _userManager.ConfirmEmailAsync(user, token);
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user).ConfigureAwait(false);
+                    var result = await _userManager.ConfirmEmailAsync(user, token).ConfigureAwait(false);
                 }
             }
                     
             // Телефон
             if (user.PhoneNumber != UI.Edit.PhoneNumber)
             {
-                await _userManager.SetPhoneNumberAsync(user, UI.Edit.PhoneNumber);
+                await _userManager.SetPhoneNumberAsync(user, UI.Edit.PhoneNumber).ConfigureAwait(false);
             }
 
             // Подтверждение телефона
-            if (UI.Edit.ConfirmPhone != await _userManager.IsPhoneNumberConfirmedAsync(user))
+            if (UI.Edit.ConfirmPhone != await _userManager.IsPhoneNumberConfirmedAsync(user).ConfigureAwait(false))
             {
                 if (UI.Edit.ConfirmPhone)
                 {
-                    var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber);
-                    var v = await _userManager.VerifyChangePhoneNumberTokenAsync(user, token, user.PhoneNumber);
-                    var result = await _userManager.ChangePhoneNumberAsync(user, token, user.PhoneNumber);
+                    var token = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber).ConfigureAwait(false);
+                    var v = await _userManager.VerifyChangePhoneNumberTokenAsync(user, token, user.PhoneNumber).ConfigureAwait(false);
+                    var result = await _userManager.ChangePhoneNumberAsync(user, token, user.PhoneNumber).ConfigureAwait(false);
                 }
             }
 
@@ -363,12 +363,12 @@ namespace FactPortal.Controllers
                 switch (UI.Edit.Roles.ToLower())
                 {
                     case "admin":
-                        await _userManager.AddToRoleAsync(user, "Admin");
-                        await _userManager.RemoveFromRoleAsync(user, "Basic");
+                        await _userManager.AddToRoleAsync(user, "Admin").ConfigureAwait(false);
+                        await _userManager.RemoveFromRoleAsync(user, "Basic").ConfigureAwait(false);
                         break;
                     case "basic":
-                        await _userManager.AddToRoleAsync(user, "Basic");
-                        await _userManager.RemoveFromRoleAsync(user, "Admin");
+                        await _userManager.AddToRoleAsync(user, "Basic").ConfigureAwait(false);
+                        await _userManager.RemoveFromRoleAsync(user, "Admin").ConfigureAwait(false);
                         break;
                 }
             }
@@ -385,11 +385,11 @@ namespace FactPortal.Controllers
                 {
                     IEnumerable<string> result = valid_company.Intersect(new_company); // оставляем только совпадения
                     var company_claims = UI.Claims.Where(y => y.Type.ToLower() == "company");
-                    await _userManager.RemoveClaimsAsync(user, company_claims); // удаляем все компании
+                    await _userManager.RemoveClaimsAsync(user, company_claims).ConfigureAwait(false); // удаляем все компании
                     foreach (var item in result)
                     {
                         System.Security.Claims.Claim cl = new System.Security.Claims.Claim("Company", item);
-                        await _userManager.AddClaimAsync(user, cl);
+                        await _userManager.AddClaimAsync(user, cl).ConfigureAwait(false);
                     }
                 }
             }
@@ -401,11 +401,11 @@ namespace FactPortal.Controllers
             System.Security.Claims.Claim NewJob = new System.Security.Claims.Claim("Job", UI.Edit.Job);
             if (OldJob == null)
             {
-                await _userManager.AddClaimAsync(user, NewJob);
+                await _userManager.AddClaimAsync(user, NewJob).ConfigureAwait(false);
             }
             else
             {
-                await _userManager.ReplaceClaimAsync(user, OldJob, NewJob);
+                await _userManager.ReplaceClaimAsync(user, OldJob, NewJob).ConfigureAwait(false);
             }
 
             // Обновить
@@ -417,12 +417,12 @@ namespace FactPortal.Controllers
         public async Task<IActionResult> RemoveUser(string Id)
         {
             // Поиск пользователя
-            var user = await _userManager.FindByIdAsync(Id);
+            var user = await _userManager.FindByIdAsync(Id).ConfigureAwait(false);
             if (user == null)
                 return RedirectToAction("Index");
 
             // Удаление пользователя
-            await _userManager.DeleteAsync(user);
+            await _userManager.DeleteAsync(user).ConfigureAwait(false);
             return RedirectToAction("Index");
         }
 
@@ -447,21 +447,21 @@ namespace FactPortal.Controllers
         {
             user = (user == null) ? GetMe() : user;
             var listCompany = _userManager.GetClaimsAsync(user).Result.Where(y => y.Type.ToLower() == "company").Select(z => z.Value).Distinct().ToList();
-            listCompany.RemoveAll(s => s == "");
+            listCompany.RemoveAll(s => String.IsNullOrEmpty(s));
             return listCompany;
         }
 
         private async Task<bool> IsEnableEditor(ApplicationUser ed_user) // разрешение редактирования пользователя
         {
             var adminUser = GetMe();
-            if (await _userManager.IsInRoleAsync(adminUser, "Admin") || await _userManager.IsInRoleAsync(adminUser, "SuperAdmin"))
+            if (await _userManager.IsInRoleAsync(adminUser, "Admin").ConfigureAwait(false) || await _userManager.IsInRoleAsync(adminUser, "SuperAdmin").ConfigureAwait(false))
             {
-                if (await _userManager.IsInRoleAsync(adminUser, "SuperAdmin") == false && await _userManager.IsInRoleAsync(ed_user, "SuperAdmin"))
+                if (await _userManager.IsInRoleAsync(adminUser, "SuperAdmin").ConfigureAwait(false) == false && await _userManager.IsInRoleAsync(ed_user, "SuperAdmin").ConfigureAwait(false))
                     return false;
 
                 var list1 = GetUserCompanies(adminUser);
                 var list2 = GetUserCompanies(ed_user);
-                if (list1.Intersect(list2).Count() <= 0)
+                if (!list1.Intersect(list2).Any())
                     return false;
 
                 return true;
@@ -477,8 +477,8 @@ namespace FactPortal.Controllers
             UserInfo UI = new UserInfo
             {
                 User = user,
-                Claims = await _userManager.GetClaimsAsync(user),
-                Roles = await _userManager.GetRolesAsync(user),
+                Claims = await _userManager.GetClaimsAsync(user).ConfigureAwait(false),
+                Roles = await _userManager.GetRolesAsync(user).ConfigureAwait(false),
                 ViewEditor = viewEditor,
                 EnableEditor = enableEditor
             };
@@ -492,8 +492,8 @@ namespace FactPortal.Controllers
                 Email = user.Email,
                 FullName = user.FullName,
                 PhoneNumber = user.PhoneNumber,
-                ConfirmEmail = await _userManager.IsEmailConfirmedAsync(user),
-                ConfirmPhone = await _userManager.IsPhoneNumberConfirmedAsync(user),
+                ConfirmEmail = await _userManager.IsEmailConfirmedAsync(user).ConfigureAwait(false),
+                ConfirmPhone = await _userManager.IsPhoneNumberConfirmedAsync(user).ConfigureAwait(false),
                 DataListJob = _context.UserClaims.Where(x => x.ClaimType.ToLower() == "job").Select(y => y.ClaimValue).Distinct().ToList(),
                 DataListCompany = GetUserCompanies()
             };

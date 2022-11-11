@@ -24,7 +24,7 @@ namespace FactPortal.Models
 
         public static int maxID(List<int> ids)
         {
-            if (ids == null || ids.Count()==0)
+            if (ids == null || !ids.Any())
                 return 1;
             return ids.Max() + 1;
         }
@@ -57,7 +57,7 @@ namespace FactPortal.Models
         public static string ExpDicPos(Dictionary<int, string> IdName, int Link, string DelimPos)
         {
             var x = IdName.Where(x => x.Key == Link);
-            if (x.Count() == 0)
+            if (!x.Any())
                 return "";
 
             return $"{ExpDicPos(IdName, Convert.ToInt32(x.First().Value.Split(':')[0]), DelimPos)}{x.First().Value.Split(':')[1]}{DelimPos}";
@@ -291,7 +291,7 @@ namespace FactPortal.Models
         // Получить минимальную дату и время
         public static string GetMinDT(List<string> DTs)
         {
-            if (DTs.Count() == 0)
+            if (!DTs.Any())
                 return "";
 
             string MinDT = DTs.OrderBy(x => x).First();
@@ -306,7 +306,7 @@ namespace FactPortal.Models
         // Получить максимальную дату и время
         public static string GetMaxDT(List<string> DTs)
         {
-            if (DTs.Count() == 0)
+            if (!DTs.Any())
                 return "";
 
             string MaxDT = DTs.OrderBy(x => x).Last();
@@ -389,7 +389,7 @@ namespace FactPortal.Models
             if (String.IsNullOrEmpty(Ids))
                 return new List<string>();
 
-            if (Ids.Split(';').Count() == 0)
+            if (Ids.Split(';').Any() == false)
                 return new List<string>();
 
             var OUT = Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "").ToList();
@@ -403,7 +403,7 @@ namespace FactPortal.Models
             if (String.IsNullOrEmpty(Ids))
                 return new List<myFiles>();
 
-            if (Ids.Split(';').Count() == 0)
+            if (Ids.Split(';').Any() == false)
                 return new List<myFiles>();
 
             var OUT = Ids.Split(';').Select(x => (Files.Any(y => y.Id.ToString() == x)) ? Files.FirstOrDefault(y => y.Id.ToString() == x) : null).ToList();
@@ -421,7 +421,7 @@ namespace FactPortal.Models
 
         public static List<string> inf_ISList(Dictionary<int, string> SS, string Ids)
         {
-            return (Ids == null) ? new List<string>() : (Ids.Split(';').Count() == 0) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(Convert.ToInt32(z))) ? SS[Convert.ToInt32(z)] : "").ToList(); //Where(x => !String.IsNullOrEmpty(x)).Distinct()
+            return (Ids == null) ? new List<string>() : (Ids.Split(';').Any() == false) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(Convert.ToInt32(z))) ? SS[Convert.ToInt32(z)] : "").ToList(); //Where(x => !String.IsNullOrEmpty(x)).Distinct()
         }
 
         // --------------------------------------------------------------------------------
@@ -431,11 +431,11 @@ namespace FactPortal.Models
         {
             int CalcStatus = 0; // нет работ
 
-            if (workSteps.Count() > 0)
+            if (workSteps.Any())
                 CalcStatus = 1; // ожидание
 
             // работа
-            foreach (var item in workSteps)
+            foreach (var item in workSteps.ToList())
             {
                 if (item == 5)
                 {
@@ -510,7 +510,7 @@ namespace FactPortal.Models
         public static int GetLastWorkId(int ServiceObjectId, List<Work> Works)
         {
             var Works_SO = Works.Where(x => x.ServiceObjectId == ServiceObjectId).OrderBy(y => y.Id).ToList();
-            var OUT = (Works_SO.Count() > 0) ? Works_SO.Last().Id : 0;
+            var OUT = (Works_SO.Any()) ? Works_SO.Last().Id : 0;
             return OUT;
         }
 
@@ -541,7 +541,7 @@ namespace FactPortal.Models
                 while (Id_for_Link > 0)
                 {
                     var Parent = Levels.Where(x => (x.Id == Id_for_Link && Id_for_Link != itemID)); // родительский объект
-                    if (Parent.Count() > 0) // родительский объект найден
+                    if (Parent.Any()) // родительский объект найден
                     {
                         var One = Parent.First(); // родительский объект
                         Line = GetPosString(One.Id, One.Name, EnId, EnName, DelimId) + DelimPos + Line; // добавление части пути...

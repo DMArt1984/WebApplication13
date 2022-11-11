@@ -142,7 +142,7 @@ namespace FactPortal.Areas.Identity.Pages.Account.Manage
 
             if (Request.Form.Files.Count > 0)
             {
-                IFormFile file = Request.Form.Files.FirstOrDefault();
+                IFormFile file = Request.Form.Files.ToList().FirstOrDefault();
                 using (var dataStream = new System.IO.MemoryStream()) // только System.IO.MemoryStream()
                 {
                     await file.CopyToAsync(dataStream);
