@@ -5,11 +5,11 @@
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     if (FilterSO > 0)
     {
-        ViewData["Title"] = $"Шаги для объекта {@Model.First(x => x.ServiceObjectId == FilterSO).ServiceObjectTitle} : параметры";
+        ViewData["Title"] = $"Шаги для {@Model.First(x => x.ServiceObjectId == FilterSO).ServiceObjectTitle}";
     }
     else
     {
-        ViewData["Title"] = "Шаги : параметры";
+        ViewData["Title"] = "Шаги для объекта";
     }
 
 }

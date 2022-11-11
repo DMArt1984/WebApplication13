@@ -7,7 +7,7 @@
     {
         var SO = @Model.FirstOrDefault(x => x.ServiceObjectId == FilterSO);
         string Title = (SO != null) ? SO.ServiceObjectTitle : "Объект";
-        ViewData["Title"] = $"{Title}: Статистика обслуживания";
+        ViewData["Title"] = $"Статистика обслуживания для {Title}";
     }
     else
     {

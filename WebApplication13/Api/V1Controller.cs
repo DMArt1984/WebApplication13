@@ -335,8 +335,8 @@ namespace FactPortal.Api
             [FromForm] string ViewClaim = null, [FromForm] string FilterClaim = null,
             [FromForm] string FilterPosition = null)
         {
-            //try
-            //{
+            try
+            {
                 if (String.IsNullOrEmpty(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
@@ -361,7 +361,7 @@ namespace FactPortal.Api
                 // 3) фильтрация по позиции
                 if (!String.IsNullOrEmpty(FilterPosition))
                 {
-                    List<int> MyPos = new List<int>();
+                    List<int> positions = new List<int>();
                     Dictionary<int, int> ItLevels = new Dictionary<int, int>();
                     foreach (var item in _business.Levels)
                     {
@@ -371,10 +371,10 @@ namespace FactPortal.Api
                     foreach (var item in FilterPosition.Split(';').Distinct())
                     {
                         var IdPos = Convert.ToInt32(item);
-                        MyPos.Add(IdPos);
-                        Bank.TreeExpPos(ref MyPos, ItLevels, IdPos);
+                        positions.Add(IdPos);
+                        Bank.TreeExpPos(ref positions, ItLevels, IdPos);
                     }
-                    SObjects = SObjects.Where(u => (u.Claims.Where(x => x.ClaimType.ToLower() == "position").Count() == 0) ? false : MyPos.Contains(Convert.ToInt32(u.Claims.FirstOrDefault(x => x.ClaimType.ToLower() == "position").ClaimValue)));
+                    SObjects = SObjects.Where(u => (u.Claims.Where(x => x.ClaimType.ToLower() == "position").Count() == 0) ? false : positions.Contains(Convert.ToInt32(u.Claims.FirstOrDefault(x => x.ClaimType.ToLower() == "position").ClaimValue)));
                 }
 
                 //
@@ -444,18 +444,15 @@ namespace FactPortal.Api
                 var forPos = SObjects2.Where(x => x.Claims.Any(y => y.Type.ToLower() == "position")).Select(x => new { Id = x.Id, Position = x.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value });
                 var forFile = SObjects2.Where(x => x.Claims.Any(y => y.Type.Contains("file", StringComparison.OrdinalIgnoreCase))).Select(z => new { Id = z.Id, Files = z.Claims.Where(k => k.Type.Contains("file", StringComparison.OrdinalIgnoreCase)).Select(m => Bank.inf_SS(DFiles, m.Value)) });
             
-                //var Obj_and_Claims = Obj_and_ClaimsBase.Join(forPos, a => a.Id, b => b.Id,
-                //    (a, b) => new { a, b }).Join(forFile, c => c.a.Id, d => d.Id, (c, d) => new { c.a.Id, c.a.ObjectTitle, c.a.ObjectCode, c.a.Description, c.b.Position, d.Files, c.a.Claims, c.a.Alerts, c.a.Works, c.a.Steps });
-            
                 var SObjectsOUT = SObjects2.Select(x => new { x.Id, x.ObjectTitle, x.ObjectCode, x.Description, Position = (forPos.Any(y => y.Id == x.Id)) ? forPos.First(y => y.Id == x.Id).Position : "", Files = (forFile.Any(y => y.Id == x.Id)) ? forFile.First(y => y.Id == x.Id).Files : null, x.Alerts, x.Work, x.Steps, x.Claims }).ToList();
 
                 // Вывод
                 return new JsonResult(new { Result = 0, ServiceObjects = SObjectsOUT }, jsonOptions);
-            //}
-            //catch (Exception ex)
-            //{
-            //    return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source}, jsonOptions);
-            //}
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source }, jsonOptions);
+            }
         }
 
         // Информация по одному объекту обслуживания
@@ -507,14 +504,14 @@ namespace FactPortal.Api
                 // Копирование важных атрибутов в основной список
                 var forPos = SObject2.Claims.Any(x => x.Type.ToLower() == "position") ? SObject2.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value : "";
                 var forFile = SObject2.Claims.Where(x => x.Type.Contains("file", StringComparison.OrdinalIgnoreCase)).Select(y => Bank.inf_SS(DFiles, y.Value)).ToList();
-                var SObject3 = new { SObject2.Id, SObject2.ObjectTitle, SObject2.ObjectCode, SObject2.Description, Position = forPos, Files = forFile, SObject2.Alerts, SObject2.Work, SObject2.Steps, SObject2.Claims };
+                var SObjectOUT = new { SObject2.Id, SObject2.ObjectTitle, SObject2.ObjectCode, SObject2.Description, Position = forPos, Files = forFile, SObject2.Alerts, SObject2.Work, SObject2.Steps, SObject2.Claims };
 
                 // Удаление перенесенных атрибутов
-                SObject3.Claims.RemoveAll(x => x.Type.ToLower() == "position");
-                SObject3.Claims.RemoveAll(x => x.Type.Contains("file", StringComparison.OrdinalIgnoreCase));
+                SObjectOUT.Claims.RemoveAll(x => x.Type.ToLower() == "position");
+                SObjectOUT.Claims.RemoveAll(x => x.Type.Contains("file", StringComparison.OrdinalIgnoreCase));
 
                 // Вывод
-                return new JsonResult(new { Result = 0, ServiceObject = SObject3 }, jsonOptions);
+                return new JsonResult(new { Result = 0, ServiceObject = SObjectOUT }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -540,7 +537,7 @@ namespace FactPortal.Api
                 Dictionary<int, int> DWorksStatus = Bank.GetDicWorkStatus(_business.Works.ToList(), _business.WorkSteps.ToList(), DFinalSteps);
 
                 // добавление к списку атрибутов и оповещений и работ
-                var SObjects2 = SObjects.Select(m => new {
+                var SObjectsOUT = SObjects.Select(m => new {
                     m.Id,
                     m.ObjectTitle,
                     m.ObjectCode,
@@ -558,7 +555,7 @@ namespace FactPortal.Api
                 // фильтрация по позиции
                 if (!String.IsNullOrEmpty(FilterPosition))
                 {
-                    List<int> MyPos = new List<int>();
+                    List<int> positions = new List<int>();
                     Dictionary<int, int> ItLevels = new Dictionary<int, int>();
                     foreach (var item in _business.Levels)
                     {
@@ -568,12 +565,12 @@ namespace FactPortal.Api
                     foreach (var item in FilterPosition.Split(';').Distinct())
                     {
                         var IdPos = Convert.ToInt32(item);
-                        MyPos.Add(IdPos);
-                        Bank.TreeExpPos(ref MyPos, ItLevels, IdPos);
+                        positions.Add(IdPos);
+                        Bank.TreeExpPos(ref positions, ItLevels, IdPos);
                     }
-                    SObjects2 = SObjects2.Where(u => MyPos.Contains(Convert.ToInt32(u.Position))).ToList();
+                    SObjectsOUT = SObjectsOUT.Where(u => positions.Contains(Convert.ToInt32(u.Position))).ToList();
                 }
-                return new JsonResult(new { Result = 0, ServiceObjects = SObjects2 }, jsonOptions);
+                return new JsonResult(new { Result = 0, ServiceObjects = SObjectsOUT }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -794,7 +791,6 @@ namespace FactPortal.Api
                     var claim = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == ItId && x.ClaimType == Item.Key);
                     if (claim == null) // добавление нового атрибута!!!
                     {
-                        //SObject.Claims.Add(new ObjectClaim { ClaimType = Item.Key, ClaimValue = Item.Value });
                         var newID = Bank.maxID(myIDs);
                         _business.Claims.Add(new ObjectClaim { Id = newID, ServiceObjectId = ItId, ClaimType = Item.Key, ClaimValue = Item.Value });
                         myIDs.Add(newID);
@@ -908,9 +904,8 @@ namespace FactPortal.Api
         {
             try
             {
-                //var List = GetPathLevels(_business.Levels,0,false,true);
-                var List = Bank.GetDicPos(_business.Levels).ToList().OrderBy(x => x.Value);
-                return new JsonResult(new { Result = 0, Positions = List }, jsonOptions);
+                var positions = Bank.GetDicPos(_business.Levels).ToList().OrderBy(x => x.Value);
+                return new JsonResult(new { Result = 0, Positions = positions }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -934,8 +929,8 @@ namespace FactPortal.Api
 
                 _business.Levels.Add(new Level { Id = Bank.maxID(_business.Levels.Select(x => x.Id).ToList()), Name = Name, LinkId = LinkId });
                 _business.SaveChanges();
-                var NewPos = _business.Levels.Where(x => x.Name == Name && x.LinkId == LinkId);
-                return new JsonResult(new { Result = 0, Position = NewPos }, jsonOptions);
+                var position = _business.Levels.Where(x => x.Name == Name && x.LinkId == LinkId);
+                return new JsonResult(new { Result = 0, Position = position }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -960,14 +955,14 @@ namespace FactPortal.Api
                 if (IsPos.Count > 0)
                     return new JsonResult(jsonPosExists, jsonOptions);
 
-                var Pos = _business.Levels.FirstOrDefault(x => x.Id == Id);
-                if (Pos == null)
+                var Position = _business.Levels.FirstOrDefault(x => x.Id == Id);
+                if (Position == null)
                     return new JsonResult(jsonPosNotFound, jsonOptions);
 
-                Pos.Name = Name;
-                Pos.LinkId = LinkId;
+                Position.Name = Name;
+                Position.LinkId = LinkId;
                 _business.SaveChanges();
-                return new JsonResult(new { Result = 0, Position = Pos }, jsonOptions);
+                return new JsonResult(new { Result = 0, Position = Position }, jsonOptions);
             }
             catch (Exception ex)
             {
@@ -981,17 +976,17 @@ namespace FactPortal.Api
         {
             try
             {
-                var Pos = _business.Levels.FirstOrDefault(x => x.Id == Id);
-                if (Pos == null)
+                var position = _business.Levels.FirstOrDefault(x => x.Id == Id);
+                if (position == null)
                     return new JsonResult(jsonPosNotFound, jsonOptions);
 
                 var LinkPos = _business.Levels.Where(x => x.LinkId == Id).ToList();
                 if (LinkPos.Count > 0)
                     return new JsonResult(jsonPosLink, jsonOptions);
 
-                _business.Levels.Remove(Pos);
+                _business.Levels.Remove(position);
                 _business.SaveChanges();
-                return new JsonResult(new { Result = 0, Position = Pos }, jsonOptions);
+                return new JsonResult(new { Result = 0, Position = position }, jsonOptions);
             }
             catch (Exception ex)
             {

@@ -284,15 +284,15 @@ namespace FactPortal.Controllers
         {
             if (id != null)
             {
-                myFiles obj = await _business.Files.FirstOrDefaultAsync(p => p.Id == id);
-                if (obj != null)
+                myFiles files = await _business.Files.FirstOrDefaultAsync(p => p.Id == id);
+                if (files != null)
                 {
-                    string Path = _appEnvironment.WebRootPath + obj.Path;
+                    string Path = _appEnvironment.WebRootPath + files.Path;
                     var OK = System.IO.File.Exists(Path);
                     if (OK)
                         System.IO.File.Delete(Path);
 
-                    _business.Files.Remove(obj);
+                    _business.Files.Remove(files);
                     await _business.SaveChangesAsync();
                     return RedirectToAction("videofile");
                 }
@@ -305,15 +305,15 @@ namespace FactPortal.Controllers
         {
             if (id != null)
             {
-                myFiles obj = await _business.Files.FirstOrDefaultAsync(p => p.Name == fileName);
-                if (obj != null)
+                myFiles files = await _business.Files.FirstOrDefaultAsync(p => p.Name == fileName);
+                if (files != null)
                 {
-                    string Path = _appEnvironment.WebRootPath + obj.Path;
+                    string Path = _appEnvironment.WebRootPath + files.Path;
                     var OK = System.IO.File.Exists(Path);
                     if (OK)
                         System.IO.File.Delete(Path);
 
-                    _business.Files.Remove(obj);
+                    _business.Files.Remove(files);
                     await _business.SaveChangesAsync();
                     return RedirectToAction("videofile");
                 }

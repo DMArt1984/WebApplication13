@@ -10,23 +10,7 @@ namespace FactPortal.Models
         public DateTime Today { get; set; }
         public List<Statistic> Statistics { get; set; }
     }
-    public enum WorkStatus
-    {
-        none = 0, // нет статуса
-        waiting = 1, // ожидание...
-        editing = 2, // редактирование...
-        production = 5, // в работе...
-        partially = 8, // выполнено частично
-        completed = 9 // выполнено
-    }
-    public class ServiceList
-    {
-        public List<ServiceObjectShort> SObjects { get; set; }
-        //public Dictionary<int, string> Positions { get; set; }
-        public Dictionary<string, string> Tables { get; set; }
-        //public int maxid { get; internal set; }
-        //public System.Collections.Generic.IEnumerable<Level> Level { get; set; }
-    }
+    
 
     public class Statistic
     {
@@ -98,53 +82,6 @@ namespace FactPortal.Models
         }
     }
 
-
-    public class Alert_
-    {
-        public int Id { get; set; }
-        public int ServiceObjectId { get; set; } // Объект обслуживания
-        public string myUserId { get; set; } // Персонал
-        public int myFilesId { get; set; } // Файл
-        public string DT { get; set; } // Дата и время
-        public string Message { get; set; } // Сообщение
-        public int Status { get; set; } // Статус
-        public string? ObjectName { get; set; }
-        public string? UserName { get; set; }
-        public string? UserEmail { get; set; }
-        public bool UserActive { get; set; }
-        public bool ObjectActive { get; set; }
-
-        public string StatusRus()
-        {
-            switch (Status)
-            {
-                case 0:
-                    return "ожидание";
-                case 10:
-                    return "редактирование";
-                case 5:
-                    return "работа";
-                case 99:
-                    return "частично";
-                case 9:
-                    return "выполнено";
-                default:
-                    return "-";
-            }
-        }
-
-    }
-    public class Steps_
-    {
-        public int Id { get; set; }
-        public int ServiceObjectId { get; set; }
-        public int Index { get; set; }
-        public string? Description { get; set; }
-        public string? groupFilesId { get; set; }
-        public string? ObjectName { get; set; }
-        public bool IsActive { get; set; }
-
-    }
 
 
 }

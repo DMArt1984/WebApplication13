@@ -4,7 +4,7 @@
     var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
     if (Obj != null && Obj.Count() == 1)
     {
-        ViewData["Title"] = $"{@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}: Уведомления от сотрудников";
+        ViewData["Title"] = $"Уведомления от сотрудников для {@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}";
         //ViewData["Title"] = $"Уведомления от сотрудников";
     }
     else
