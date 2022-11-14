@@ -442,7 +442,7 @@ namespace FactPortal.Api
 
                 // 5) копирование важных атрибутов в основной список
                 var forPos = SObjects2.Where(x => x.Claims.Any(y => y.Type.ToLower() == "position")).Select(x => new { Id = x.Id, Position = x.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value });
-                var forFile = SObjects2.Where(x => x.Claims.Any(y => y.Type.Contains("file", StringComparison.OrdinalIgnoreCase))).Select(z => new { Id = z.Id, Files = z.Claims.Where(k => k.Type.Contains("file", StringComparison.OrdinalIgnoreCase)).Select(m => Bank.inf_SS(DFiles, m.Value)) });
+                var forFile = SObjects2.Where(x => x.Claims.Any(y => y.Type == "groupFilesId")).Select(z => new { Id = z.Id, Files = z.Claims.Where(k => k.Type == "groupFilesId").Select(m => Bank.inf_SS(DFiles, m.Value)) });
             
                 var SObjectsOUT = SObjects2.Select(x => new { x.Id, x.ObjectTitle, x.ObjectCode, x.Description, Position = (forPos.Any(y => y.Id == x.Id)) ? forPos.First(y => y.Id == x.Id).Position : "", Files = (forFile.Any(y => y.Id == x.Id)) ? forFile.First(y => y.Id == x.Id).Files : null, x.Alerts, x.Work, x.Steps, x.Claims }).ToList();
 
@@ -503,12 +503,12 @@ namespace FactPortal.Api
 
                 // Копирование важных атрибутов в основной список
                 var forPos = SObject2.Claims.Any(x => x.Type.ToLower() == "position") ? SObject2.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value : "";
-                var forFile = SObject2.Claims.Where(x => x.Type.Contains("file", StringComparison.OrdinalIgnoreCase)).Select(y => Bank.inf_SS(DFiles, y.Value)).ToList();
+                var forFile = SObject2.Claims.Where(x => x.Type == "groupFilesId").Select(y => Bank.inf_SS(DFiles, y.Value)).ToList();
                 var SObjectOUT = new { SObject2.Id, SObject2.ObjectTitle, SObject2.ObjectCode, SObject2.Description, Position = forPos, Files = forFile, SObject2.Alerts, SObject2.Work, SObject2.Steps, SObject2.Claims };
 
                 // Удаление перенесенных атрибутов
                 SObjectOUT.Claims.RemoveAll(x => x.Type.ToLower() == "position");
-                SObjectOUT.Claims.RemoveAll(x => x.Type.Contains("file", StringComparison.OrdinalIgnoreCase));
+                SObjectOUT.Claims.RemoveAll(x => x.Type == "groupFilesId");
 
                 // Вывод
                 return new JsonResult(new { Result = 0, ServiceObject = SObjectOUT }, jsonOptions);
@@ -704,7 +704,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // удаление файлов
-                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == SObject.Id && x.ClaimType.ToLower() == "file").ToListAsync().ConfigureAwait(false);
+                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == SObject.Id && x.ClaimType == "groupFilesId").ToListAsync().ConfigureAwait(false);
                 foreach (var item in ClaimsFiles)
                     await DeleteFiles(item.ClaimValue).ConfigureAwait(false);
 
@@ -828,7 +828,7 @@ namespace FactPortal.Api
                 if (claim == null)
                     return new JsonResult(jsonClaimNotFound, jsonOptions);
 
-                if (claim.ClaimType.ToLower() == "file")
+                if (claim.ClaimType == "groupFilesId")
                     await DeleteFiles(claim.ClaimValue);
 
 
@@ -2196,7 +2196,7 @@ namespace FactPortal.Api
                             if (SO == null)
                                 return new JsonResult(jsonSONotFound, jsonOptions);
 
-                            _business.Claims.Add(new ObjectClaim {Id = Bank.maxID(_business.Claims.Select(x => x.Id).ToList()), ServiceObjectId = CategoryId, ClaimType="file", ClaimValue = file.Id.ToString()  });
+                            _business.Claims.Add(new ObjectClaim {Id = Bank.maxID(_business.Claims.Select(x => x.Id).ToList()), ServiceObjectId = CategoryId, ClaimType = "groupFilesId", ClaimValue = file.Id.ToString()  });
                             break;
                     }
 
