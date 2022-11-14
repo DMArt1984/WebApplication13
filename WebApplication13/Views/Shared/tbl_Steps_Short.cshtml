@@ -1,6 +1,7 @@
 ﻿@model List<StepInfo>
 
 @{
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
     int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
 }
@@ -10,9 +11,25 @@
     <div class="card-header bg-soft-secondary" id="headingOne">
         <h5 class="m-0 font-size-14">
             <a class="text-secondary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne" onclick="javascript:flipflopClass('steps');">
-                <i id="steps" class="fas fa-arrow-up"></i>
-                Шаги обслуживания <span class="badge bg-dark">@Model.Count()</span>
-                <small class="px-2"><a class="text-secondary px-2" asp-action="StepsList" asp-route-ServiceObjectId="@FilterSO">Подробнее >>></a></small>
+               
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i id="steps" class="fas fa-arrow-up"></i>
+                        Шаги обслуживания <span class="badge bg-dark">@Model.Count()</span>
+                    </div>
+                    <div>
+                        <a class="col btn btn-outline-secondary btn-sm edit" title="Все шаги объекта >>>" asp-action="StepsList" asp-route-ServiceObjectId="@FilterSO">
+                            <i class="fas fa-align-justify"></i> Все шаги объекта
+                        </a>
+                        @if (IsAdmin)
+                        {
+                            <a class="col btn btn-secondary btn-sm edit" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO">
+                                <i class="fas fa-plus"></i> Добавить новый шаг
+                            </a>
+                        }
+                    </div>
+                </div>
+            
             </a>
         </h5>
     </div>

@@ -189,7 +189,6 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
 <!-- Редактировать позицию -->
 <div id="myModal_Edit" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
@@ -236,7 +235,6 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
 <!-- Удалить позицию -->
 <div id="myModal_Del" class="modal fade show" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-modal="true" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
@@ -260,7 +258,7 @@
                     </div>
                     <div class="pt-3">
                         <div id="a_alert" class="alert alert-warning" role="alert">
-                            Удаление выбранной позиции приведет к удалению всех ее дочерних позиций! 
+                            Удаление выбранной позиции приведет к удалению всех ее дочерних позиций!
                             <code id="a_child">...</code>
                         </div>
                     </div>
@@ -274,96 +272,96 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-
-
 <!-- Info from form -->
 <div class="p-1">
     <div asp-validation-summary="All" class="text-danger"></div>
 </div>
 
 <!-- Nav tabs -->
-<ul class="nav nav-tabs mx-3" role="tablist">
-    <li class="nav-item">
-        <a id="tab1" class="nav-link active" data-bs-toggle="tab" href="#view-profile" role="tab" aria-selected="true">
-            <i class="mdi mdi-file-tree me-1 align-middle"></i> <span class="d-none d-md-inline-block">Дерево</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a id="tab2" class="nav-link" data-bs-toggle="tab" href="#edit-profile" role="tab" aria-selected="false">
-            <i class="mdi mdi-table me-1 align-middle"></i> <span class="d-none d-md-inline-block">Таблица</span>
-        </a>
-    </li>
-    <li class="nav-item px-5">
+<div class="d-flex justify-content-between">
+    <ul class="nav nav-tabs nav-fill mx-3" role="tablist">
+
+        <li class="nav-item">
+            <a id="tab1" class="nav-link active" data-bs-toggle="tab" href="#view-profile" role="tab" aria-selected="true">
+                <i class="mdi mdi-file-tree me-1 align-middle"></i> <span class="d-none d-md-inline-block">Дерево</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a id="tab2" class="nav-link" data-bs-toggle="tab" href="#edit-profile" role="tab" aria-selected="false">
+                <i class="mdi mdi-table me-1 align-middle"></i> <span class="d-none d-md-inline-block">Таблица</span>
+            </a>
+        </li>
+    </ul>
+    <div class="nav-item">
         <!-- КНОПКА: Добавить новую позицию -->
         <button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="javascript:AddNew();"><i class="fas fa-plus"></i> Добавить новую позицию</button>
-    </li>
-</ul>
+    </div>
+</div>
+    <!-- Tab panes -->
+    <div class="tab-content pt-0">
 
-<!-- Tab panes -->
-<div class="tab-content pt-0">
+        <!-- 1: Tree -->
+        <div class="tab-pane active" id="view-profile" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <div>
+                        @{
+                            GetObjPos(Model);
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <!-- 1: Tree -->
-    <div class="tab-pane active" id="view-profile" role="tabpanel">
-        <div class="card">
-            <div class="card-body">
-                <div>
-                    @{
-                        GetObjPos(Model);
-                    }
+        <!-- 2: Table -->
+        <div class="tab-pane" id="edit-profile" role="tabpanel">
+            <div class="card">
+                <div class="card-body">
+                    <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="d-none">ID</th>
+                                <th>Позиция</th>
+                                <th class="d-none">ID привязки</th>
+                                <th>Путь</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderBy(x => x.Name))
+                            {
+                                <tr>
+                                    <th scope="row" class="d-none">@item.Id</th>
+                                    <td>
+                                        <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Id, '@item.Name', @item.LinkId)">@item.Name</a>
+                                    </td>
+                                    <td class="text-secondary d-none">@item.LinkId</td>
+                                    <td style="white-space: nowrap">
+                                        @{
+                                            ExpPosTable(@item.LinkId, "bg-dark");
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 2: Table -->
-    <div class="tab-pane" id="edit-profile" role="tabpanel">
-        <div class="card">
-            <div class="card-body">
-                <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th class="d-none">ID</th>
-                            <th>Позиция</th>
-                            <th class="d-none">ID привязки</th>
-                            <th>Путь</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.OrderBy(x => x.Name))
-                        {
-                            <tr>
-                                <th scope="row" class="d-none">@item.Id</th>
-                                <td>
-                                    <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Id, '@item.Name', @item.LinkId)">@item.Name</a>
-                                </td>
-                                <td class="text-secondary d-none">@item.LinkId</td>
-                                <td style="white-space: nowrap">
-                                    @{
-                                        ExpPosTable(@item.LinkId, "bg-dark");
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
 
-@section Scripts {
-    <!-- Required datatable js -->
-    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    @section Scripts {
+        <!-- Required datatable js -->
+        <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+        <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
 
-    <!-- Datatable init js -->
-    <script src="~/assets/js/pages/datatables.init.js"></script>
-}
-<script type="text/javascript">
+        <!-- Datatable init js -->
+        <script src="~/assets/js/pages/datatables.init.js"></script>
+    }
+    <script type="text/javascript">
 
     //HideId('myModal_Delete');
 
@@ -483,5 +481,5 @@
             });
         }
 
-</script>
+    </script>
 

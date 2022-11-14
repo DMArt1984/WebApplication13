@@ -3,11 +3,11 @@
 @{
     int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    if (FilterSO > 0)
+
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    if (Obj != null && Obj.Count() == 1)
     {
-        var SO = @Model.FirstOrDefault(x => x.ServiceObjectId == FilterSO);
-        string Title = (SO != null) ? SO.ServiceObjectTitle : "Объект";
-        ViewData["Title"] = $"Статистика обслуживания для {Title}";
+        ViewData["Title"] = $"Статистика обслуживания для {@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}";
     }
     else
     {
@@ -27,7 +27,17 @@
 <!-- получение локального времени -->
 <script src="~/assets/dm/localtime.js"></script>
 
+<!-- Карточка-->
 <div class="card">
+    <!-- Добавить -->
+    @if (IsAdmin && FilterSO > 0 && ViewBag.EnableAdd)
+    {
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="text-secondary">Список обслуживаний</h4>
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
+        </div>
+    }
+    <!-- Таблица -->
     <div class="card-body">
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-primary text-white">
@@ -57,8 +67,12 @@
                                 @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
                             </td>
                         }
-                        <td><script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script></td>
-                        <td><script>document.write(UTC_To_LocalTime('@DT_Stop'));</script></td>
+                        <td>
+                            <script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script>
+                        </td>
+                        <td>
+                            <script>document.write(UTC_To_LocalTime('@DT_Stop'));</script>
+                        </td>
                         <td>@item.StatusRus()</td>
                         <td>
                             <small>
@@ -70,7 +84,11 @@
                                             //var DT = st.DT_Start;
                                             //if (st.DT_Stop != "")
                                             //    DT += "/" + st.DT_Stop;
-                                            <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> / <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script></li>
+                                            <li>
+                                                @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail })
+                                                <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> /
+                                                <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script>
+                                            </li>
                                         }
                                     }
                                 </ol>
@@ -97,13 +115,7 @@
             </tbody>
         </table>
     </div>
-    <!-- Добавить -->
-    @if (IsAdmin && FilterSO > 0 && ViewBag.EnableAdd)
-    {
-        <div class="card-footer">
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
-        </div>
-    }
+
 </div>
 
 <!-- sample modal [ myModalDel ] content -->

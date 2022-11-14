@@ -4,9 +4,11 @@
     int FilterSO = Convert.ToInt32(ViewData["SOReturn"]); // выборка по объекту
     int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    if (FilterWrk > 0)
+    
+    var Obj = Model.Select(x => x.WorkId).Distinct();
+    if (Obj != null && Obj.Count() == 1)
     {
-        ViewData["Title"] = $"Выполненные шаги по обслуживанию ID {FilterWrk}";
+        ViewData["Title"] = $"Выполненные шаги по обслуживанию ID {@Model.First(x => x.WorkId == Obj.First()).WorkId}";
     }
     else
     {

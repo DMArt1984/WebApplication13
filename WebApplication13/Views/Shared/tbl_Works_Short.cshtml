@@ -1,6 +1,7 @@
 ﻿@model List<WorkInfo>
 
 @{
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
     int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
 }
@@ -13,9 +14,25 @@
     <div class="card-header bg-soft-primary" id="headingTwo">
         <h5 class="m-0 font-size-14">
             <a class="collapsed text-primary" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo" onclick="javascript:flipflopClass('works');">
-                <i id="works" class="fas fa-arrow-up"></i>
-                Последнее обслуживание <span class="badge bg-primary">@Model.Count()</span>
-                <small class="px-2"><a class="text-primary px-2" asp-action="WorksList" asp-route-ServiceObjectId="@FilterSO">Все обслуживания объекта >>></a></small>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <i id="works" class="fas fa-arrow-up"></i>
+                        Последнее обслуживание <span class="badge bg-primary">@Model.Count()</span>
+                    </div>
+                    <div>
+                        <a class="col btn btn-outline-primary btn-sm edit" title="Все обслуживания объекта >>>" asp-action="WorksList" asp-route-ServiceObjectId="@FilterSO">
+                            <i class="fas fa-align-justify"></i> Все обслуживания объекта
+                        </a>
+                        @if (IsAdmin)
+                        {
+                            <a class="col btn btn-primary btn-sm edit" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO">
+                                <i class="fas fa-plus"></i> Добавить новое обслуживание
+                            </a>
+                        }
+                    </div>
+                </div>
+
             </a>
         </h5>
     </div>

@@ -25,8 +25,17 @@
     }
 </style>
 
-<!-- Table -->
+<!-- Карточка -->
 <div class="card">
+    <!-- Добавить -->
+    @if (IsAdmin)
+    {
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="text-secondary">Список объектов</h4>
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="SOEdit" asp-route-id="0"><i class="fas fa-plus"></i> Добавить новый объект</a>
+        </div>
+    }
+    <!-- Таблица -->
     <div class="card-body">
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead class="bg-primary text-white">
@@ -125,13 +134,7 @@
             </tbody>
         </table>
     </div> <!-- end col -->
-    <!-- Добавить -->
-    @if (IsAdmin)
-    {
-        <div class="card-footer">
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="SOEdit" asp-route-id="0"><i class="fas fa-plus"></i> Добавить новый объект</a>
-        </div>
-    }
+
 </div>
 
 <!-- sample modal [ myModalDel ] content -->
@@ -146,6 +149,5 @@
 
     <!-- Datatable init js -->
     <script src="~/assets/js/pages/datatables.init.js"></script>
-
 
 }

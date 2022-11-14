@@ -1,6 +1,7 @@
 ﻿@model List<AlertInfo>
 
 @{
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
     var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
     int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
 }
@@ -11,12 +12,28 @@
 <!-- Таблица -->
 <div id="accordion2">
     <div class="card mb-2">
-        <div class="card-header bg-soft-danger" id="headingThree">
+        <div class="card-header bg-soft-warning" id="headingThree">
             <h5 class="m-0 font-size-14">
                 <a class="collapsed text-danger" data-bs-toggle="collapse" data-parent="#accordion2" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree" onclick="javascript:flipflopClass('alerts');">
-                    <i id="alerts" class="fas fa-arrow-up"></i>
-                    Активные уведомления <span class="badge bg-danger">@Model.Count()</span>
-                    <small class="px-2"><a class="text-danger px-2" asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO">Все уведомления объекта >>></a></small>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i id="alerts" class="fas fa-arrow-up"></i>
+                            Активные уведомления <span class="badge bg-danger">@Model.Count()</span>
+                        </div>
+                        <div>
+                            <a class="col btn btn-outline-danger btn-sm edit" title="Все уведомления объекта >>>" asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO">
+                                <i class="fas fa-align-justify"></i> Все уведомления объекта
+                            </a>
+                            @if (IsAdmin)
+                            {
+                                <a class="col btn btn-danger btn-sm edit" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO">
+                                    <i class="fas fa-plus"></i> Добавить новое уведомление
+                                </a>
+                            }
+                        </div>
+                    </div>
+
                 </a>
             </h5>
         </div>

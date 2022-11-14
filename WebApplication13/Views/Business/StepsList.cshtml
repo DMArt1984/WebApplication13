@@ -3,9 +3,11 @@
 @{
     int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]); // выборка по обслуживанию
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    if (FilterSO > 0)
+
+    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    if (Obj != null && Obj.Count() == 1)
     {
-        ViewData["Title"] = $"Шаги для {@Model.First(x => x.ServiceObjectId == FilterSO).ServiceObjectTitle}";
+        ViewData["Title"] = $"Шаги для {@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}";
     }
     else
     {
@@ -23,7 +25,17 @@
     <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 }
 
+<!-- Карточка-->
 <div class="card">
+    <!-- Добавить -->
+    @if (IsAdmin && FilterSO > 0 && ViewBag.EnableAdd)
+    {
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="text-secondary">Список шагов</h4>
+            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новый шаг</a>
+        </div>
+    }
+    <!-- Таблица -->
     <div class="card-body">
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-primary text-white">
@@ -43,52 +55,45 @@
             <tbody>
                 @foreach (var item in Model.OrderBy(x => x.Index))
                 {
-                <tr>
+                    <tr>
 
-                    @if (FilterSO == 0)
-                    {
-                        <th scope="row">@item.Id</th>
-                        <td>
-                            @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                        @if (FilterSO == 0)
+                        {
+                            <th scope="row">@item.Id</th>
+                            <td>
+                                @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                            </td>
+                        }
+                        <td>@item.Index</td>
+                        <td>@item.Title</td>
+                        <td style="max-width:300px; word-break: break-all">
+                            @item.Description
                         </td>
-                    }
-                    <td>@item.Index</td>
-                    <td>@item.Title</td>
-                    <td style="max-width:300px; word-break: break-all">
-                        @item.Description
-                    </td>
-                    <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                    <td>
-                        <div class="row px-1">
-                            <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
-                                <i class="far fa-eye"></i>
-                            </a>
-                            @if (IsAdmin)
-                            {
-                                <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
-                                    <i class="fas fa-pencil-alt"></i>
+                        <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                        <td>
+                            <div class="row px-1">
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
+                                    <i class="far fa-eye"></i>
                                 </a>
-                                if (item.EnableDel)
+                                @if (IsAdmin)
                                 {
-                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle', @item.Index)">
-                                        <i class="fas fa-trash-alt px-1"></i>
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
+                                        <i class="fas fa-pencil-alt"></i>
                                     </a>
+                                    if (item.EnableDel)
+                                    {
+                                        <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle', @item.Index)">
+                                            <i class="fas fa-trash-alt px-1"></i>
+                                        </a>
+                                    }
                                 }
-                            }
-                        </div>
-                    </td>
-                </tr>
+                            </div>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
     </div>
-    <!-- Добавить -->
-    @if (IsAdmin && FilterSO > 0 && ViewBag.EnableAdd)
-    {
-        <div class="card-footer">
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новый шаг</a>
-        </div>
-    }
 </div>
 
 <!-- sample modal [ myModalDel ] content -->

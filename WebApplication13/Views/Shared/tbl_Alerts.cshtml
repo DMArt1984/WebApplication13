@@ -8,8 +8,17 @@
 <!-- получение локального времени -->
 <script src="~/assets/dm/localtime.js"></script>
 
-<!-- Таблица -->
+<!-- Карточка-->
 <div class="card">
+    <!-- Добавить -->
+    @if (IsAdmin && FilterSO > 0)
+    {
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="text-secondary">Список уведомлений</h4>
+        <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
+    </div>
+    }
+    <!-- Таблица -->
     <div class="card-body">
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-danger text-white">
@@ -38,7 +47,9 @@
                             <th scope="row">@item.Id</th>
                         }
 
-                        <td><script>document.write(UTC_To_LocalTime('@item.DT'));</script></td>
+                        <td>
+                            <script>document.write(UTC_To_LocalTime('@item.DT'));</script>
+                        </td>
 
                         @if (FilterSO == 0)
                         {
@@ -74,13 +85,7 @@
         </table>
     </div>
 
-    <!-- Добавить -->
-    @if (IsAdmin && FilterSO > 0)
-    {
-        <div class="card-footer">
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
-        </div>
-    }
+
 </div>
 
 <!-- sample modal [ myModalDel ] content -->

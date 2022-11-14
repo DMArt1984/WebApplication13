@@ -5,7 +5,6 @@
     if (Obj != null && Obj.Count() == 1)
     {
         ViewData["Title"] = $"Уведомления от сотрудников для {@Model.First(x => x.ServiceObjectId == Obj.First()).ServiceObjectTitle}";
-        //ViewData["Title"] = $"Уведомления от сотрудников";
     }
     else
     {
