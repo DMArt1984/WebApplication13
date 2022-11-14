@@ -19,7 +19,7 @@
 <!-- HTML5 Input Form Elements -->
 <div id="uplfiles">
     <div class="d-flex justify-content-between">
-        <input id="fileupload" class="form-control" type="file" name="fileupload" onchange="uploadFile2('load', GetInfo('categoryId'), GetInfoValue('filedesc'))" />
+        <input id="fileupload" class="form-control" type="file" name="fileupload" onchange="uploadFile2(GetInfo('category'), GetInfo('categoryId'), GetInfoValue('filedesc'))" />
         <input id="filedesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
         <br>
     </div>

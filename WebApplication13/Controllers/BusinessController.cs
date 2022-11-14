@@ -104,10 +104,11 @@ namespace FactPortal.Controllers
                         if (DicPos.ContainsKey(PosIndex))
                             PositionName = DicPos[PosIndex];
                     }
-                    var claimFiles = claims.Where(x => x.ClaimType.Contains("file") && !String.IsNullOrEmpty(x.ClaimValue));
+                    
+                    ObjectClaim claimFiles = claims.FirstOrDefault(x => x.ClaimType == "groupFilesId"); // файлы
                     if (claimFiles != null)
                     {
-                        var FileIndexes = String.Join(";", claimFiles.Select(x => x.ClaimValue));
+                        var FileIndexes = claimFiles.ClaimValue; //String.Join(";", claimFiles.Select(x => x.ClaimValue));
                         groupFiles = Bank.inf_SSFiles(Files, FileIndexes);
                     }
                 }
@@ -330,6 +331,7 @@ namespace FactPortal.Controllers
 
                 // 4. Сохранение изменений
                 await _business.SaveChangesAsync().ConfigureAwait(false);
+
             } 
                 
             // 3. Изменение элемента
@@ -337,46 +339,47 @@ namespace FactPortal.Controllers
             if (SObject == null)
                 return NotFound();
 
+            // Атрибут: Позиция
             var claimPos = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "position"); // позиция
-            if (claimPos != null)
+            if (claimPos == null)
             {
-                claimPos.ClaimValue = Position.ToString();
+                await AddObjectClaim(Id, "position", Position.ToString());
             }
             else
             {
-                var myIDs = await _business.Claims.Select(x => x.Id).ToListAsync().ConfigureAwait(false);
-                var newID = Bank.maxID(myIDs);
-                await _business.Claims.AddAsync(new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "position", ClaimValue = Position.ToString() });
+                claimPos.ClaimValue = Position.ToString();
             }
 
+            // Изменение свойств
             SObject.ObjectTitle = ObjectTitle;
             SObject.ObjectCode = ObjectCode;
 
             if (!String.IsNullOrEmpty(Description))
                 SObject.Description = Description;
-            
+
+            // Атрибут: Файлы
+            var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType == "groupFilesId"); // файлы
+            if (claimFiles == null)
+            {
+                await AddObjectClaim(Id, "groupFilesId", "");
+            }
+            // снова
+            claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType == "groupFilesId"); // файлы
 
             // Добавление файлов
             if (!String.IsNullOrEmpty(LoadFileId))
             {
-                foreach (var item in LoadFileId.Split(';'))
-                {
-                    var myIDs = _business.Claims.Select(x => x.Id).ToList();
-                    var newID = Bank.maxID(myIDs);
-                    var fileClaim = new ObjectClaim { Id = newID, ServiceObjectId = Id, ClaimType = "file", ClaimValue = item };
-                    _business.Claims.Add(fileClaim);
-                }
-                await _business.SaveChangesAsync().ConfigureAwait(false);
+                claimFiles.ClaimValue = Bank.AddItemToStringList(claimFiles.ClaimValue, ";", LoadFileId);
             }
 
             // Контроль несуществующих ID файлов
             if (DelFileId == null)
                 DelFileId = "";
             var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync().ConfigureAwait(false);
-            foreach (var item in _business.Claims.Where(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file"))
+            foreach (var item in claimFiles.ClaimValue.Split(';'))
             {
-                if (!files.Contains(item.ClaimValue))
-                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item.ClaimValue);
+                if (!files.Contains(item))
+                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item);
             }
 
             // Удаление файлов
@@ -386,9 +389,7 @@ namespace FactPortal.Controllers
                 {
                     if (await DeleteFile(item).ConfigureAwait(false))
                     {
-                        var claimFile = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "file" && x.ClaimValue == item); // файл
-                        if (claimFile != null)
-                            _business.Claims.Remove(claimFile);
+                        claimFiles.ClaimValue = Bank.DelItemToStringList(claimFiles.ClaimValue, ";", item.ToString());
                     }
                     else
                     {
@@ -396,7 +397,6 @@ namespace FactPortal.Controllers
                     }
                 }
             }
-
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -415,14 +415,15 @@ namespace FactPortal.Controllers
             if (obj != null)
             {
                 // удаление файлов
-                var ClaimsFiles = await _business.Claims.Where(x => x.ServiceObjectId == obj.Id && x.ClaimType.ToLower() == "file").ToListAsync().ConfigureAwait(false);
-                foreach (var item in ClaimsFiles)
-                    await DeleteFiles(item.ClaimValue).ConfigureAwait(false);
+                var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == id && x.ClaimType == "groupFilesId"); // файлы
+                if (claimFiles != null)
+                {
+                    await DeleteFiles(claimFiles.ClaimValue).ConfigureAwait(false);
 
-                // удаление свойств
-                var myClaims = _business.Claims.Where(x => x.ServiceObjectId == obj.Id);
-                _business.Claims.RemoveRange(myClaims);
-
+                    // удаление свойств
+                    _business.Claims.Remove(claimFiles);
+                }
+               
                 // удаление уведомлений
                 var myAlerts = await _business.Alerts.Where(x => x.ServiceObjectId == obj.Id).ToListAsync().ConfigureAwait(false);
                 foreach (var item in myAlerts)
@@ -1452,6 +1453,22 @@ namespace FactPortal.Controllers
             return EL;
         }
 
+        // ============================================================
+
+        // Добавление атрибута к объекту
+        private async Task<bool> AddObjectClaim(int SObjectId, string ClaimType, string ClaimValue)
+        {
+            // Добавление атрибута
+            var myClaimIDs = await _business.Claims.Select(x => x.Id).ToListAsync().ConfigureAwait(false);
+            var newClaimID = Bank.maxID(myClaimIDs);
+            await _business.Claims.AddAsync(new ObjectClaim { Id = newClaimID, ServiceObjectId = SObjectId, ClaimType = ClaimType, ClaimValue = ClaimValue });
+
+            // Сохранение изменений
+            await _business.SaveChangesAsync().ConfigureAwait(false);
+
+            return true;
+        }
+
         // =================================================================================================
 
         // Словари
@@ -2118,9 +2135,9 @@ namespace FactPortal.Controllers
                 switch (category)
                 {
                     case "so":
-                        var claims = _business.Claims.Where(x => x.ServiceObjectId == categoryId && x.ClaimType.ToLower() == "file").ToList();
-                        if (claims.Any())
-                            Ids += String.Join(";", claims.Select(y => y.ClaimValue));
+                        var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == categoryId && x.ClaimType == "groupFilesId"); // файлы
+                        if (claimFiles != null)
+                            Ids += String.Join(";", claimFiles.ClaimValue);
                         break;
                     case "alert":
                         var alert = _business.Alerts.FirstOrDefault(x => x.Id == categoryId);
@@ -2170,13 +2187,12 @@ namespace FactPortal.Controllers
                     var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == categoryId);
                     if (SObject != null)
                     {
-                        ID = await AddFile(file, $"/Files/SO{SObject.Id}/Info/", description).ConfigureAwait(false);
-                        if (ID > 0)
+                        var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == categoryId && x.ClaimType == "groupFilesId");
+                        if (claimFiles != null)
                         {
-                            var myIDs = _business.Claims.Select(x => x.Id).ToList();
-                            var newID = Bank.maxID(myIDs);
-                            var fileClaim = new ObjectClaim { Id = newID, ServiceObjectId = SObject.Id, ClaimType = "file", ClaimValue = ID.ToString() };
-                            await _business.Claims.AddAsync(fileClaim);
+                            ID = await AddFile(file, $"/Files/SO{SObject.Id}/Info/", description).ConfigureAwait(false);
+                            if (ID > 0)
+                                claimFiles.ClaimValue = Bank.AddItemToStringList(claimFiles.ClaimValue, ";", ID.ToString());
                         }
                     }
                     break;
@@ -2224,10 +2240,10 @@ namespace FactPortal.Controllers
                 switch (category.ToLower())
                 {
                     case "so":
-                        var claim = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == categoryId && x.ClaimType.ToLower() == "file" && x.ClaimValue == Id.ToString());
-                        if (claim != null)
+                        var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == categoryId && x.ClaimType == "groupFilesId");
+                        if (claimFiles != null)
                         {
-                            _business.Claims.Remove(claim);
+                            claimFiles.ClaimValue = Bank.DelItemToStringList(claimFiles.ClaimValue, ";", Id.ToString());
                         }
                         break;
                     case "alert":
