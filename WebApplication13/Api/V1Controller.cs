@@ -1886,6 +1886,9 @@ namespace FactPortal.Api
                 workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
                 workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
                 workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
+                if (!String.IsNullOrEmpty(workStep.DT_Stop) && String.IsNullOrEmpty(workStep.DT_Start))
+                    workStep.DT_Start = workStep.DT_Stop;
+
                 workStep.Status = Status;
                 workStep.Title = (!String.IsNullOrEmpty(Title)) ? Title : workStep.Title;
 

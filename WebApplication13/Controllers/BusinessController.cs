@@ -1163,6 +1163,10 @@ namespace FactPortal.Controllers
 
             workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
             workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
+            if (!String.IsNullOrEmpty(workStep.DT_Stop) && String.IsNullOrEmpty(workStep.DT_Start))
+                workStep.DT_Start = workStep.DT_Stop;
+
+
             workStep.myUserId = (user != null) ? user.Id : "?";
 
             // Добавление файлов
