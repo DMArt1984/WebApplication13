@@ -384,7 +384,7 @@ namespace FactPortal.Models
             return (String.IsNullOrEmpty(Ids)) ? "" : String.Join(';', Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : ""));
         }
 
-        public static List<string> inf_SSList(Dictionary<string, string> SS, string Ids)
+        public static List<string> inf_SSList(Dictionary<string, string> SS, string Ids, bool NoEmpty = false)
         {
             if (String.IsNullOrEmpty(Ids))
                 return new List<string>();
@@ -392,8 +392,12 @@ namespace FactPortal.Models
             if (Ids.Split(';').Any() == false)
                 return new List<string>();
 
-            var OUT = Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "").ToList();
-            return OUT;
+            var OUT = Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "");
+            if (NoEmpty)
+            {
+                OUT = OUT.Where(x => !String.IsNullOrEmpty(x)).Distinct();
+            }
+            return OUT.ToList();
 
             //return (Ids == null) ? new List<string>() : (Ids.Split(';').Count()==0) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "").ToList(); // Where(x => !String.IsNullOrEmpty(x)).Distinct()
         }

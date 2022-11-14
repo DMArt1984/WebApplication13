@@ -335,8 +335,8 @@ namespace FactPortal.Api
             [FromForm] string ViewClaim = null, [FromForm] string FilterClaim = null,
             [FromForm] string FilterPosition = null)
         {
-            try
-            {
+            //try
+            //{
                 if (String.IsNullOrEmpty(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
@@ -441,18 +441,35 @@ namespace FactPortal.Api
                     ).ToList();
 
                 // 5) копирование важных атрибутов в основной список
-                var forPos = SObjects2.Where(x => x.Claims.Any(y => y.Type.ToLower() == "position")).Select(x => new { Id = x.Id, Position = x.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value });
-                var forFile = SObjects2.Where(x => x.Claims.Any(y => y.Type == "groupFilesId")).Select(z => new { Id = z.Id, Files = z.Claims.Where(k => k.Type == "groupFilesId").Select(m => Bank.inf_SS(DFiles, m.Value)) });
+                var forPos = SObjects2.Where(x => x.Claims.Any(y => y.Type.ToLower() == "position")).Select(x => new { 
+                    Id = x.Id,
+                    Position = x.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value 
+                });
+
+                var forFiles = SObjects2.Where(x => x.Claims.Any(y => y.Type == "groupFilesId")).Select(z => new { 
+                    Id = z.Id,
+                    Files = z.Claims.FirstOrDefault(k => k.Type == "groupFilesId").Value 
+                });
             
-                var SObjectsOUT = SObjects2.Select(x => new { x.Id, x.ObjectTitle, x.ObjectCode, x.Description, Position = (forPos.Any(y => y.Id == x.Id)) ? forPos.First(y => y.Id == x.Id).Position : "", Files = (forFile.Any(y => y.Id == x.Id)) ? forFile.First(y => y.Id == x.Id).Files : null, x.Alerts, x.Work, x.Steps, x.Claims }).ToList();
+                var SObjectsOUT = SObjects2.Select(x => new { 
+                    x.Id, 
+                    x.ObjectTitle, 
+                    x.ObjectCode, 
+                    x.Description, 
+                    Position = (forPos.Any(y => y.Id == x.Id)) ? forPos.First(y => y.Id == x.Id).Position : "", 
+                    Files = (forFiles.Any(y => y.Id == x.Id)) ? Bank.inf_SSList(DFiles, forFiles.First(y => y.Id == x.Id).Files, true) : new List<string>(),  //(forFile.Any(y => y.Id == x.Id)) ? forFile.First(y => y.Id == x.Id).Files : null, 
+                    x.Alerts, 
+                    x.Work, 
+                    x.Steps, 
+                    x.Claims }).ToList();
 
                 // Вывод
                 return new JsonResult(new { Result = 0, ServiceObjects = SObjectsOUT }, jsonOptions);
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source }, jsonOptions);
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    return new JsonResult(new { Result = ex.HResult, Message = ex.Message, Source = ex.Source }, jsonOptions);
+            //}
         }
 
         // Информация по одному объекту обслуживания
@@ -487,7 +504,7 @@ namespace FactPortal.Api
                         UserId = j.myUserId,
                         User = Bank.inf_SS(DUsers, j.myUserId),
                         FilesId = j.groupFilesId,
-                        Files = Bank.inf_SSList(DFiles, j.groupFilesId)
+                        Files = Bank.inf_SSList(DFiles, j.groupFilesId, true)
                     }).ToList(),
                     Work = Bank.GetLastWorkId(SObject.Id, _business.Works.ToList()),
                     Steps = _business.Steps.Where(k => k.ServiceObjectId == SObject.Id).OrderBy(y => y.Index).Select(j => new {
@@ -497,14 +514,25 @@ namespace FactPortal.Api
                         Title = j.Title,
                         Description = j.Description,
                         FilesId = j.groupFilesId,
-                        Files = Bank.inf_SSList(DFiles, j.groupFilesId)
+                        Files = Bank.inf_SSList(DFiles, j.groupFilesId, true)
                     }).ToList()
                 };
 
                 // Копирование важных атрибутов в основной список
-                var forPos = SObject2.Claims.Any(x => x.Type.ToLower() == "position") ? SObject2.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value : "";
-                var forFile = SObject2.Claims.Where(x => x.Type == "groupFilesId").Select(y => Bank.inf_SS(DFiles, y.Value)).ToList();
-                var SObjectOUT = new { SObject2.Id, SObject2.ObjectTitle, SObject2.ObjectCode, SObject2.Description, Position = forPos, Files = forFile, SObject2.Alerts, SObject2.Work, SObject2.Steps, SObject2.Claims };
+                var objPos = SObject2.Claims.Any(x => x.Type.ToLower() == "position") ? SObject2.Claims.FirstOrDefault(y => y.Type.ToLower() == "position").Value : "";
+                var objFiles = SObject2.Claims.FirstOrDefault(x => x.Type == "groupFilesId");
+
+                var SObjectOUT = new { 
+                    SObject2.Id, 
+                    SObject2.ObjectTitle, 
+                    SObject2.ObjectCode, 
+                    SObject2.Description, 
+                    Position = objPos, 
+                    Files = (objFiles != null) ? Bank.inf_SSList(DFiles, objFiles.Value, true) : new List<string>(), 
+                    SObject2.Alerts, 
+                    SObject2.Work, 
+                    SObject2.Steps, 
+                    SObject2.Claims };
 
                 // Удаление перенесенных атрибутов
                 SObjectOUT.Claims.RemoveAll(x => x.Type.ToLower() == "position");
@@ -1114,7 +1142,7 @@ namespace FactPortal.Api
                     UserId = j.myUserId,
                     User = Bank.inf_SS(DUsers, j.myUserId),
                     FilesId = j.groupFilesId,
-                    Files = Bank.inf_SSList(DFiles, j.groupFilesId)
+                    Files = Bank.inf_SSList(DFiles, j.groupFilesId, true)
                 });
                 var worksOUT = works0.Select(j => new {
                     Id = j.Id,
@@ -1400,7 +1428,7 @@ namespace FactPortal.Api
                         s.DT_Start, 
                         s.DT_Stop, 
                         FilesId = s.groupFilesId, 
-                        Files = Bank.inf_SSList(DFiles, s.groupFilesId) }).ToList() });
+                        Files = Bank.inf_SSList(DFiles, s.groupFilesId, true) }).ToList() });
 
                 return new JsonResult(new { Result = 0, Works = worksOUT.OrderBy(x => x.Id).OrderBy(x => x.ServiceObjectId) }, jsonOptions);
             }
@@ -2216,7 +2244,7 @@ namespace FactPortal.Api
             }
         }
 
-        
+
         // POST: api/v1/file/download/image.png
         [HttpPost("file/download/{FileName}")]
         public JsonResult DownloadFiles([FromHeader] string db, string FileName)
