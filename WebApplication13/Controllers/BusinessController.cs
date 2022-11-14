@@ -2177,10 +2177,18 @@ namespace FactPortal.Controllers
         {
             var ID = 0; // ID нового файла
 
+            var FolderForm = "";
+            if (categoryId == 0) // если это новый элемент
+            {
+                var DT = DateTime.Now;
+                FolderForm = $"{category}_{DT.Year}_{DT.Month}_{DT.Day}_{DT.Hour}/";
+                category = "load";
+            }
+
             switch (category.ToLower())
             {
                 case "load":
-                    ID = await AddFile(file, $"/Files/form/", description).ConfigureAwait(false);
+                    ID = await AddFile(file, $"/Files/form/{FolderForm}", description).ConfigureAwait(false);
                     break;
                 
                 case "so":
