@@ -165,14 +165,39 @@ namespace FactPortal.Models
             return Name.Replace(">", String.Empty).Replace(":", String.Empty);
         }
 
-        // Преобразование даты и времени в строку
-        public static string NormDateTime(string DT)
+        // ====================================================================
+
+        // Преобразование строки из 2022-01-07T08:09 в YYYY.MM.DD HH:MM:SS
+        public static string CalendarToDateTimeYMD(string SDT)
+        {
+            if (String.IsNullOrEmpty(SDT))
+                return "";
+            
+            if (SDT.Length !=16)
+                return "";
+
+            var Year = Convert.ToInt32(SDT.Substring(0, 4));
+            var Month = Convert.ToInt32(SDT.Substring(5,2));
+            var Day = Convert.ToInt32(SDT.Substring(8, 2));
+            
+
+            var Hour = Convert.ToInt32(SDT.Substring(11, 2));
+            var Minute = Convert.ToInt32(SDT.Substring(14, 2));
+            var Second = 0;
+
+            string NewDT = $"{Year}.{Month.ToString("D2")}.{Day.ToString("D2")} {Hour.ToString("D2")}:{Minute.ToString("D2")}:{Second.ToString("D2")}";
+            return NewDT;
+        }
+
+
+        // Преобразование даты и времени в строку YYYY.MM.DD HH:MM:SS
+        public static string NormDateTimeYMD(string SDT)
         {
             // 02.08.2022 7:09:57
             // 0123456789
             try
             {
-                var Big = DT.Split(' ');
+                var Big = SDT.Split(' ');
 
                 var BDate = Big[0].Split('.');
                 var Month = Convert.ToInt32(BDate[1]);
@@ -189,22 +214,22 @@ namespace FactPortal.Models
                 var Minute = Convert.ToInt32(DTime[1]);
                 var Second = Convert.ToInt32(DTime[2]);
 
-                string NewDT = $"{Year}.{Month.ToString("D2")}.{Day.ToString("D2")} {Hour.ToString("D2")}:{Minute.ToString("D2")}:{Second.ToString("D2")}";
-                return NewDT;
+                string NewSDT = $"{Year}.{Month.ToString("D2")}.{Day.ToString("D2")} {Hour.ToString("D2")}:{Minute.ToString("D2")}:{Second.ToString("D2")}";
+                return NewSDT;
             } catch
             {
-                return DT;
+                return SDT;
             }
         }
 
-        // Преобразование строки в локальное время
-        public static string LocalDateTime(string DT)
+        // Преобразование строки в локальное время YYYY.MM.DD HH:MM:SS
+        public static string LocalDateTime(string SDT)
         {
             // 2022.08.02 5:09:57
             // 0123456789
             try
             {
-                var Big = DT.Split(' ');
+                var Big = SDT.Split(' ');
 
                 var BDate = Big[0].Split('.');
                 var Month = Convert.ToInt32(BDate[1]);
@@ -223,13 +248,13 @@ namespace FactPortal.Models
 
                 var NewDT = new DateTime(Year, Month, Day, Hour, Minute, Second);
                 var LocalTime = NewDT.ToLocalTime().ToString();
-                var NormTime = NormDateTime(LocalTime);
+                var NormTime = NormDateTimeYMD(LocalTime);
 
                 return NormTime;
             }
             catch
             {
-                return DT;
+                return SDT;
             }
         }
 
@@ -243,21 +268,21 @@ namespace FactPortal.Models
                 return true;
 
             if (String.IsNullOrEmpty(DateFrom))
-                return GetDTfromString(Date) <= GetDTfromString(DateTo);
+                return GetDTfromStringYMD(Date) <= GetDTfromStringYMD(DateTo);
 
             if (String.IsNullOrEmpty(DateTo))
-                return GetDTfromString(Date) >= GetDTfromString(DateFrom);
+                return GetDTfromStringYMD(Date) >= GetDTfromStringYMD(DateFrom);
 
-            var OUT = GetDTfromString(Date) >= GetDTfromString(DateFrom) && GetDTfromString(Date) <= GetDTfromString(DateTo);
+            var OUT = GetDTfromStringYMD(Date) >= GetDTfromStringYMD(DateFrom) && GetDTfromStringYMD(Date) <= GetDTfromStringYMD(DateTo);
             return OUT;
-        } 
+        }
 
-        // Получить дату из строки
-        public static DateTime GetDTfromString(string DT)
+        // Получить дату из строки YYYY.MM.DD
+        public static DateTime GetDTfromStringYMD(string SDT, int OffsetMinutes = 0)
         {
             try
             {
-                var Big = DT.Split(' ');
+                var Big = SDT.Split(' ');
 
                 var BDate = Big[0].Split('.');
                 var Month = Convert.ToInt32(BDate[1]);
@@ -269,23 +294,76 @@ namespace FactPortal.Models
                     Day = Convert.ToInt32(BDate[0]);
                 }
 
-                return new DateTime(Year, Month, Day);
+                DateTime DT = new DateTime(Year, Month, Day);
+                DT = DT.AddMinutes((double)OffsetMinutes);
+
+                return DT;
             } catch
             {
                 return DateTime.UtcNow;
             }
         }
 
+        // Получить дату из строки YYYY.MM.DD HH:MM:SS
+        public static DateTime GetDTfromStringYMDHMS(string SDT, int OffsetMinutes = 0)
+        {
+            try
+            {
+                var Big = SDT.Split(' ');
+
+                var BDate = Big[0].Split('.');
+                var Month = Convert.ToInt32(BDate[1]);
+                var Day = Convert.ToInt32(BDate[2]);
+                var Year = Convert.ToInt32(BDate[0]);
+                if (Day > 31 || Year < 2000)
+                {
+                    Year = Convert.ToInt32(BDate[2]);
+                    Day = Convert.ToInt32(BDate[0]);
+                }
+
+                var DTime = Big[1].Split(':');
+                var Hour = Convert.ToInt32(DTime[0]);
+                var Minute = Convert.ToInt32(DTime[1]);
+                var Second = Convert.ToInt32(DTime[2]);
+
+                DateTime DT = new DateTime(Year, Month, Day, Hour, Minute, Second);
+                DT = DT.AddMinutes((double)OffsetMinutes);
+
+                return DT;
+            }
+            catch
+            {
+                return DateTime.UtcNow;
+            }
+        }
+
+
+
+        // Получить строку из даты и времени
+        public static string GetStringFromDT(DateTime DT)
+        {
+            var Day = DT.Day;
+            var Month = DT.Month;
+            var Year = DT.Year;
+
+            var Hour = DT.Hour;
+            var Minute = DT.Minute;
+            var Second = DT.Second;
+
+            string NewSDT = $"{Year}.{Month.ToString("D2")}.{Day.ToString("D2")} {Hour.ToString("D2")}:{Minute.ToString("D2")}:{Second.ToString("D2")}";
+            return NewSDT;
+        }
+
         // Время и дата начала работы
         public static string GetWork_DTStart(int Status, string DT = "")
         {
-            return (Status == 5) ? (String.IsNullOrEmpty(DT)) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()): DT : "";
+            return (Status == 5) ? (String.IsNullOrEmpty(DT)) ? NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString()): DT : "";
         }
 
         // Время и дата окончания работы
         public static string GetWork_DTStop(int Status, string DT = "")
         {
-            return (Status == 9) ? (String.IsNullOrEmpty(DT)) ? NormDateTime(System.DateTime.Now.ToUniversalTime().ToString()) : DT : "";
+            return (Status == 9) ? (String.IsNullOrEmpty(DT)) ? NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString()) : DT : "";
         }
 
         // Получить минимальную дату и время
@@ -297,7 +375,7 @@ namespace FactPortal.Models
             string MinDT = DTs.OrderBy(x => x).First();
             foreach(var item in DTs)
             {
-                if (GetDTfromString(MinDT) > GetDTfromString(item))
+                if (GetDTfromStringYMD(MinDT) > GetDTfromStringYMD(item))
                     MinDT = item;
             }
             return MinDT;
@@ -312,13 +390,13 @@ namespace FactPortal.Models
             string MaxDT = DTs.OrderBy(x => x).Last();
             foreach (var item in DTs)
             {
-                if (GetDTfromString(MaxDT) < GetDTfromString(item))
+                if (GetDTfromStringYMD(MaxDT) < GetDTfromStringYMD(item))
                     MaxDT = item;
             }
             return MaxDT;
         }
 
-        // ========================
+        // ==========================================================================
 
         public static bool StringContains(string Ids="", int Id=0)
         {

@@ -1031,8 +1031,8 @@ namespace FactPortal.Api
         {
             try
             {
-                var UniversalTime = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
-                var LocalTime = Bank.NormDateTime(System.DateTime.Now.ToString());
+                var UniversalTime = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
+                var LocalTime = Bank.NormDateTimeYMD(System.DateTime.Now.ToString());
 
                 return new JsonResult(new { Result = 0, UniversalTime, LocalTime }, jsonOptions);
             }
@@ -1230,7 +1230,7 @@ namespace FactPortal.Api
 
                 // DT
                 if (String.IsNullOrEmpty(DT))
-                    DT = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
+                    DT = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // groupFilesId
                 var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
@@ -1307,7 +1307,7 @@ namespace FactPortal.Api
 
                 // DT
                 if (String.IsNullOrEmpty(DT))
-                    DT = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
+                    DT = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // Поиск                
                 var alert = _business.Alerts.FirstOrDefault(x => x.Id == Id);
@@ -1452,7 +1452,7 @@ namespace FactPortal.Api
 
                 // DT
                 if (String.IsNullOrEmpty(DT))
-                    DT = Bank.NormDateTime(System.DateTime.Now.ToUniversalTime().ToString());
+                    DT = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // Добавить работу
                 Work work = new Work { Id = Bank.maxID(_business.Works.Select(x => x.Id).ToList()), ServiceObjectId = ServiceObjectId };

@@ -576,7 +576,7 @@ namespace FactPortal.Controllers
             // 3. Изменение элемента
             alert.Status = Status;
             alert.Message = Message;
-            alert.DT = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString());
+            alert.DT = Bank.NormDateTimeYMD(DateTime.Now.ToUniversalTime().ToString());
             alert.myUserId = (user != null) ? user.Id : "?";
 
             // Добавление файлов
@@ -1099,8 +1099,9 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, bool EnableDT = false, string NewDT = "", int TimezoneOffset = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
+            
             // Текущий пользователь
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
@@ -1113,11 +1114,15 @@ namespace FactPortal.Controllers
                 return RedirectToAction("WorkStepsList", new { WorkId = WorkReturn, ServiceObjectId = SOReturn });
             }
 
+            // Введенное время
+            var localDT = (EnableDT) ? Bank.CalendarToDateTimeYMD(NewDT) : "";
+            var NewUTC_DT = Bank.GetStringFromDT(Bank.GetDTfromStringYMDHMS(localDT, TimezoneOffset));
+
             // DT_Start
-            string DT_Start = Bank.GetWork_DTStart(Status);
+            string DT_Start = Bank.GetWork_DTStart(Status, NewUTC_DT);
 
             // DT_Stop
-            string DT_Stop = Bank.GetWork_DTStop(Status);
+            string DT_Stop = Bank.GetWork_DTStop(Status, NewUTC_DT);
             if (Status != 9)
                 DT_Stop = "";
 
@@ -1745,7 +1750,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, user.Id),
                 FileLinks = new List<myFiles>(),
-                DT_Start = (Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
+                DT_Start = (Bank.NormDateTimeYMD(DateTime.Now.ToUniversalTime().ToString())),
                 DT_Stop = "",
                 Status = 0,
                 Index = NextIndex,
@@ -1823,7 +1828,7 @@ namespace FactPortal.Controllers
                 UserName = Bank.inf_SS(DUsersName, user.Id),
                 UserEmail = Bank.inf_SS(DUsersEmail, user.Id),
                 FileLinks = new List<myFiles>(),
-                DT = (Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString())),
+                DT = (Bank.NormDateTimeYMD(DateTime.Now.ToUniversalTime().ToString())),
                 Status = 0,
                 Message = ""
             };

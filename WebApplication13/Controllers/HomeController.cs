@@ -80,7 +80,7 @@ namespace FactPortal.Controllers
 
                 //ViewBag.Alerts = //_business.Alerts.OrderByDescending(x => x.DT).ToList(); //.Take(5);
 
-                ViewBag.Time = Bank.NormDateTime(DateTime.Now.ToUniversalTime().ToString());
+                ViewBag.Time = Bank.NormDateTimeYMD(DateTime.Now.ToUniversalTime().ToString());
 
                 return View(stat);
             }

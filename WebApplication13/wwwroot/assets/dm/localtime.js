@@ -42,3 +42,10 @@ function UTC_To_LocalTime(DT) {
 
     return out
 }
+
+
+function get_TimezoneOffset() {
+    const d = new Date();
+    let diff = d.getTimezoneOffset();
+    return diff;
+}
