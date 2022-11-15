@@ -1099,11 +1099,33 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, bool EnableDT = false, string NewDT = "", int TimezoneOffset = 0, int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, bool EnableDT = false, string NewDT = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             
             // Текущий пользователь
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+
+            // Изменения произведены от имени другого пользователя
+            if (!String.IsNullOrEmpty(NewUser))
+            {
+                var new_user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == NewUser.ToLower());
+                if (new_user != null && user != new_user)
+                {
+                    // на будущее!
+                    var URoles = _context.UserRoles.Where(x => x.UserId == new_user.Id);
+                    if (URoles.Any())
+                    {
+                        var roles = _context.Roles.Where(x => URoles.Select(y => y.RoleId).Contains(x.Id));
+                        if (roles.Any())
+                        {
+                            var rolesName = roles.Select(x => x.Name.ToLower());
+                            bool IsAdmin = (rolesName.Contains("admin") || rolesName.Contains("superadmin"));
+                        } 
+                    }
+                    // 
+                    user = new_user;
+                }    
+            }
 
             // Проверка на доступность номера шага (Index)
             var IndexSteps = await _business.WorkSteps.Where(x => x.WorkId == WorkId && x.Id != Id).Select(x => x.Index).ToListAsync().ConfigureAwait(false);

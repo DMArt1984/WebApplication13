@@ -128,21 +128,24 @@
                     </div>
 
                     <hr />
-                    <small>Дата и время:</small>
+                    <small>Дата и время (для статусов работа или выполнено):</small>
                     <div class="row row-cols-lg-auto g-3 align-items-center">
-
                         <div class="col-6">
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" name="EnableDT" value="true" id="dtCheck" onchange="yesnoCheck('dtCheck','datetime-local-input')">
                                 <label class="form-check-label" for="inlineFormCheck">
-                                    Изменить
+                                    Установить
                                 </label>
                             </div>
                         </div>
-
                         <div class="col-6">
                             <input id="datetime-local-input" type="datetime-local" class="form-control" name="NewDT" value="дд.мм.гггг --:--">
                         </div>
+                    </div>
+
+                    <div class="col-12 pt-2">
+                        <small>Сохранить изменения от имени сотрудника:</small>
+                        <input id="email-input" type="email" class="form-control" name="NewUser" value="@Model.UserEmail">
                     </div>
 
                     <!--Файлы-->
