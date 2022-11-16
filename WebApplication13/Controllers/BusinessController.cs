@@ -1106,25 +1106,22 @@ namespace FactPortal.Controllers
                 x.Id,
                 x.UserName,
                 x.FullName,
-                jobs = claimsJob.Where(y => y.UserId == x.Id), //.Select(x => x.ClaimValue),
-                roles = userRoles.Where(y => y.UserId == x.Id), //.Select(x => x.RoleId) //.Select(y => roles.FirstOrDefault(z => z.Id == y.RoleId))
-            }); //Select(x => new { x.Id, x.UserName, x.FullName});
-
+                jobs = claimsJob.Where(y => y.UserId == x.Id), 
+                roles = userRoles.Where(y => y.UserId == x.Id), 
+            });
             var users2 = users1.Select(x => new
             {
                 x.Id,
-                x.UserName,
-                x.FullName,
+                Name = (String.IsNullOrEmpty(x.FullName)) ? x.UserName : $"{x.FullName} ({x.UserName})",
                 jobs = (x.jobs.Any()) ? x.jobs.Select(y => y.ClaimValue).Where(y => !String.IsNullOrEmpty(y)).Distinct().ToList() : new List<string>(),
                 roles = (x.roles.Any()) ? x.roles.Select(y => (NameRoles.Select(w => w.Id).Contains(y.RoleId)) ? NameRoles.FirstOrDefault(z => z.Id == y.RoleId).Name : "").Distinct().ToList() : new List<string>()
             });
+            var usersOUT = users2.Select(x => ($"{x.Id}:{x.Name} {x.jobs.FirstOrDefault()}").Trim()).ToList();
 
-            //var company = user.getListClaim(_context.UserClaims.ToList(), "company").Where(x => x != "").Distinct();
-            //var job = Model.User.getListClaim(Model.Claims, "job").Where(x => x != "").Distinct();
-            //var roles = Model.Roles.Where(x => x != "").Distinct();
 
             // Вывод
-            ViewData["Users"] = new List<string>();
+            ViewBag.activeUserId = user.Id;
+            ViewBag.Users = usersOUT;
 
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["WorkReturn"] = WorkId;
@@ -1145,7 +1142,7 @@ namespace FactPortal.Controllers
             // Изменения произведены от имени другого пользователя
             if (!String.IsNullOrEmpty(NewUser))
             {
-                var new_user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == NewUser.ToLower());
+                var new_user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == NewUser.ToLower() || x.Id == NewUser);
                 if (new_user != null && user != new_user)
                 {
                     // на будущее!

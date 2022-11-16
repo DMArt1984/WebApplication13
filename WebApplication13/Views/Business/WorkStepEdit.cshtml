@@ -1,5 +1,6 @@
 ﻿@model WorkStepInfo
 @using System.Text.RegularExpressions;
+
 @{
     int FilterSO = Convert.ToInt32(ViewData["SOReturn"]); // выборка по объекту
     int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
@@ -12,8 +13,8 @@
         ViewData["Title"] = $"Обслуживание № {Model.WorkId}: Новый выполненный шаг";
     }
 
-    //List<myFiles> MF = ViewBag.Files;
 
+    // Статус
     List<SelectListItem> listStatus = new List<SelectListItem>();
     listStatus.Add(new SelectListItem { Value = "0", Text = "ожидание" });
     listStatus.Add(new SelectListItem { Value = "1", Text = "пауза" });
@@ -39,6 +40,22 @@
     //    if (Y != null)
     //        Y.Selected = true;
     //}
+
+    // Пользователи
+    List<SelectListItem> listUsers = new List<SelectListItem>();
+    if (ViewBag.Users != null)
+    {
+        List<string> ST = ViewBag.Users;
+        foreach (var item in ST.OrderBy(x => x.Split(":")[1]))
+        {
+            string ID = item.Split(":")[0];
+            string Title = item.Split(":")[1];
+            listUsers.Add(new SelectListItem { Value = ID, Text = Title });
+        }
+        var Y = listUsers.FirstOrDefault(x => x.Value == ViewBag.activeUserId);
+        if (Y != null)
+            Y.Selected = true;
+    }
 
 }
 
@@ -135,7 +152,8 @@
 
                     <div class="col-12 col-lg-6 pt-2">
                         <small>Сохранить изменения от имени сотрудника:</small>
-                        <input id="email-input" type="email" class="form-control" name="NewUser" value="@Model.UserEmail">
+                        @*<input id="email-input" type="email" class="form-control" name="NewUser" value="@Model.UserEmail">*@
+                        <select class="form-select" name="NewUser" value="0" asp-items="listUsers"></select>
                     </div>
 
                     <!--Файлы-->
