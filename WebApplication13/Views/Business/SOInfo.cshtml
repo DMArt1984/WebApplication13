@@ -102,11 +102,12 @@ else
                         <small>Код объекта:</small>
                         <h5 class="px-3 mb-sm-0 text-primary"> @Model.ObjectCode</h5>
                     </div>
-                    <div class="d-flex justify-content-center">
-                        <img class="card-img-top img-fluid" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" style="max-width:300px; max-height:300px; min-width:150px; min-height:150px; text-align: center;" />
+                    <div id="QR" class="d-flex justify-content-center">
+                        <img class="card-img-top img-fluid" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" style=" min-width:150px; min-height:150px; text-align: center;" />
                     </div>
                     <div class="d-flex justify-content-center pb-2">
-                        <a href="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" class="btn btn-outline-secondary btn-sm edit" download>Скачать файл</a>
+                        <a href="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" class="btn btn-outline-secondary btn-sm mx-3 edit" download="@Model.ObjectCode"> Скачать </a>
+                        <a href="javascript:PrintElem('QR','@Model.ObjectCode')" class="btn btn-outline-secondary btn-sm mx-3 edit"> Печать </a>
                     </div>
                 </div>
             }
@@ -174,5 +175,24 @@ else
 @section Scripts {
 
     <script type="text/javascript">
+        function PrintElem(elem, title)
+        {
+            var mywindow = window.open('', 'PRINT', 'height=1000,width=800');
+
+            mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1>' + document.title + '</h1>');
+            mywindow.document.write('<h2>' + title  + '</h2>');
+            mywindow.document.write(document.getElementById(elem).innerHTML);
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10*/
+
+            mywindow.print();
+            mywindow.close();
+
+            return true;
+        }
     </script>
 }
