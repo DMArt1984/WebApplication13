@@ -43,9 +43,20 @@ function UTC_To_LocalTime(DT) {
     return out
 }
 
-
+// Получения временной зоны в минутах
 function get_TimezoneOffset() {
     const d = new Date();
     let diff = d.getTimezoneOffset();
     return diff;
+}
+
+// Преобразование строки из YYYY.MM.DD HH:MM:SS в 2022-01-07T08:09
+function get_CalendarDateTime(dt) {
+    let out = dt.replaceAll('.', '-').replaceAll(' ', 'T');
+    return out;
+}
+
+// Преобразование даты и времени js в YYYY.MM.DD HH:MM
+function jsDT_To_YMDHMS(jdatetime) {
+    return `${jdatetime.getFullYear().toString().padStart(2, '0')}.${jdatetime.getMonth().toString().padStart(2, '0')}.${jdatetime.getDate()} ${jdatetime.getHours().toString().padStart(2, '0')}:${jdatetime.getMinutes().toString().padStart(2, '0')}:${jdatetime.getSeconds().toString().padStart(2, '0')}`;
 }
