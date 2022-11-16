@@ -309,6 +309,10 @@ namespace FactPortal.Models
         {
             try
             {
+                if (String.IsNullOrEmpty(SDT))
+                    return DateTime.UtcNow;
+
+
                 var Big = SDT.Split(' ');
 
                 var BDate = Big[0].Split('.');

@@ -122,28 +122,18 @@
                         <input type="text" class="form-control" name="Title" value="@Model.Title" required="" placeholder="Введите название" />
                     </div>
 
-                    <div class="col-12 pt-2">
+                    <div class="col-12 col-lg-6 pt-2">
                         <small>Статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
                     </div>
 
                     <hr />
-                    <small>Дата и время (для статусов работа или выполнено):</small>
-                    <div class="row row-cols-lg-auto g-3 align-items-center">
-                        <div class="col-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="EnableDT" value="true" id="dtCheck" onchange="yesnoCheck('dtCheck','datetime-local-input')">
-                                <label class="form-check-label" for="inlineFormCheck">
-                                    Установить
-                                </label>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <input id="datetime-local-input" type="datetime-local" class="form-control" name="NewDT" value="2017-08-19T13:45:00">
-                        </div>
+                    <div class="col-12 col-lg-6 pt-2">
+                        <small>Дата и время (для статусов работа или выполнено):</small>
+                        <input id="datetime-local-input" type="datetime-local" class="form-control" name="NewDT" value="">
                     </div>
 
-                    <div class="col-12 pt-2">
+                    <div class="col-12 col-lg-6 pt-2">
                         <small>Сохранить изменения от имени сотрудника:</small>
                         <input id="email-input" type="email" class="form-control" name="NewUser" value="@Model.UserEmail">
                     </div>
@@ -189,9 +179,9 @@
 
         SetInfoValue('TimezoneOffset', get_TimezoneOffset())
         //SetInfoValue('datetime-local-input', '2019-08-19T13:45:00')
-        SetInfoValue('datetime-local-input', get_CalendarDateTime(jsDT_To_YMDHMS(new Date())))
+        SetInfoValue('datetime-local-input', get_CalendarDateTime(jsDT_To_YMDHM(new Date())))
 
-        yesnoCheck('dtCheck', 'datetime-local-input');
+        //yesnoCheck('dtCheck', 'datetime-local-input');
 
         function yesnoCheck(chb, mydiv) {
             if (document.getElementById(chb).checked) {

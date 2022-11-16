@@ -1088,7 +1088,44 @@ namespace FactPortal.Controllers
                 Parent = (work != null) ? GetBreadWorkStepsList_Filter(WorkId, ServiceObjectId, "") : GetBreadWorkStepsList_All()
             };
 
+            // Текущий пользователь
+            var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+            var userClaimCompany = _context.UserClaims.FirstOrDefault(x => x.UserId == user.Id && x.ClaimType == "Company");
+            var userCompany = (userClaimCompany != null) ? userClaimCompany.ClaimValue : "";
+
+            // Список пользователей для выбора
+            var claimsCompany = _context.UserClaims.Where(x => x.ClaimType.ToLower() == "company" && x.ClaimValue == userCompany);
+            var usersIDInCompany = (claimsCompany != null) ? claimsCompany.Select(x => x.UserId).ToList() : new List<string>();
+            var usersInCompany = _context.Users.Where(x => usersIDInCompany.Contains(x.Id)).ToList();
+
+            var claimsJob = _context.UserClaims.Where(x => x.ClaimType.ToLower() == "job").ToList();
+            var userRoles = _context.UserRoles.ToList();
+            var NameRoles = _context.Roles.ToList();
+
+            var users1 = usersInCompany.Select(x => new {
+                x.Id,
+                x.UserName,
+                x.FullName,
+                jobs = claimsJob.Where(y => y.UserId == x.Id), //.Select(x => x.ClaimValue),
+                roles = userRoles.Where(y => y.UserId == x.Id), //.Select(x => x.RoleId) //.Select(y => roles.FirstOrDefault(z => z.Id == y.RoleId))
+            }); //Select(x => new { x.Id, x.UserName, x.FullName});
+
+            var users2 = users1.Select(x => new
+            {
+                x.Id,
+                x.UserName,
+                x.FullName,
+                jobs = (x.jobs.Any()) ? x.jobs.Select(y => y.ClaimValue).Where(y => !String.IsNullOrEmpty(y)).Distinct().ToList() : new List<string>(),
+                roles = (x.roles.Any()) ? x.roles.Select(y => (NameRoles.Select(w => w.Id).Contains(y.RoleId)) ? NameRoles.FirstOrDefault(z => z.Id == y.RoleId).Name : "").Distinct().ToList() : new List<string>()
+            });
+
+            //var company = user.getListClaim(_context.UserClaims.ToList(), "company").Where(x => x != "").Distinct();
+            //var job = Model.User.getListClaim(Model.Claims, "job").Where(x => x != "").Distinct();
+            //var roles = Model.Roles.Where(x => x != "").Distinct();
+
             // Вывод
+            ViewData["Users"] = new List<string>();
+
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
@@ -1099,7 +1136,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, bool EnableDT = false, string NewDT = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             
             // Текущий пользователь
@@ -1137,7 +1174,7 @@ namespace FactPortal.Controllers
             }
 
             // Введенное время
-            var localDT = (EnableDT) ? Bank.CalendarToDateTimeYMD(NewDT) : "";
+            var localDT = Bank.CalendarToDateTimeYMD(NewDT);
             var NewUTC_DT = Bank.GetStringFromDT(Bank.GetDTfromStringYMDHMS(localDT, TimezoneOffset));
 
             // DT_Start
