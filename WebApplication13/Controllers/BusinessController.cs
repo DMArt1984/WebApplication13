@@ -2345,6 +2345,14 @@ namespace FactPortal.Controllers
 
         #endregion
 
+        // КЛИЕНТ: Информация для меню
+        public async Task<JsonResult> MenuInfo(string inf="")
+        {
+            var alerts = await _business.Alerts.CountAsync(x => x.Status != 9).ConfigureAwait(false);
+
+
+            return new JsonResult(new { alerts });
+        }
 
         // ============== Разное ======================================================================================
         #region Others

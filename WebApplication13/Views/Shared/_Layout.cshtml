@@ -130,8 +130,8 @@
         <div class="main-content">
 
             @*<div id="load" class="page-content">
-                Загрузка страницы...
-            </div>*@
+                    Загрузка страницы...
+                </div>*@
             <div id="content" class="page-content">
                 @RenderBody()
             </div>
@@ -159,17 +159,80 @@
 
     <!-- load -->
     @*<script type="text/javascript">
-        ShowId("load")
-        HideId("content")
+            ShowId("load")
+            HideId("content")
 
-        window.addEventListener("load", function () {
-            HideId("load")
-            ShowId("content")
-        });
-    </script>*@
+            window.addEventListener("load", function () {
+                HideId("load")
+                ShowId("content")
+            });
+        </script>*@
+
+    <!-- Получение информации с сервера для меню -->
+    <div class="d-none" id="base">@ViewContext.HttpContext.Request.PathBase</div>
+    <script type="text/javascript">
+
+        getInfo();
+
+        // Путь к сайту
+        function GetPathBase() {
+            var base = document.getElementById('base').innerText;
+            return base;
+        }
+
+
+        // Получение информации с сервера
+        async function getInfo() {
+            let formData = new FormData();
+            formData.append("inf", "");
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/MenuInfo`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                //
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Error == undefined) {
+                        // document.getElementById("message").innerHTML = ""
+                        SetInfo('menu_alerts', data.alerts)
+                        document.getElementById('menu_alerts').style.display = (data.alerts > 0) ? '' : 'none';
+                    } else {
+                        //
+                    }
+                },
+                error: function (error) {
+                    // handle error
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    //
+                },
+                complete: function () {
+                    //
+                },
+                timeout: 60000
+            });
+
+        }
+    </script>
+
 
     @RenderSection("Scripts", required: false)
-
 
 
 </body>

@@ -29,6 +29,7 @@ function GetPathHost() {
     return host;
 }
 
+// Путь к сайту
 function GetPathBase() {
     var base = document.getElementById('base').innerText;
     return base;
