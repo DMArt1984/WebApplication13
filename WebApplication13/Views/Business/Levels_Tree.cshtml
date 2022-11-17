@@ -6,9 +6,12 @@
     var maxUID = 0;
 
     List<SelectListItem> TextLinkID = new List<SelectListItem>();
-    TextLinkID.Add(new SelectListItem { Value = "0", Text = "ЗАВОД" });
+    TextLinkID.Add(new SelectListItem { Value = "0", Text = "Структура" });
     foreach (var item in Model.OrderBy(x => x.Name))
-        TextLinkID.Add(new SelectListItem { Value = item.Id.ToString(), Text = GetParent(item.Name, item.LinkId) });
+    {
+        if (item.Id > 0)
+            TextLinkID.Add(new SelectListItem { Value = item.Id.ToString(), Text = GetParent(item.Name, item.LinkId) });
+    }
 
     List<SelectListItem> TextLinkID2 = new List<SelectListItem>();
     foreach (var item in TextLinkID.OrderBy(x => x.Text))
@@ -43,8 +46,8 @@
         foreach (var item in Levels)
             IdName.Add(item.Id, item.LinkId + ":" + item.Name);
 
-        <li>
-            Завод [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
+        <li id="level_root">
+            Структура [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
             @{ExpPos(IdName, 0);
                 maxUID = uid;}
         </li>
@@ -60,7 +63,7 @@
             }
         }
         <div class="pt-2 d-none">
-            <small id="a_Text" class="mx-1">Завод</small><small> (id: <code id="a_ID" class="mx-1">0</code>) </small>
+            <small id="a_Text" class="mx-1">Завод000</small><small> (id: <code id="a_ID" class="mx-1">0</code>) </small>
         </div>
 
     }
@@ -105,7 +108,7 @@
     void ExpPosTable(int ID, string bg = "bg-light")
     {
         var L = Model.FirstOrDefault(x => x.Id == ID);
-        if (L != null)
+        if (L != null && L.Id > 0) // && L.Id > 0
         {
             ExpPosTable(L.LinkId);
             <span class="badge @bg">@L.Name</span>
@@ -114,7 +117,7 @@
         {
             if (ID == 0)
             {
-                <strong class="badge @bg">Завод</strong>
+                @*<strong class="badge @bg">Завод111</strong>*@
             }
             else
             {
@@ -366,7 +369,8 @@
     //HideId('myModal_Delete');
 
     //Edit(0, "", 0);
-    HideAll();
+        HideAll();
+        First();
 
     // Форма редактирования позиции
     function Edit(Id, Name, LinkId) {
@@ -404,10 +408,36 @@
         document.getElementById("n_LinkIdInfo").value = document.getElementById("n_LinkId").value;
     }
 
+    // Первый уровень
+    function First() {
+
+        for (var i = 1; i <=@maxUID; i++) {
+            let element = document.getElementById(i);
+            let link = document.getElementById("s " + i);
+
+            if (element) {
+                let pid = element.parentNode.parentNode.parentNode.id;
+                if (pid == 'level_root') {
+                    element.style.display = "";
+                    if (link)
+                        link.className = "fas fa-angle-up";
+                }
+            }
+        }
+
+        //let i = 1;
+        //let element = document.getElementById(i);
+        //let link = document.getElementById("s " + i);
+        //if (element)
+        //    element.style.display = "";
+        //if (link)
+        //    link.className = "fas fa-angle-up";
+    }
+
     function HideAll() {
         for (var i = 1; i <=@maxUID; i++) {
-            element = document.getElementById(i);
-            link = document.getElementById("s " + i);
+            let element = document.getElementById(i);
+            let link = document.getElementById("s " + i);
             if (element) {
                 element.style.display = "none";
             }
