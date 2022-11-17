@@ -46,11 +46,11 @@
         foreach (var item in Levels)
             IdName.Add(item.Id, item.LinkId + ":" + item.Name);
 
-        <li id="level_root">
+        <div id="level_root">
             Структура [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
             @{ExpPos(IdName, 0);
                 maxUID = uid;}
-        </li>
+        </div>
         <!-- Позиции с ошибками -->
         foreach (var item in Levels.OrderBy(x => x.Id))
         {
@@ -369,8 +369,9 @@
     //HideId('myModal_Delete');
 
     //Edit(0, "", 0);
-        HideAll();
-        First();
+
+    HideAll();
+    //First();
 
     // Форма редактирования позиции
     function Edit(Id, Name, LinkId) {
@@ -444,6 +445,8 @@
             if (link)
                 link.className = "fas fa-angle-double-right";
         }
+        // first level
+        First();
     }
 
     function ShowAll() {
