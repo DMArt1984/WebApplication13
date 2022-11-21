@@ -75,14 +75,28 @@ async function uploadFile2(category, categoryId, description) {
 
             SetInfoValue("newfiles", Ids)
 
-            document.getElementById("message").innerHTML = ""
+            document.getElementById("message").innerText = ""
             getFiles(Ids, GetInfo('category'), GetInfo('categoryId'), GetInfoValue('delfiles'))
         },
-        error: function (error) {
+        error: function (jqXHR, textStatus, errorThrown) {
             // handle error
             ShowId("listfiles")
             ShowId("uplfiles")
-            document.getElementById("message").innerHTML = "Ошибка загрузки файла!";
+            //alert("jqXHR.status "+ jqXHR.status)
+            //alert("etAllResponseHeaders() "+ jqXHR.getAllResponseHeaders())
+            //alert("jqXHR.responseText "+ jqXHR.responseText)
+            //alert("textStatus " + textStatus)
+            //alert("errorThrown " + errorThrown)
+
+            let title = "";
+            let parser = new DOMParser();
+            const doc = parser.parseFromString(jqXHR.responseText, 'text/html');
+            links = doc.getElementsByTagName('title');
+            for (var item of links) {
+                title = item.innerText;
+            }
+
+            document.getElementById("message").innerText = `Ошибка загрузки файла: ${textStatus} [${jqXHR.status}] ${title} ${errorThrown}`;
         },
         async: true,
         data: formData,
@@ -148,16 +162,16 @@ async function getFiles(Ids, category, categoryId, DelIds) {
         success: function (data) {
             // your callback here
             if (data.Error == undefined) {
-                document.getElementById("message").innerHTML =""
+                document.getElementById("message").innerText =""
                 BuildFiles(data)
             } else {
-                document.getElementById("message").innerHTML = `<span class="badge bg-danger">Ошибка получения файлов! ${data.Error}</span>`;
+                document.getElementById("message").innerText = `<span class="badge bg-danger">Ошибка получения файлов! ${data.Error}</span>`;
             }
             //alert('The file has been uploaded successfully.');
         },
         error: function (error) {
             // handle error
-            document.getElementById("mesage").innerHTML = `<span class="badge bg-danger">Ошибка получения файлов! ${error}</span>`;
+            document.getElementById("mesage").innerText = `<span class="badge bg-danger">Ошибка получения файлов! ${error}</span>`;
         },
         async: true,
         data: formData,
