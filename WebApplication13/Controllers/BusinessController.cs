@@ -895,6 +895,9 @@ namespace FactPortal.Controllers
             if (work == null && Id > 0)
                 return RedirectToAction("WorkNull");
 
+            // Список шагов для объекта
+            var Steps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId).ToListAsync().ConfigureAwait(false);
+
             // Крошки
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
             var thisNode = new MvcBreadcrumbNode("WorkEdit", "Business", "ViewData.Title")
@@ -903,6 +906,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewBag.Steps = Steps.OrderBy(x => x.Index).ToList(); // шаги
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             ViewBag.Indexes = GetListSteps(ServiceObjectId);
@@ -916,8 +920,9 @@ namespace FactPortal.Controllers
         {
             // Текущий пользователь
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
-            
+
             // Создание нового элемента
+            var newID = 0; // для новых
             if (Id == 0)
             {
                 // Список шагов для объекта
@@ -926,7 +931,7 @@ namespace FactPortal.Controllers
                     return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
 
                 var myIDs = _business.Works.Select(x => x.Id).ToList();
-                var newID = Bank.maxID(myIDs);
+                newID = Bank.maxID(myIDs);
                 var newWork = new Work
                 {
                     Id = newID,
@@ -952,6 +957,7 @@ namespace FactPortal.Controllers
                         myUserId = user.Id,
                         groupFilesId = ""
                     };
+                    
                     await _business.WorkSteps.AddAsync(newWorkStep);
                     await _business.SaveChangesAsync().ConfigureAwait(false);
                 }
@@ -973,7 +979,13 @@ namespace FactPortal.Controllers
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // 5. Вернуться в список
-            return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
+            if (Id == 0 && newID > 0) // новый
+            {
+                return RedirectToAction("WorkInfo", new { Id = newID, ServiceObjectId = SOReturn });
+            } else // существующий
+            {
+                return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
+            }
         }
 
         // Удаление обслуживания
@@ -1133,7 +1145,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT_Start = "", string NewDT_Stop = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
         {
             
             // Текущий пользователь
@@ -1171,16 +1183,15 @@ namespace FactPortal.Controllers
             }
 
             // Введенное время
-            var localDT = Bank.CalendarToDateTimeYMD(NewDT);
-            var NewUTC_DT = Bank.GetStringFromDT(Bank.GetDTfromStringYMDHMS(localDT, TimezoneOffset));
+            var localDT_start = Bank.CalendarToDateTimeYMD(NewDT_Start);
+            var localDT_stop = Bank.CalendarToDateTimeYMD(NewDT_Stop);
 
             // DT_Start
-            string DT_Start = Bank.GetWork_DTStart(Status, NewUTC_DT);
+            string DT_Start = Bank.GetStringFromDT(Bank.GetDTfromStringYMDHMS(localDT_start, TimezoneOffset));
 
             // DT_Stop
-            string DT_Stop = Bank.GetWork_DTStop(Status, NewUTC_DT);
-            if (Status != 9)
-                DT_Stop = "";
+            string DT_Stop = Bank.GetStringFromDT(Bank.GetDTfromStringYMDHMS(localDT_stop, TimezoneOffset));
+
 
             // Создание нового элемента
             if (Id == 0) // создание нового элемента

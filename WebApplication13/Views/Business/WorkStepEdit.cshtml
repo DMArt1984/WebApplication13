@@ -146,8 +146,12 @@
 
                     <hr />
                     <div class="col-12 col-lg-6 pt-2">
-                        <small>Дата и время (для статусов работа или выполнено):</small>
-                        <input id="datetime-local-input" type="datetime-local" class="form-control" name="NewDT" value="">
+                        <small>Дата и время начала:</small>
+                        <input id="datetime-local-input1" type="datetime-local" class="form-control" name="NewDT_Start" value="">
+                    </div>
+                    <div class="col-12 col-lg-6 pt-2">
+                        <small>Дата и время окончания:</small>
+                        <input id="datetime-local-input2" type="datetime-local" class="form-control" name="NewDT_Stop" value="">
                     </div>
 
                     <div class="col-12 col-lg-6 pt-2">
@@ -197,7 +201,15 @@
 
         SetInfoValue('TimezoneOffset', get_TimezoneOffset())
         //SetInfoValue('datetime-local-input', '2019-08-19T13:45:00')
-        SetInfoValue('datetime-local-input', get_CalendarDateTime(jsDT_To_YMDHM(new Date())))
+
+        let dt_stop = jsDT_To_YMDHM(new Date());
+        SetInfoValue('datetime-local-input2', get_CalendarDateTime(dt_stop));
+
+        let dt_start = '@Model.DT_Start';
+        if (dt_start == null || dt_start == '') {
+            dt_start = jsDT_To_YMDHM(new Date());
+        }
+        SetInfoValue('datetime-local-input1', get_CalendarDateTime(dt_start));
 
         //yesnoCheck('dtCheck', 'datetime-local-input');
 

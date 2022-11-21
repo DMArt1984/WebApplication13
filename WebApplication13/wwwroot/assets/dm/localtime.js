@@ -53,10 +53,51 @@ function get_TimezoneOffset() {
 // Преобразование строки из YYYY.MM.DD HH:MM:SS в 2022-01-07T08:09
 function get_CalendarDateTime(dt) {
     let out = dt.replaceAll('.', '-').replaceAll(' ', 'T');
+    var fortim = out.split(':');
+    if (fortim.length > 2) {
+        out = fortim[0] + ":" + fortim[1];
+       
+    }
+    //alert(out);
     return out;
 }
 
 // Преобразование даты и времени js в YYYY.MM.DD HH:MM
 function jsDT_To_YMDHM(jdatetime) {
     return `${jdatetime.getFullYear().toString().padStart(2, '0')}.${(jdatetime.getMonth()+1).toString().padStart(2, '0')}.${jdatetime.getDate()} ${jdatetime.getHours().toString().padStart(2, '0')}:${jdatetime.getMinutes().toString().padStart(2, '0')}`;
+}
+
+// Преобразование из DD.MM.YYYY HH:MM:SS в YYYY.MM.DD HH:MM:SS
+function DMY_To_YMD(dt) {
+    if (dt.trim() == "")
+        return "";
+
+    var year = 0;
+    var month = 0;
+    var day = 0;
+    var tm = "";
+
+    var datetime = dt.split(' ')
+    if (datetime.length > 0) {
+        var date = datetime[0];
+        var YMD = date.split('.')
+        if (YMD.length == 3) {
+            year = YMD[2]
+            month = YMD[1]
+            day = YMD[0]
+        }
+    }
+
+    if (datetime.length > 1) {
+        var time = datetime[1]
+        var HMS = time.split(':')
+        if (HMS.length == 3) {
+            hour = HMS[0]
+            minute = HMS[1]
+            second = HMS[2]
+        }
+    }
+
+    return `${year.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${day.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+
 }

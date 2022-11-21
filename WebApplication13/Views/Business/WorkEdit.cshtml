@@ -39,6 +39,15 @@
                     </div>
 
                     <hr />
+                    <!-- шаги -->
+                    <div class="col-12 pb-2">
+                        <small>Шаги: </small>
+                        <br />
+                        @foreach (Step item in ViewBag.Steps)
+                        {
+                            <p>@item.Index . <strong>@item.Title</strong> <br/> @item.Description</p>
+                        }
+                    </div>
 
                     <!---->
                 </div>
