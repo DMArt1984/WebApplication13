@@ -28,7 +28,7 @@
             @if (IsAdmin)
             {
                 <div class="col-3 col-md-3 pb-2">
-                    <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@Model.Id" asp-route-WorkId="@Model.WorkId" asp-route-ServiceObjectId="@Model.ServiceObjectId">
+                    <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@Model.Id" asp-route-WorkId="@Model.WorkId" asp-route-ServiceObjectId="@Model.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]">
                         <i class="fas fa-pencil-alt"></i>
                     </a>
                 </div>

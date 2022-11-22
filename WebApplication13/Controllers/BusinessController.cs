@@ -1081,7 +1081,7 @@ namespace FactPortal.Controllers
         // Таблица шагов обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public async Task<IActionResult> WorkStepsList(int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepsList(int WorkId = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             List<WorkStepInfo> workSteps = GetWorkStepsInfo(WorkId);
@@ -1098,6 +1098,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
@@ -1116,7 +1117,7 @@ namespace FactPortal.Controllers
         // Просмотр шагов обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public async Task<IActionResult> WorkStepInfo(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepInfo(int Id = 0, int WorkId = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var workStep = await GetWorkStepInfo(Id, WorkId).ConfigureAwait(false);
@@ -1132,6 +1133,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
@@ -1142,7 +1144,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Попытка создать новый шаг (пока можно!)
             //if (Id == 0)
@@ -1197,6 +1199,7 @@ namespace FactPortal.Controllers
             ViewBag.activeUserId = user.Id;
             ViewBag.Users = usersOUT;
 
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["WorkReturn"] = WorkId;
             ViewData["SOReturn"] = ServiceObjectId;
@@ -1207,7 +1210,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT_Start = "", string NewDT_Stop = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT_Start = "", string NewDT_Stop = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, bool pageInfo = false, string LoadFileId = null, string DelFileId = null)
         {
             
             // Текущий пользователь
@@ -1341,13 +1344,13 @@ namespace FactPortal.Controllers
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // 5. Вернуться в список
-            return RedirectToAction("WorkStepsList", new { WorkId = WorkReturn, ServiceObjectId = SOReturn });
+            return RedirectToAction("WorkStepsList", new { WorkId = WorkReturn, ServiceObjectId = SOReturn, pageInfo });
         }
 
         // Удаление шагов обслуживания
         [HttpPost]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepDelete(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkStepDelete(int Id = 0, int WorkId = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             WorkStep workStep = _business.WorkSteps.FirstOrDefault(p => p.Id == Id);
             if (workStep != null)
@@ -1356,7 +1359,7 @@ namespace FactPortal.Controllers
 
                 _business.WorkSteps.Remove(workStep);
                 await _business.SaveChangesAsync().ConfigureAwait(false);
-                return RedirectToAction("WorkStepsList", new { WorkId = WorkId, ServiceObjectId = ServiceObjectId });
+                return RedirectToAction("WorkStepsList", new { WorkId = WorkId, ServiceObjectId = ServiceObjectId, pageInfo });
             }
             return NotFound();
         }

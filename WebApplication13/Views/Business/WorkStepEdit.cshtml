@@ -178,7 +178,7 @@
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                         <!-- отмена -->
-                        <a asp-action="WorkStepsList" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                        <a asp-action="WorkStepsList" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
                 </div>
             </form>
