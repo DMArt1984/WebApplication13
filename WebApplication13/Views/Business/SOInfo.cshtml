@@ -149,7 +149,7 @@ else
         @if (IsAdmin && StepsAvailable)
         {
             <div class="mb-2">
-                <a class="btn btn-primary btn btn-sm btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
+                <a class="btn btn-primary btn btn-sm btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id" asp-route-pageInfo="true"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
             </div>
         }
     }

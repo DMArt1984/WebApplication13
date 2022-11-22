@@ -11,8 +11,9 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="number" id ="name_id" name="id" value="0" style="display: none" readonly />
+                    <input type="number" id="name_id" name="id" value="0" style="display: none" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
+                    <input type="number" name="pageInfo" class="form-control d-none" value="@ViewData["pageInfo"]" readonly />
                     <p>После этого действия вы не сможете востановить обслуживание. Прикрепленные файлы также будут удалены.</p>
                 </div>
                 <div class="modal-footer">

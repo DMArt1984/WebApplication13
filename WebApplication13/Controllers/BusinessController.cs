@@ -681,6 +681,7 @@ namespace FactPortal.Controllers
             ViewData["BreadcrumbNode"] = thisNode;
 
             // Вывод
+            ViewData["pageInfo"] = false;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             ViewBag.EnableAdd = ServiceObjectId > 0;
             return View(steps);
@@ -696,7 +697,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepInfo(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> StepInfo(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var step = await GetStepInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -711,6 +712,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             return View(step);
@@ -720,7 +722,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var step = await GetStepInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -735,6 +737,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;      
             return View(step);
@@ -743,7 +746,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Title = "", string Description = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Title = "", string Description = "", int ServiceObjectId = 0, int SOReturn = 0, bool pageInfo = false, string LoadFileId = null, string DelFileId = null)
         {
             // Проверка на доступность номера шага (Index)
             //var IndexSteps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId && x.Id != Id).Select(x => x.Index).ToListAsync();
@@ -825,14 +828,24 @@ namespace FactPortal.Controllers
             if (Index > 0 && step.Index != Index)
                 await MakeInOrderStep(ServiceObjectId, step.Id, Index).ConfigureAwait(false);
 
-            // 5. Вернуться в список
-            return RedirectToAction("StepsList", new { ServiceObjectId = SOReturn });
+            // 5. Вернуться в
+            if (pageInfo && ServiceObjectId > 0)
+            {
+                // объект
+                return RedirectToAction("SOInfo", new { id = ServiceObjectId });
+            }
+            else
+            {
+                // список
+                return RedirectToAction("StepsList", new { ServiceObjectId = SOReturn });
+            }
+
         }
 
         // Удаление параметров шагов объекта обслуживания
         [HttpPost]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepDelete(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> StepDelete(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             Step step = _business.Steps.FirstOrDefault(p => p.Id == Id);
             if (step != null)
@@ -845,7 +858,18 @@ namespace FactPortal.Controllers
                 // Переназначить номера шагов, чтобы не было пропусков
                 await MakeInOrderStep(ServiceObjectId).ConfigureAwait(false);
 
-                return RedirectToAction("StepsList", new { ServiceObjectId = ServiceObjectId });
+                // 5. Вернуться в
+                if (pageInfo && ServiceObjectId > 0)
+                {
+                    // объект
+                    return RedirectToAction("SOInfo", new { id = ServiceObjectId });
+                }
+                else
+                {
+                    // список
+                    return RedirectToAction("StepsList", new { ServiceObjectId = ServiceObjectId });
+                }
+                
             }
             return NotFound();
         }
@@ -869,9 +893,10 @@ namespace FactPortal.Controllers
             {
                 Parent = (SObject != null) ? GetBreadObj(SObject.Id, SObject.ObjectTitle) : GetBreadMain(),
             };
-            ViewData["BreadcrumbNode"] = thisNode;
-
+            
             // Вывод
+            ViewData["pageInfo"] = false;
+            ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             var CountSteps = _business.Steps.Count(x => x.ServiceObjectId == ServiceObjectId);
             ViewBag.EnableAdd = ServiceObjectId > 0 && CountSteps > 0;
@@ -887,7 +912,7 @@ namespace FactPortal.Controllers
         // Просмотр обслуживания
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public async Task<IActionResult> WorkInfo(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkInfo(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var work = await GetWorkInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -902,6 +927,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             return View(work);
@@ -911,7 +937,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkEdit(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkEdit(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var work = await GetWorkInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -930,6 +956,8 @@ namespace FactPortal.Controllers
 
             // Вывод
             ViewBag.Steps = Steps.OrderBy(x => x.Index).ToList(); // шаги
+
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             ViewBag.Indexes = GetListSteps(ServiceObjectId);
@@ -939,7 +967,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkEdit(int Id = 0, int ServiceObjectId = 0, int SOReturn = 0)
+        public async Task<IActionResult> WorkEdit(int Id = 0, int ServiceObjectId = 0, int SOReturn = 0, bool pageInfo = false)
         {
             // Текущий пользователь
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -1004,7 +1032,7 @@ namespace FactPortal.Controllers
             // 5. Вернуться в список
             if (Id == 0 && newID > 0) // новый
             {
-                return RedirectToAction("WorkInfo", new { Id = newID, ServiceObjectId = SOReturn });
+                return RedirectToAction("WorkInfo", new { Id = newID, ServiceObjectId = SOReturn, pageInfo });
             } else // существующий
             {
                 return RedirectToAction("WorksList", new { ServiceObjectId = SOReturn });
@@ -1014,7 +1042,7 @@ namespace FactPortal.Controllers
         // Удаление обслуживания
         [HttpPost]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkDelete(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> WorkDelete(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             Work work = _business.Works.FirstOrDefault(p => p.Id == Id);
             if (work != null)
@@ -1031,7 +1059,18 @@ namespace FactPortal.Controllers
 
                 await _business.SaveChangesAsync().ConfigureAwait(false);
 
-                return RedirectToAction("WorksList", new { ServiceObjectId = ServiceObjectId });
+                // 5. Вернуться в
+                if (pageInfo && ServiceObjectId > 0)
+                {
+                    // объект
+                    return RedirectToAction("SOInfo", new { id = ServiceObjectId });
+                }
+                else
+                {
+                    // список
+                    return RedirectToAction("WorksList", new { ServiceObjectId = ServiceObjectId });
+                }
+                
             }
             return NotFound();
         }
@@ -1105,9 +1144,9 @@ namespace FactPortal.Controllers
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> WorkStepEdit(int Id = 0, int WorkId = 0, int ServiceObjectId = 0)
         {
-            // Попытка создать новый шаг
-            if (Id == 0)
-                return RedirectToAction("WorkStepNull");
+            // Попытка создать новый шаг (пока можно!)
+            //if (Id == 0)
+            //    return RedirectToAction("WorkStepNull");
 
             // Поиск существующего шага
             var workStep = await GetWorkStepInfo(Id, WorkId).ConfigureAwait(false);

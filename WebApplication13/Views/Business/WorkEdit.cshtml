@@ -60,8 +60,15 @@
                         }
                         <!-- сохранить -->
                         <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
-                        <!-- закрыть -->
-                        <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                        <!-- отмена -->
+                        @if (Convert.ToBoolean(ViewData["pageInfo"]))
+                        {
+                            <a asp-action="SOInfo" asp-route-id="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена <small>(в объект)</small></a>
+                        }
+                        else
+                        {
+                            <a asp-action="WorksList" asp-route-ServiceObjectId="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена <small>(в список)</small></a>
+                        }
                     </div>
                 </div>
             </form>

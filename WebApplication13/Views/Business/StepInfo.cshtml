@@ -76,10 +76,17 @@
                     <!-- редактировать -->
                     @if (IsAdmin)
                     {
-                        <a asp-action="StepEdit" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
+                        <a asp-action="StepEdit" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
                     }
                     <!-- закрыть -->
-                    <a asp-action="StepsList" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    @if (Convert.ToBoolean(ViewData["pageInfo"]))
+                    {
+                        <a asp-action="SOInfo" asp-route-id="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть <small>(в объект)</small></a>
+                    }
+                    else
+                    {
+                        <a asp-action="StepsList" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть <small>(в список)</small></a>
+                    }
                 </div>
             </div>
         </div>
@@ -100,6 +107,7 @@
                 <div class="modal-body">
                     <input type="number" name="id" value="@Model.Id" style="display: none" readonly />
                     <input type="number" name="ServiceObjectId" class="form-control d-none" value="@ViewData["ServiceObjectId"]" readonly />
+                    <input type="number" name="pageInfo" class="form-control d-none" value="@ViewData["pageInfo"]" readonly />
                     <p>После этого действия вы не сможете востановить шаг</p>
                 </div>
                 <div class="modal-footer">
