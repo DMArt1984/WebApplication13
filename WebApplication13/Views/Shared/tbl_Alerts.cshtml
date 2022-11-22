@@ -15,7 +15,7 @@
     {
     <div class="card-header d-flex justify-content-between align-items-center">
         <h4 class="text-secondary">Список уведомлений</h4>
-        <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
+        <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
     </div>
     }
     <!-- Таблица -->
@@ -64,12 +64,12 @@
                         <td>@Html.Partial("_FilesV", item.FileLinks)</td>
                         <td>
                             <div class="row px-1">
-                                <a class="col btn btn-outline-primary btn-sm edit" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
+                                <a class="col btn btn-outline-primary btn-sm edit" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
                                     <i class="far fa-eye"></i>
                                 </a>
                                 @if (IsAdmin)
                                 {
-                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO">
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
 

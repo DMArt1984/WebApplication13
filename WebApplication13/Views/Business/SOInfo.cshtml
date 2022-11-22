@@ -37,7 +37,7 @@ else
     @if (IsAdmin)
     {
         <div class="mb-2">
-            <a class="btn btn-danger btn btn-sm btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
+            <a class="btn btn-danger btn btn-sm btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id" asp-route-pageInfo="true"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
         </div>
     }
 }

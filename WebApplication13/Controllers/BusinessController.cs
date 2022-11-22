@@ -481,6 +481,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = false;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             return View(alerts);
@@ -495,7 +496,7 @@ namespace FactPortal.Controllers
         // Просмотр уведомлений
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public async Task<IActionResult> AlertInfo(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> AlertInfo(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var alert = await GetAlertInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -510,6 +511,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             return View(alert);
@@ -519,7 +521,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> AlertEdit(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> AlertEdit(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             // Поиск
             var alert = await GetAlertInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -534,6 +536,7 @@ namespace FactPortal.Controllers
             };
 
             // Вывод
+            ViewData["pageInfo"] = pageInfo;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
             return View(alert);
@@ -542,7 +545,7 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0, int SOReturn = 0, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0, int SOReturn = 0, bool pageInfo = false, string LoadFileId = null, string DelFileId = null)
         {
             // Текущий пользователь
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -615,14 +618,23 @@ namespace FactPortal.Controllers
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
-            // 5. Вернуться в список
-            return RedirectToAction("AlertsList", new { ServiceObjectId = SOReturn });
+            // 5. Вернуться в
+            if (pageInfo && ServiceObjectId > 0)
+            {
+                // объект
+                return RedirectToAction("SOInfo", new { id = ServiceObjectId });
+            }
+            else
+            {
+                // список
+                return RedirectToAction("AlertsList", new { ServiceObjectId = SOReturn });
+            }
         }
 
         
         [HttpPost]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> AlertDelete(int Id = 0, int ServiceObjectId = 0)
+        public async Task<IActionResult> AlertDelete(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
         {
             Alert alert = _business.Alerts.FirstOrDefault(p => p.Id == Id);
             if (alert != null)
@@ -631,7 +643,18 @@ namespace FactPortal.Controllers
 
                 _business.Alerts.Remove(alert);
                 await _business.SaveChangesAsync().ConfigureAwait(false);
-                return RedirectToAction("AlertsList", new { ServiceObjectId = ServiceObjectId });
+
+                // 5. Вернуться в
+                if (pageInfo && ServiceObjectId > 0 )
+                {
+                    // объект
+                    return RedirectToAction("SOInfo", new { id = ServiceObjectId });
+                }
+                else
+                {
+                    // список
+                    return RedirectToAction("AlertsList", new { ServiceObjectId = ServiceObjectId });
+                }
             }
             return NotFound();
         }

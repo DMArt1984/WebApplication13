@@ -67,10 +67,18 @@
                     <!-- редактировать -->
                     @if (IsAdmin)
                     {
-                        <a asp-action="AlertEdit" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
+                        <a asp-action="AlertEdit" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
                     }
                     <!-- закрыть -->
-                    <a asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    @if (Convert.ToBoolean(ViewData["pageInfo"]))
+                    {
+                        <a asp-action="SOInfo" asp-route-id="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть <small>(в объект)</small></a>
+                    }
+                    else
+                    {
+                        <a asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть <small>(в список)</small></a>
+                    }
+
                 </div>
             </div>
         </div>

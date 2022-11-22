@@ -27,7 +27,7 @@
                             </a>
                             @if (IsAdmin)
                             {
-                                <a class="col btn btn-danger btn-sm edit" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO">
+                                <a class="col btn btn-danger btn-sm edit" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="true">
                                     <i class="fas fa-plus"></i> Добавить новое уведомление
                                 </a>
                             }
