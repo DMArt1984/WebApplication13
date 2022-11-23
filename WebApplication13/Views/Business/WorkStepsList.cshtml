@@ -4,7 +4,7 @@
     int FilterSO = Convert.ToInt32(ViewData["SOReturn"]); // выборка по объекту
     int FilterWrk = Convert.ToInt32(ViewData["WorkReturn"]); // выборка по обслуживанию
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    
+
     var Obj = Model.Select(x => x.WorkId).Distinct();
     if (Obj != null && Obj.Count() == 1)
     {
@@ -28,8 +28,16 @@
 <!-- получение локального времени -->
 <script src="~/assets/dm/localtime.js"></script>
 
-
+<!-- Карточка-->
 <div class="card">
+    <!-- Добавить -->
+    @if (IsAdmin && FilterWrk > 0) // && ViewBag.EnableAdd
+    {
+        @*<div class="card-footer">
+                <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" asp-route-workInfo="false" asp-route-pageInfo="@ViewData["pageInfo"]"><i class="fas fa-plus"></i> Добавить новый выполненный шаг</a>
+            </div>*@
+    }
+    <!-- Таблица -->
     <div class="card-body">
         <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-primary text-white">
@@ -60,8 +68,12 @@
                             </td>
                         }
                         <td>@item.Index</td>
-                        <td><script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script></td>
-                        <td><script>document.write(UTC_To_LocalTime('@item.DT_Stop'));</script></td>
+                        <td>
+                            <script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script>
+                        </td>
+                        <td>
+                            <script>document.write(UTC_To_LocalTime('@item.DT_Stop'));</script>
+                        </td>
                         <td>@item.StatusRus()</td>
                         <td>
                             @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
@@ -69,18 +81,18 @@
                         <td>@Html.Partial("_FilesV", item.FileLinks)</td>
                         <td>
                             <div class="row px-1">
-                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkStepInfo" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkStepInfo" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]" asp-route-workInfo="false">
                                     <i class="far fa-eye"></i>
                                 </a>
                                 @if (IsAdmin)
                                 {
-                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="WorkStepEdit" asp-route-Id="@item.Id" asp-route-WorkId="@item.WorkId" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]" asp-route-workInfo="false">
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
 
                                     @*<a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, @item.WorkId, '@item.ServiceObjectTitle', @item.Index)">
-                                        <i class="fas fa-trash-alt px-1"></i>
-                                    </a>*@
+                                            <i class="fas fa-trash-alt px-1"></i>
+                                        </a>*@
                                 }
                             </div>
                         </td>
@@ -89,13 +101,7 @@
             </tbody>
         </table>
     </div>
-    <!-- Добавить -->
-    @if (IsAdmin && FilterWrk > 0 ) // && ViewBag.EnableAdd
-    {
-        @*<div class="card-footer">
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]"><i class="fas fa-plus"></i> Добавить новый выполненный шаг</a>
-        </div>*@
-    }
+
 </div>
 
 <!-- sample modal [ myModalDel ] content -->

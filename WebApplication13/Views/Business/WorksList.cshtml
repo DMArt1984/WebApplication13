@@ -99,9 +99,9 @@
                                 <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false">
                                     <i class="far fa-eye"></i>
                                 </a>
-                                <a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="false">
+                                @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="false">
                                     <i class="fas fa-align-justify"></i>
-                                </a>
+                                </a>*@
                                 @if (IsAdmin)
                                 {
                                     <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">

@@ -70,7 +70,7 @@
                     <!-- Добавить -->
                     @if (IsAdmin && (Model.Steps == null || Model.Steps.Count() < Model.FinalStep))
                     {
-                        <a class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId"><i class="fas fa-plus"></i> Добавить новый выполненный шаг</a>
+                        <a class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" title="Добавить" asp-action="WorkStepEdit" asp-route-Id="0" asp-route-WorkId="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]"><i class="fas fa-plus"></i> Добавить новый выполненный шаг</a>
                     }
                     <!-- закрыть -->
                     @if (Convert.ToBoolean(ViewData["pageInfo"]))

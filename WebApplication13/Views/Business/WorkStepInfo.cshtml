@@ -30,7 +30,14 @@
                         <a asp-action="WorkStepEdit" asp-route-Id="@Model.Id" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
                     }
                     <!-- закрыть -->
-                    <a asp-action="WorkStepsList" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть</a>
+                    @if (Convert.ToBoolean(ViewData["workInfo"]))
+                    {
+                        <a asp-action="WorkInfo" asp-route-id="@ViewData["ServiceObjectId"]" asp-route-pageInfo="@ViewData["pageInfo"]" asp-route-workInfo="@ViewData["workInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена <small>(в обслуживание)</small></a>
+                    }
+                    else
+                    {
+                        <a asp-action="WorkStepsList" asp-route-WorkId="@FilterWrk" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block">Закрыть <small>(в список)</small></a>
+                    }
                 </div>
             </div>
         </div>
