@@ -2494,6 +2494,22 @@ namespace FactPortal.Controllers
             return View(Works);
         }
 
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult diagrams2()
+        {
+            
+            return View();
+        }
+
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult diagrams3()
+        {
+
+            return View();
+        }
+
         //[HttpPost]
         //public async Task<IActionResult> Create_db_So(string objcode, string name, string description)
         //{
@@ -2507,7 +2523,7 @@ namespace FactPortal.Controllers
         #endregion
 
 
-    // ========= Данные 1 (тест) ====================================================================================
+        // ========= Данные 1 (тест) ====================================================================================
 
         [Breadcrumb("ViewData.Title")]
         public IActionResult TagsInfo()

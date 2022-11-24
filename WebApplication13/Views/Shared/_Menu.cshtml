@@ -124,6 +124,20 @@
     </a>
 </li>
 
+<li class="">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams2">
+        <i class="mdi mdi-texture-box"></i>
+        <span>Тест Диаграммы 2</span>
+    </a>
+</li>
+
+<li class="">
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams3">
+        <i class="mdi mdi-texture-box"></i>
+        <span>Тест Диаграммы 3</span>
+    </a>
+</li>
+
 @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
 {
     <li class="menu-title d-none">Администрирование</li>
