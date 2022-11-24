@@ -1,0 +1,96 @@
+﻿
+<style>
+    .circle .percent {
+        color: #aaaaaa;
+        fill: #aaaaaa;
+        font-weight: bold;
+    }
+
+    .circle {
+        display: block;
+        float: left;
+    }
+
+    circle {
+        fill: rgba(0,0,0,0);
+        stroke: #eee;
+        stroke-width: 10;
+        stroke-dasharray: 408px 408px;
+    }
+
+    circle:nth-child(2n) {
+        fill: rgba(0,0,0,0);
+        stroke: #30bae7;
+        stroke-width: 15;
+        stroke-linecap: round;
+        animation-name: render;
+        animation-duration: 1.5s;
+    }
+
+        circle:nth-child(2n):hover {
+            opacity: 0.8;
+        }
+
+    @@keyframes render {
+      0% {
+        stroke-dasharray: 0 100;
+      }
+    }
+
+</style>
+
+<script type="text/javascript">
+        var Circle = function (sel) {
+            var circles = document.querySelectorAll(sel); // находим все круги и
+            [].forEach.call(circles, function (el) { // перебираем их
+
+                // свойства до
+                let basesize = 408;
+                if (el.hasAttribute("size")) { // если нужно менять размер, то...
+                    basesize = parseFloat(el.getAttribute("size"));
+                }
+                let svgBox = basesize * 160 / 408;
+                let radius = basesize * 65 / 408;
+                let cxy = basesize * 80 / 408;
+                let fsize = basesize * 28 / 408;
+
+                var addstyle = "";
+                if (el.hasAttribute("color")) { // если нужно менять цвет, то...
+                    addstyle = " stroke: "+el.getAttribute("color")+";";
+                }
+
+                // число
+                var valEl = parseFloat(el.innerHTML); // получаем число (процент) у элемента
+                valEl = valEl * basesize / 100; // получаем "длину"
+
+                // круговая диаграмма svg
+                el.innerHTML = `<svg width="${svgBox}" height="${svgBox}">
+                                            <circle transform="rotate(-90)" r="${radius}" cx="-${cxy}" cy="${cxy}" />
+                                            <circle transform="rotate(-90)" style="stroke-dasharray:${valEl}px ${basesize}px; ${addstyle}" r="${radius}" cx="-${cxy}" cy="${cxy}" />
+                                            <text class="percent" x="${cxy}" y="${cxy + fsize/4 + 1}" font-size="${fsize}" text-anchor="middle"  >
+                                            <tspan>${el.innerHTML}</tspan>
+                                        </svg>`;
+
+                // свойства после
+                const el_circles = el.getElementsByTagName('circle');
+                const el_circle1 = el_circles[0];
+                const el_circle2 = el_circles[1];
+                if (el.hasAttribute("widthback")) { // если нужно менять ширину линии фона, то...
+                    el_circle1.style.cssText += " stroke-width: "+ el.getAttribute("widthback")+";";
+                };
+                if (el.hasAttribute("widthfront")) { // если нужно менять ширину линии значения, то...
+                    el_circle2.style.cssText += " stroke-width: "+ el.getAttribute("widthfront")+";";
+                }
+
+
+                //if (el.hasAttribute("widthratio")) { // если нужно менять отношение ширины, то...
+                //    const el_circle = el.getElementsByTagName('circle')[0];
+                //    alert(el_circle.style.cssText); //.getPropertyValue("width"));
+                //}
+
+            });
+        };
+
+        // рисуем наши круги
+        Circle('.circle');
+</script>

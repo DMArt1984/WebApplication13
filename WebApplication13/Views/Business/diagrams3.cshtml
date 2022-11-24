@@ -3,109 +3,26 @@
     ViewData["Title"] = "diagrams3";
 }
 
-<style>
-    .circle .percent {
-        color: #aaaaaa;
-        fill: #aaaaaa;
-        font-weight: bold;
-    }
-
-    .circle {
-        display: block;
-        float: left;
-    }
-
-    circle {
-        fill: rgba(0,0,0,0);
-        stroke: #eee;
-        stroke-width: 10;
-        stroke-dasharray: 408px 408px;
-    }
-
-        circle:nth-child(2n) {
-            fill: rgba(0,0,0,0);
-            stroke: #30bae7;
-            stroke-width: 15;
-            stroke-linecap: round;
-        }
-</style>
-
 <h1>diagrams3</h1>
 
 <!---->
 <div class="circle">7%</div>
-<div class="circle">27%</div>
+<div class="circle" widthback="15" widthfront="10">27%</div>
+<div class="circle" size="300">100%</div>
+<div class="circle" size="200" widthback="5" widthfront="5">90.5%</div>
 <div class="circle" color="#96d94e">84%</div>
-<div class="circle">100%</div>
 <div class="circle" color="red">65.4%</div>
 
-
+@Html.Partial("_DiagramCircle")
 
 
 @section Scripts {
 
 
     <script type="text/javascript">
-        var Circle = function (sel) {
-            var circles = document.querySelectorAll(sel);
-            [].forEach.call(circles, function (el) {
-                var valEl = parseFloat(el.innerHTML);
-                valEl = valEl * 408 / 100;
-
-                var addstyle = "";
-                if (el.hasAttribute("color")) {
-                    addstyle = " stroke: "+el.getAttribute("color")+";";
-                }
-
-                el.innerHTML = `<svg width="160" height="160">
-                                            <circle transform="rotate(-90)" r="65" cx="-80" cy="80" />
-                                            <circle transform="rotate(-90)" style="stroke-dasharray:${valEl}px 408px; ${addstyle}" r="65" cx="-80" cy="80" />
-                                            <text class="percent" x="80" y="87" font-size="28" text-anchor="middle"  >
-                                            <tspan>${el.innerHTML}</tspan>
-                                        </svg>`;
-                 
-            });
-        };
-        Circle('.circle');
+            
     </script>
 }
 
 
 
-<!---->
-@*<svg>
-        <text x="0" y="15">This is Scalable Vector Graphic (SVG) Text</text>
-    </svg>
-
-    <svg>
-        <text x="0" y="15"><tspan style="font-weight: bold;">This is bold</tspan>, <tspan style="font-style: italic;">this is italic</tspan> and <tspan style="text-decoration: underline;">this is underline</tspan></text>
-    </svg>
-
-    <svg>
-        <text x="70" y="20" style="writing-mode: tb;" class="japanese">???????</text>
-    </svg>
-
-    <svg>
-        <text x="0" y="50px" font-size="50px" font-weight="bold" stroke="black" stroke-width="0.5" fill="none">This is SVG Text</text>
-    </svg>
-
-    <defs>
-        <path id="textpath" fill="none" stroke="#000000" d="M0.057,0.024c0,0,10.99,51.603,102.248,51.603c91.259,0,136.172,53.992,136.172,53.992" />
-    </defs>
-
-    <text x="100" y="100" style="font-family: impact, georgia, times, serif; font-weight: normal; font-style: normal">
-        Text using web safe font
-    </text>*@
-
-<!---->
-@*<svg height="500" width="500">
-
-        <path d="M250 250 L250 0 A250,250,0,0,1,466.50635094610965,124.99999999999997  L250 250 Z" fill="#ddd" stroke="#ddd"></path>
-        <defs>
-            <path id="p1" d="M250 50 A200,200,0,0,1,423.2050807568877,149.99999999999997" fill="#ddd" stroke="#ddd"></path>
-        </defs>
-        <text style="font-size: 24px;">
-            <textPath xlink:href="#p1" startOffset="50%" text-anchor="middle">1test text</textPath>
-        </text>
-
-    </svg>*@
