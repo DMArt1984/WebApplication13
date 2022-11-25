@@ -17,11 +17,12 @@
         display: grid;
         grid-template-columns: auto;
         gap: .5em 0;
-        align-items: center;
-        margin: 0;
+        /*align-items: center;*/
+        margin: 0 auto;
         padding: 0;
         list-style-type: none;
         grid-auto-columns: 1fr;
+        height: 200px;
     }
 
         .hchart li {
@@ -45,7 +46,6 @@
         display: table;
         table-layout: fixed;
         width: 100%;
-        max-width: 700px;
         height: 200px;
         margin: 0 auto;
         background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.1) 2%, transparent 2%);
@@ -69,42 +69,98 @@
             animation: draw 1s ease-in-out;
         }
 
-    .vchart  span:before {
-        position: absolute;
-        left: 0;
-        right: 0;
-        top: 100%;
-        
-        display: block;
-        text-align: center;
-        content: attr(title);
-        word-wrap: break-word;
+            .vchart span:before {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 100%;
+                display: block;
+                text-align: center;
+                content: attr(title);
+                word-wrap: break-word;
+            }
+
+    ul.legend {
+        list-style: none;
     }
+
+    ul.legend li {
+        padding: 0.5rem;
+    }
+
+
     
 </style>
 
-<style>
-    .percentage {
-        background: repeating-linear-gradient( to right, #ddd, #ddd 1px, #fff 1px, #fff 5% );
-    }
-    .percentage:after {
-        content: "";
-        display: block;
-        background-color: #3d9970;
-    }
 
-    .percentage-20:after {
-        width: 20%;
-    }
-
-    .percentage-30:after {
-      width: 30%;
-    }
-</style>
 
 <h1>diagrams4</h1>
 
-<section>
+<div class="row">
+
+    <div class="col-xl-4 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>Players per sports team</h3>
+                <ul class="hchart">
+                    <li style="grid-column: span 9; background: lightseagreen">
+                        Baseball:
+                        <span>9</span>
+                    </li>
+                    <br />
+                    <li style="grid-column: span 11; background: lightsalmon">
+                        Football:
+                        <span>11</span>
+                    </li>
+                    <br />
+                    <li style="grid-column: span 5; background: lightslategray">
+                        Basketball:
+                        <span>5</span>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8 col-sm-12">
+        <div class="card">
+            <div class="card-body">
+                <h3>Players per sports team</h3>
+                <div class="row d-flex align-items-center">
+                    <div class="col-8">
+                        <ul class="vchart" style="padding:0px">
+                            <li>
+                                <span style="height:5%; background: lightseagreen" title="5%"></span>
+                            </li>
+                            <li>
+                                <span style="height:70%; background: lightsalmon" title="70%"></span>
+                            </li>
+                            <li>
+                                <span style="height:50%; background: lightslategray" title="50%"></span>
+                            </li>
+                            <li>
+                                <span style="height:99%; background: lightskyblue" title="99%"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-4">
+                        <ul class="legend">
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightseagreen"></i>ActionScript</li>
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightsalmon"></i>JavaScript</li>
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightslategray"></i>CoffeScript</li>
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightskyblue"></i>HTML</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+@*<section>
     <h2>Players per sports team</h2>
     <ul class="hchart">
         <li style="grid-column: span 9; background: lightseagreen">
@@ -141,14 +197,5 @@
             <span style="height:99%; background: lightskyblue" title="HTML"></span>
         </li>
     </ul>
-</section>
+</section>*@
 
-<section>
-    <dl>
-        <dt>A title of the graph</dt>
-        <dd class="percentage percentage-7"><span class="text"> IE 11: 7% </span></dd>
-        <dd class="percentage percentage-20"><span class="text"> Chrome: 20% </span></dd>
-        <dd class="percentage percentage-2"><span class="text"> Android 4.4: 2% </span></dd>
-    </dl>
-
-</section>

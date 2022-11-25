@@ -3,71 +3,201 @@
     ViewData["Title"] = "diagrams3";
 }
 
+<!-- diagram -->
+<style>
+    section {
+        width: 100%;
+        max-width: 30rem;
+        padding: 1.5rem 1.5rem 2rem;
+        border: 1px solid #a7a8aa;
+        border-radius: 0.1rem;
+        margin: auto;
+    }
+
+    .hchart {
+        display: grid;
+        grid-template-columns: auto;
+        gap: .5em 0;
+        /*align-items: center;*/
+        margin: 0 auto;
+        padding: 0;
+        list-style-type: none;
+        grid-auto-columns: 1fr;
+        height: 200px;
+    }
+
+        .hchart li {
+            color: white;
+            background: #ffd100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.2rem;
+        }
+
+            .hchart li span {
+                font-weight: bold;
+            }
+</style>
+<style>
+    .vchart {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+        background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.1) 2%, transparent 2%);
+        background-size: 100% 50px;
+        background-position: left top;
+    }
+
+        .vchart li {
+            position: relative;
+            display: table-cell;
+            vertical-align: bottom;
+            height: 200px;
+        }
+
+        .vchart span {
+            margin: 0 1em;
+            display: block;
+            background: #d1ecfa;
+            border-radius: 0.2rem;
+            animation: draw 1s ease-in-out;
+        }
+
+            .vchart span:before {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 100%;
+                display: block;
+                text-align: center;
+                content: attr(title);
+                word-wrap: break-word;
+            }
+
+    ul.legend {
+        list-style: none;
+    }
+
+        ul.legend li {
+            padding: 0.5rem;
+        }
+</style>
+
 <h1>diagrams3</h1>
 
 <!---->
-<div class="card">
-    <div class="">
-        <div class="circle">7%</div>
-        <div class="circle" widthback="15" widthfront="10">27%</div>
-        <div class="circle" size="300">100%</div>
-        <div class="circle" size="200" widthback="5" widthfront="5">90.5%</div>
-        <div class="circle" color="#96d94e">84%</div>
-        <div class="circle" color="red">65.4%</div>
-    </div>
-</div>
+@*<div class="card">
+        <div class="">
+            <div class="circle">7%</div>
+            <div class="circle" widthback="15" widthfront="10">27%</div>
+            <div class="circle" size="300">100%</div>
+            <div class="circle" size="200" widthback="5" widthfront="5">90.5%</div>
+            <div class="circle" color="#96d94e">84%</div>
+            <div class="circle" color="red">65.4%</div>
+        </div>
+    </div>*@
 
+<!-- Circles -->
 <div class="row">
     <div class="col-xl-3 col-sm-6">
-        @Html.Partial("_CardCircle", new {color="green", percent=75, title="Hello", value=99.5, alpha="0.03%", icon="ri-arrow-right-up-line", description="text text text" })
+        @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = 75, title = "Заголовок №1", value = 99.5, alpha = "0.03%", description = "text text text" })
     </div>
 
     <div class="col-xl-3 col-sm-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
-                        <div size="220" widthback="5" widthfront="7" class="circle">7%</div>
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden">
-                        <p class="mb-1">Параметр #1</p>
-                        <h5 class="mb-3">2.20</h5>
-                        <p class="text-truncate mb-0"><span class="text-success me-2"> 0.02% <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> Текст #1</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = 30, title = "Заголовок №2", value = 100, alpha = "-5%", description = "text text text" })
     </div>
 
     <div class="col-xl-3 col-sm-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
-                        <div size="220" widthback="5" widthfront="7" class="circle">7%</div>
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden">
-                        <p class="mb-1">Параметр #1</p>
-                        <h5 class="mb-3">2.20</h5>
-                        <p class="text-truncate mb-0"><span class="text-success me-2"> 0.02% <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> Текст #1</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = 10, title = "Заголовок №3", value = 100, alpha = "9%", description = "text text text" })
     </div>
+
+    <div class="col-xl-3 col-sm-6">
+        @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Заголовок №4", value = 100, alpha = "9%", description = "text text text" })
+    </div>
+
 </div>
 
-    @Html.Partial("_DiagramCircle")
+@Html.Partial("_DiagramCircle")
 
 
 
-    @section Scripts {
+<!-- Bars -->
+<div class="row">
+
+    <div class="col-xl-4 col-sm-12">
+        <div class="card">
+            <div class="card-body m-3">
+                <h3>Горизонтальный список</h3>
+                <ul class="hchart">
+                    <li style="grid-column: span 9; background: lightseagreen">
+                        Секция 1:
+                        <span>9</span>
+                    </li>
+                    <br />
+                    <li style="grid-column: span 11; background: lightsalmon">
+                        Секция 2:
+                        <span>11</span>
+                    </li>
+                    <br />
+                    <li style="grid-column: span 5; background: lightslategray">
+                        Секция 3:
+                        <span>5</span>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8 col-sm-12">
+        <div class="card">
+            <div class="card-body m-3">
+                <h3>Вертикальный список</h3>
+                <div class="row d-flex align-items-center">
+                    <div class="col-8">
+                        <ul class="vchart" style="padding:0px">
+                            <li>
+                                <span style="height:5%; background: lightseagreen" title="5%"></span>
+                            </li>
+                            <li>
+                                <span style="height:70%; background: lightsalmon" title="70%"></span>
+                            </li>
+                            <li>
+                                <span style="height:50%; background: lightslategray" title="50%"></span>
+                            </li>
+                            <li>
+                                <span style="height:99%; background: lightskyblue" title="99%"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-4">
+                        <ul class="legend">
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightseagreen"></i>Секция 1</li>
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightsalmon"></i>Секция 2</li>
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightslategray"></i>Секция 3</li>
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightskyblue"></i>Секция 4</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 
-        <script type="text/javascript">
 
-        </script>
-    }
+@section Scripts {
+
+
+    <script type="text/javascript">
+
+    </script>
+}
 
 
 

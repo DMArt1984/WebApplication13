@@ -1,25 +1,50 @@
 ﻿@model Object
 
 @{ 
-    string color = @Model.GetType().GetProperty("color").GetValue(@Model, null).ToString();
-    string percent = @Model.GetType().GetProperty("percent").GetValue(@Model, null).ToString()+"%";
+    string icon = (@Model.GetType().GetProperty("icon") != null) ? @Model.GetType().GetProperty("icon").GetValue(@Model, null).ToString() : null;
+    string color = (@Model.GetType().GetProperty("color") != null) ? @Model.GetType().GetProperty("color").GetValue(@Model, null).ToString() : null;
+    string percent = (@Model.GetType().GetProperty("percent") != null) ? @Model.GetType().GetProperty("percent").GetValue(@Model, null).ToString()+"%" : null;
+    string description = (@Model.GetType().GetProperty("description") != null) ? @Model.GetType().GetProperty("description").GetValue(@Model, null).ToString() : null;
+
     string title = @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString();
     string value = @Model.GetType().GetProperty("value").GetValue(@Model, null).ToString();
     string alpha = @Model.GetType().GetProperty("alpha").GetValue(@Model, null).ToString();
-    string icon = @Model.GetType().GetProperty("icon").GetValue(@Model, null).ToString();
-    string description = @Model.GetType().GetProperty("description").GetValue(@Model, null).ToString();
+    
 }
 
     <div class="card">
         <div class="card-body">
             <div class="d-flex align-items-center">
-                <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
-                    <div size="220" color="@color" widthback="5" widthfront="7" class="circle">@percent</div>
-                </div>
+                <!-- left -->
+                @if (String.IsNullOrEmpty(icon))
+                {
+                    <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
+                        <div size="220" color="@color" widthback="5" widthfront="7" class="circle">@percent</div>
+                    </div>
+                }
+                else
+                {
+                    <div class="flex-shrink-0  me-3 align-self-center">
+                        <div class="avatar-sm">
+                            <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
+                                <i class="@icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- right -->
                 <div class="flex-grow-1 overflow-hidden">
                     <p class="mb-1">@title</p>
                     <h5 class="mb-3">@value</h5>
-                    <p class="text-truncate mb-0"><span class="text-success me-2"> @alpha <i class="@icon align-bottom ms-1"></i></span> @description</p>
+                    @if (alpha[0] == '-')
+                    {
+                        <p class="text-truncate mb-0"><span class="text-danger me-2"> @alpha <i class="ri-arrow-right-down-line align-bottom ms-1"></i></span> @description</p>
+                    }
+                    else
+                    {
+                        <p class="text-truncate mb-0"><span class="text-success me-2"> @alpha <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> @description</p>
+                    }
+
                 </div>
             </div>
         </div>
