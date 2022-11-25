@@ -1,0 +1,44 @@
+﻿@model Object
+
+@{ 
+    string title = (@Model.GetType().GetProperty("title") != null) ? @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString() : null;
+    Object[] bars = (@Model.GetType().GetProperty("bars") != null) ? (@Model.GetType().GetProperty("bars").GetValue(@Model, null)) as Object[] : new Object[] { };
+}
+
+    <div class="card">
+        <div class="card-body m-3">
+            @if (!String.IsNullOrEmpty(title))
+            {
+                <h3>@title</h3>
+            }
+            
+            <div class="">
+                <div class="pb-3">
+                        <ul class="vchart" style="padding:0px">
+                            @foreach (var item in bars)
+                            {
+                                string value = item.GetType().GetProperty("value").GetValue(item, null).ToString();
+                                string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
+
+                                <li>
+                                    <span style="height:@(value)%; background: @color" title="@(value)%"></span>
+                                </li>
+                            }
+                        </ul>
+                </div>
+                <hr />
+                <div class="container-fluid">
+                    <ul class="hr d-flex justify-content-around">
+                        @foreach (var item in bars)
+                        {
+                            string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                            string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
+
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: @color"></i>@text</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>

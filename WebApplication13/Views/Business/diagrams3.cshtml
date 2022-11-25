@@ -14,7 +14,7 @@
         margin: auto;
     }
 
-    .hchart {
+    ul.hchart {
         display: grid;
         grid-template-columns: auto;
         gap: .5em 0;
@@ -26,19 +26,29 @@
         height: 200px;
     }
 
-        .hchart li {
+        ul.hchart li {
             color: white;
             background: #ffd100;
+            /*display: inline;*/
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: end; /*space-between;*/
             padding: 0.25rem 0.5rem;
             border-radius: 0.2rem;
         }
 
-            .hchart li span {
-                font-weight: bold;
-            }
+    ul.hchart li span {
+        font-weight: bold;
+        display: inline;
+    }
+
+    ul.legend {
+        list-style: none;
+    }
+
+    ul.legend li {
+        padding: 0.1rem;
+    }
 </style>
 <style>
     .vchart {
@@ -78,28 +88,19 @@
                 word-wrap: break-word;
             }
 
-    ul.legend {
-        list-style: none;
+    ul.hr {
+        margin: 0; /* Обнуляем значение отступов */
+        padding: 4px; /* Значение полей */
     }
 
-        ul.legend li {
-            padding: 0.5rem;
+        ul.hr li {
+            display: inline; /* Отображать как строчный элемент */
+            margin-right: 5px; /* Отступ слева */
+            padding: 3px; /* Поля вокруг текста */
         }
 </style>
 
-<h1>diagrams3</h1>
-
-<!---->
-@*<div class="card">
-        <div class="">
-            <div class="circle">7%</div>
-            <div class="circle" widthback="15" widthfront="10">27%</div>
-            <div class="circle" size="300">100%</div>
-            <div class="circle" size="200" widthback="5" widthfront="5">90.5%</div>
-            <div class="circle" color="#96d94e">84%</div>
-            <div class="circle" color="red">65.4%</div>
-        </div>
-    </div>*@
+<h1>Диаграммы</h1>
 
 <!-- Circles -->
 <div class="row">
@@ -128,67 +129,19 @@
 <!-- Bars -->
 <div class="row">
 
-    <div class="col-xl-4 col-sm-12">
-        <div class="card">
-            <div class="card-body m-3">
-                <h3>Горизонтальный список</h3>
-                <ul class="hchart">
-                    <li style="grid-column: span 9; background: lightseagreen">
-                        Секция 1:
-                        <span>9</span>
-                    </li>
-                    <br />
-                    <li style="grid-column: span 11; background: lightsalmon">
-                        Секция 2:
-                        <span>11</span>
-                    </li>
-                    <br />
-                    <li style="grid-column: span 5; background: lightslategray">
-                        Секция 3:
-                        <span>5</span>
-                    </li>
-
-                </ul>
-            </div>
-        </div>
+    <div class="col-xl-6 col-sm-12">
+        @Html.Partial("_CardHChart", new { title = "Диаграмма", bars = new Object[] { new { text = "Секция #1", value = 3, color="lightseagreen" }, new { text = "Секция #2", value = 15, color="lightsalmon" }, new { text = "Секция #3", value = 25, color="lightslategray" } } } )  
     </div>
 
-    <div class="col-xl-8 col-sm-12">
-        <div class="card">
-            <div class="card-body m-3">
-                <h3>Вертикальный список</h3>
-                <div class="row d-flex align-items-center">
-                    <div class="col-8">
-                        <ul class="vchart" style="padding:0px">
-                            <li>
-                                <span style="height:5%; background: lightseagreen" title="5%"></span>
-                            </li>
-                            <li>
-                                <span style="height:70%; background: lightsalmon" title="70%"></span>
-                            </li>
-                            <li>
-                                <span style="height:50%; background: lightslategray" title="50%"></span>
-                            </li>
-                            <li>
-                                <span style="height:99%; background: lightskyblue" title="99%"></span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-4">
-                        <ul class="legend">
-                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightseagreen"></i>Секция 1</li>
-                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightsalmon"></i>Секция 2</li>
-                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightslategray"></i>Секция 3</li>
-                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: lightskyblue"></i>Секция 4</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="col-xl-6 col-sm-12">
+        @Html.Partial("_CardVChart", new { title = "Диаграмма", bars = new Object[] { new { text = "Секция #1", value = 25, color = "lightseagreen" }, new { text = "Секция #2", value = 15, color = "lightsalmon" }, new { text = "Секция #3", value = 75, color = "lightslategray" } } })
     </div>
 
 </div>
 
+<div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+</div>
 
 
 @section Scripts {

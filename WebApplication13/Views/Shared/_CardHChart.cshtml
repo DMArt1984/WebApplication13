@@ -1,0 +1,45 @@
+﻿@model Object
+
+@{ 
+    string title = (@Model.GetType().GetProperty("title") != null) ? @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString() : null;
+    Object[] bars = (@Model.GetType().GetProperty("bars") != null) ? (@Model.GetType().GetProperty("bars").GetValue(@Model, null)) as Object[] : new Object[] { };
+}
+
+    <div class="card">
+        <div class="card-body m-3">
+            @if (!String.IsNullOrEmpty(title))
+            {
+                <h3>@title</h3>
+            }
+        <div class="row">
+            <div class="col-3 d-flex align-items-center">
+                <ul class="legend">
+                    @foreach (var item in bars)
+                    {
+                        string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                        string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
+
+                        <li><i class="mdi mdi-circle font-size-12 me-1" style="color: @color"></i>@text</li>
+                    }
+                </ul>
+            </div>
+            <div class="col-9 d-block">
+                <ul class="hchart">
+                    @foreach (var item in bars)
+                    {
+                        string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                        string value = item.GetType().GetProperty("value").GetValue(item, null).ToString();
+                        string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
+
+                        <li style="grid-column: span @value; background: @color;">
+                            @*@text*@
+                            <span>@value</span>
+                        </li>
+                        
+                    }
+                </ul>
+            </div>
+
+        </div>
+        </div>
+    </div>
