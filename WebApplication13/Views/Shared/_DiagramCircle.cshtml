@@ -23,18 +23,20 @@
         stroke: #30bae7;
         stroke-width: 15;
         stroke-linecap: round;
-        animation-name: render;
-        animation-duration: 1.5s;
+        /*animation-name: render;
+        animation-delay: 1.5s;
+        animation-duration: 2s;*/
     }
 
         circle:nth-child(2n):hover {
             opacity: 0.8;
         }
 
+
     @@keyframes render {
-      0% {
-        stroke-dasharray: 0 100;
-      }
+        0% {
+            stroke-dasharray: 0 100;
+        }
     }
 
 </style>

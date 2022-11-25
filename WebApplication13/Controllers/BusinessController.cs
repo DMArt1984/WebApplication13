@@ -2510,6 +2510,14 @@ namespace FactPortal.Controllers
             return View();
         }
 
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult diagrams4()
+        {
+
+            return View();
+        }
+
         //[HttpPost]
         //public async Task<IActionResult> Create_db_So(string objcode, string name, string description)
         //{

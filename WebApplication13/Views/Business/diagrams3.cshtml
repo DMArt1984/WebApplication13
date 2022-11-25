@@ -6,23 +6,68 @@
 <h1>diagrams3</h1>
 
 <!---->
-<div class="circle">7%</div>
-<div class="circle" widthback="15" widthfront="10">27%</div>
-<div class="circle" size="300">100%</div>
-<div class="circle" size="200" widthback="5" widthfront="5">90.5%</div>
-<div class="circle" color="#96d94e">84%</div>
-<div class="circle" color="red">65.4%</div>
+<div class="card">
+    <div class="">
+        <div class="circle">7%</div>
+        <div class="circle" widthback="15" widthfront="10">27%</div>
+        <div class="circle" size="300">100%</div>
+        <div class="circle" size="200" widthback="5" widthfront="5">90.5%</div>
+        <div class="circle" color="#96d94e">84%</div>
+        <div class="circle" color="red">65.4%</div>
+    </div>
+</div>
 
-@Html.Partial("_DiagramCircle")
+<div class="row">
+    <div class="col-xl-3 col-sm-6">
+        @Html.Partial("_CardCircle", new {color="green", percent=75, title="Hello", value=99.5, alpha="0.03%", icon="ri-arrow-right-up-line", description="text text text" })
+    </div>
+
+    <div class="col-xl-3 col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
+                        <div size="220" widthback="5" widthfront="7" class="circle">7%</div>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="mb-1">Параметр #1</p>
+                        <h5 class="mb-3">2.20</h5>
+                        <p class="text-truncate mb-0"><span class="text-success me-2"> 0.02% <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> Текст #1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
+                        <div size="220" widthback="5" widthfront="7" class="circle">7%</div>
+                    </div>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <p class="mb-1">Параметр #1</p>
+                        <h5 class="mb-3">2.20</h5>
+                        <p class="text-truncate mb-0"><span class="text-success me-2"> 0.02% <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> Текст #1</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    @Html.Partial("_DiagramCircle")
 
 
-@section Scripts {
+
+    @section Scripts {
 
 
-    <script type="text/javascript">
-            
-    </script>
-}
+        <script type="text/javascript">
+
+        </script>
+    }
 
 
 

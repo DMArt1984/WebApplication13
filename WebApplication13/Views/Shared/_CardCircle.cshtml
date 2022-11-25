@@ -1,0 +1,26 @@
+﻿@model Object
+
+@{ 
+    string color = @Model.GetType().GetProperty("color").GetValue(@Model, null).ToString();
+    string percent = @Model.GetType().GetProperty("percent").GetValue(@Model, null).ToString()+"%";
+    string title = @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString();
+    string value = @Model.GetType().GetProperty("value").GetValue(@Model, null).ToString();
+    string alpha = @Model.GetType().GetProperty("alpha").GetValue(@Model, null).ToString();
+    string icon = @Model.GetType().GetProperty("icon").GetValue(@Model, null).ToString();
+    string description = @Model.GetType().GetProperty("description").GetValue(@Model, null).ToString();
+}
+
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex align-items-center">
+                <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
+                    <div size="220" color="@color" widthback="5" widthfront="7" class="circle">@percent</div>
+                </div>
+                <div class="flex-grow-1 overflow-hidden">
+                    <p class="mb-1">@title</p>
+                    <h5 class="mb-3">@value</h5>
+                    <p class="text-truncate mb-0"><span class="text-success me-2"> @alpha <i class="@icon align-bottom ms-1"></i></span> @description</p>
+                </div>
+            </div>
+        </div>
+    </div>

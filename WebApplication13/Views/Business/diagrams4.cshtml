@@ -1,0 +1,154 @@
+﻿
+@{
+    ViewData["Title"] = "diagrams4";
+}
+
+<style>
+    section {
+        width: 100%;
+        max-width: 30rem;
+        padding: 1.5rem 1.5rem 2rem;
+        border: 1px solid #a7a8aa;
+        border-radius: 0.1rem;
+        margin: auto;
+    }
+
+    .hchart {
+        display: grid;
+        grid-template-columns: auto;
+        gap: .5em 0;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+        grid-auto-columns: 1fr;
+    }
+
+        .hchart li {
+            color: white;
+            background: #ffd100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.2rem;
+        }
+
+    .hchart li span {
+        font-weight: bold;
+    }
+
+</style>
+
+<style>
+    .vchart {
+        display: table;
+        table-layout: fixed;
+        width: 100%;
+        max-width: 700px;
+        height: 200px;
+        margin: 0 auto;
+        background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.1) 2%, transparent 2%);
+        background-size: 100% 50px;
+        background-position: left top;
+    }
+    
+    .vchart li {
+            position: relative;
+            display: table-cell;
+            vertical-align: bottom;
+            height: 200px;
+            
+        }
+
+        .vchart span {
+            margin: 0 1em;
+            display: block;
+            background: #d1ecfa;
+            border-radius: 0.2rem;
+            animation: draw 1s ease-in-out;
+        }
+
+    .vchart  span:before {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        
+        display: block;
+        text-align: center;
+        content: attr(title);
+        word-wrap: break-word;
+    }
+    
+</style>
+
+<style>
+    .percentage {
+        background: repeating-linear-gradient( to right, #ddd, #ddd 1px, #fff 1px, #fff 5% );
+    }
+    .percentage:after {
+        content: "";
+        display: block;
+        background-color: #3d9970;
+    }
+
+    .percentage-20:after {
+        width: 20%;
+    }
+
+    .percentage-30:after {
+      width: 30%;
+    }
+</style>
+
+<h1>diagrams4</h1>
+
+<section>
+    <h2>Players per sports team</h2>
+    <ul class="hchart">
+        <li style="grid-column: span 9; background: lightseagreen">
+            Baseball:
+            <span>9</span>
+        </li>
+        <br />
+        <li style="grid-column: span 11; background: lightsalmon">
+            Football:
+            <span>11</span>
+        </li>
+        <br />
+        <li style="grid-column: span 5; background: lightslategray">
+            Basketball:
+            <span>5</span>
+        </li>
+
+    </ul>
+</section>
+
+<section>
+    <h2>Players per sports team</h2>
+    <ul class="vchart" style="padding:0px">
+        <li>
+            <span style="height:5%; background: lightseagreen" title="ActionScript"></span>
+        </li>
+        <li>
+            <span style="height:70%; background: lightsalmon" title="JavaScript"></span>
+        </li>
+        <li>
+            <span style="height:50%; background: lightslategray" title="CoffeScript"></span>
+        </li>
+        <li>
+            <span style="height:99%; background: lightskyblue" title="HTML"></span>
+        </li>
+    </ul>
+</section>
+
+<section>
+    <dl>
+        <dt>A title of the graph</dt>
+        <dd class="percentage percentage-7"><span class="text"> IE 11: 7% </span></dd>
+        <dd class="percentage percentage-20"><span class="text"> Chrome: 20% </span></dd>
+        <dd class="percentage percentage-2"><span class="text"> Android 4.4: 2% </span></dd>
+    </dl>
+
+</section>
