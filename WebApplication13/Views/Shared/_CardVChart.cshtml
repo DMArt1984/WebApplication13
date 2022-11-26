@@ -6,7 +6,7 @@
 }
 
     <div class="card">
-        <div class="card-body m-3">
+        <div class="card-body m-4">
             
             <div class="">
                 <div class="pb-4">
@@ -22,11 +22,12 @@
                         <ul class="vchart" style="position: absolute; top:0; left:0; padding:5px">
                             @foreach (var item in bars)
                             {
+                                string percent = item.GetType().GetProperty("percent").GetValue(item, null).ToString();
                                 string value = item.GetType().GetProperty("value").GetValue(item, null).ToString();
                                 string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
 
                                 <li>
-                                    <span style="height:@(value)%; background: @color" title="@(value)%"></span>
+                                    <span style="height:@(percent)%; background: @color" title="@(value)"></span>
                                 </li>
                             }
                         </ul>
@@ -36,7 +37,7 @@
                 <hr />
                 @if (!String.IsNullOrEmpty(title))
                 {
-                    <h3 class="text-center">@title</h3>
+                    <h5 class="card-title text-center">@title</h5>
                 }
                 <div class="container-fluid">
                     <ul class="hr d-flex justify-content-around">

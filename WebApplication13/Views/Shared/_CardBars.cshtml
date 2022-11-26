@@ -1,0 +1,68 @@
+﻿@model Object
+
+@{ 
+    string title = (@Model.GetType().GetProperty("title") != null) ? @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString() : null;
+    Object[] bars = (@Model.GetType().GetProperty("bars") != null) ? (@Model.GetType().GetProperty("bars").GetValue(@Model, null)) as Object[] : new Object[] { };
+}
+
+    <div class="card">
+        <div class="card-body">
+
+            @if (!String.IsNullOrEmpty(title))
+            {
+                <h3 class="card-title">@title</h3>
+            }
+
+            <div>
+                <ul class="list-unstyled">
+
+                    @foreach (var item in bars)
+                    {
+                        string percent = item.GetType().GetProperty("percent").GetValue(item, null).ToString();
+                        string icon = item.GetType().GetProperty("icon").GetValue(item, null).ToString();
+                        string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                        string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
+
+                        <li class="py-3">
+                            <div class="d-flex">
+                                <div class="avatar-xs align-self-center me-3">
+                                    <div class="avatar-title rounded-circle bg-light text-primary font-size-18">
+                                        <i class="@icon"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="text-muted mb-2">@text</p>
+                                    <div class="progress progress-sm animated-progess">
+                                        <div class="progress-bar" role="progressbar" style="width: @(percent)%; background-color: @(color)" aria-valuenow="@(percent)" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+
+            <hr>
+
+            <div class="text-center">
+                <div class="row">
+
+                    @foreach (var item in bars)
+                    {
+                        string value = item.GetType().GetProperty("value").GetValue(item, null).ToString();
+                        string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                        
+                        <div class="col-4">
+                            <div class="mt-2">
+                                <p class="text-muted mb-2">@text</p>
+                                <h5 class="font-size-16 mb-0">@value</h5>
+                            </div>
+                        </div>
+                    }
+ 
+                </div>
+            </div>
+
+        </div>
+    </div>
