@@ -165,7 +165,7 @@ namespace FactPortal.Models
             return Name.Replace(">", String.Empty).Replace(":", String.Empty);
         }
 
-        // ====================================================================
+        // ====================== Дата и время ==============================================
 
         // Преобразование строки из 2022-01-07T08:09 в YYYY.MM.DD HH:MM:SS
         public static string CalendarToDateTimeYMD(string SDT)
@@ -341,7 +341,24 @@ namespace FactPortal.Models
             }
         }
 
+        // Совпадает ли в дате месяц и год
+        public static bool DTinValues(string SDT, int year, int month)
+        {
+            return true;
+            if (String.IsNullOrEmpty(SDT) || String.IsNullOrWhiteSpace(SDT))
+                return false;
+            
+            var Big = SDT.Split(' ');
 
+            var BDate = Big[0].Split('.');
+            var Month = Convert.ToInt32(BDate[1]);
+            var Year = Convert.ToInt32(BDate[0]);
+            if (Year < 2000)
+            {
+                Year = Convert.ToInt32(BDate[2]);
+            }
+            return Year == year && Month == month;
+        }
 
         // Получить строку из даты и времени
         public static string GetStringFromDT(DateTime DT)

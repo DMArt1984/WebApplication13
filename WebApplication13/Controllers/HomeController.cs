@@ -82,6 +82,51 @@ namespace FactPortal.Controllers
 
                 ViewBag.Time = Bank.NormDateTimeYMD(DateTime.Now.ToUniversalTime().ToString());
 
+                // =========================================================================
+
+                var NowDT = Bank.GetStringFromDT(DateTime.Now); // текущий месяц
+                var PrevDT = Bank.GetStringFromDT(DateTime.Now.AddMonths(-1)); // предыдущий месяц
+
+                var IdsSO = _business.ServiceObjects.Select(x => x.Id).ToList(); // список ID объектов
+                var IdsWork = _business.Works.Where(x => IdsSO.Contains(x.ServiceObjectId)).Select(x => x.Id).ToList(); // список ID работ
+                var stepsByCount = _business.ServiceObjects.Select(x => new { Id = x.Id, Need = _business.Steps.Count(y => y.ServiceObjectId == x.Id) });
+
+                var SOCount = IdsSO.Count; // количество объектов
+
+                // количество объектов с активными уведомлениями
+                var alertSOCount = _business.Alerts.Where(x => IdsSO.Contains(x.ServiceObjectId) && x.Status != 9).Select(x => x.ServiceObjectId).Distinct().Count();
+
+                // все допустимые шаги
+                var xworkSteps = _business.WorkSteps.Where(x => IdsWork.Contains(x.WorkId));
+                // все шаги текущего месяца и прошлого месяца
+                var nowWorkSteps = xworkSteps.Where(x => x.DT_Start.Substring(0,8) == NowDT.Substring(0,8) || x.DT_Stop.Substring(0, 8) == NowDT.Substring(0, 8));
+                var prevWorkSteps = xworkSteps.Where(x => x.DT_Start.Substring(0, 8) == PrevDT.Substring(0, 8) || x.DT_Stop.Substring(0, 8) == PrevDT.Substring(0, 8));
+
+                // список работ
+                var nowAllWorks = _business.Works.Where(x => nowWorkSteps.Select(z => z.WorkId).Contains(x.Id));
+                var prevAllWorks = _business.Works.Where(x => prevWorkSteps.Select(z => z.WorkId).Contains(x.Id));
+
+                // выполненные шаги текущего месяца и прошлого месяца
+                var nowWorkStepsReady = nowWorkSteps.Where(x => x.Status == 9);
+                var prevWorkStepsReady = prevWorkSteps.Where(x => x.Status == 9);
+
+                // количество работ текущего месяца и прошлого месяца
+                var nowWorks = nowAllWorks.Count(x => nowWorkSteps.Select(z => z.WorkId).Contains(x.Id));
+                var prevWorks = prevAllWorks.Count(x => prevWorkSteps.Select(z => z.WorkId).Contains(x.Id));
+
+                // работы с количеством выполненных шагов текущего месяца и прошлого месяца
+                var nowWorksInSteps = nowAllWorks.Select(x => new { ServiceObjectId = x.ServiceObjectId, Ready = nowWorkStepsReady.Count(y => y.WorkId == x.Id), Need = stepsByCount.FirstOrDefault(z => z.Id == x.ServiceObjectId).Need });
+                var prevWorksInSteps = prevAllWorks.Select(x => new { ServiceObjectId = x.ServiceObjectId, Ready = prevWorkStepsReady.Count(y => y.WorkId == x.Id), Need = stepsByCount.FirstOrDefault(z => z.Id == x.ServiceObjectId).Need });
+
+                // завершенные работы текущего месяца и прошлого месяца
+                var nowWorksReady = nowWorksInSteps.Count(x => x.Ready > 0 && x.Ready == x.Need);
+                var prevWorksReady = prevWorksInSteps.Count(x => x.Ready > 0 && x.Ready == x.Need);
+
+
+                // вывод
+                ViewBag.SOCount = SOCount;
+                ViewBag.alertSOCount = alertSOCount;
+
                 return View(stat);
             }
             catch (Exception ex)
