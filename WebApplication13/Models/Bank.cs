@@ -280,6 +280,9 @@ namespace FactPortal.Models
         // Получить дату из строки YYYY.MM.DD
         public static DateTime GetDTfromStringYMD(string SDT, int OffsetMinutes = 0)
         {
+            if (String.IsNullOrEmpty(SDT) || String.IsNullOrWhiteSpace(SDT))
+                return DateTime.UtcNow;
+
             try
             {
                 var Big = SDT.Split(' ');

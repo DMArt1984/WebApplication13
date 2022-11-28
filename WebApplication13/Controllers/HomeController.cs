@@ -99,20 +99,20 @@ namespace FactPortal.Controllers
                 // все допустимые шаги
                 var xworkSteps = _business.WorkSteps.Where(x => IdsWork.Contains(x.WorkId));
                 // все шаги текущего месяца и прошлого месяца
-                var nowWorkSteps = xworkSteps.Where(x => x.DT_Start.Substring(0,8) == NowDT.Substring(0,8) || x.DT_Stop.Substring(0, 8) == NowDT.Substring(0, 8));
-                var prevWorkSteps = xworkSteps.Where(x => x.DT_Start.Substring(0, 8) == PrevDT.Substring(0, 8) || x.DT_Stop.Substring(0, 8) == PrevDT.Substring(0, 8));
+                var nowWorkSteps = xworkSteps.Where(x => x.DT_Start.Substring(0,7) == NowDT.Substring(0,7) || x.DT_Stop.Substring(0, 7) == NowDT.Substring(0, 7));
+                var prevWorkSteps = xworkSteps.Where(x => x.DT_Start.Substring(0, 7) == PrevDT.Substring(0, 7) || x.DT_Stop.Substring(0, 7) == PrevDT.Substring(0, 7));
 
                 // список работ
                 var nowAllWorks = _business.Works.Where(x => nowWorkSteps.Select(z => z.WorkId).Contains(x.Id));
                 var prevAllWorks = _business.Works.Where(x => prevWorkSteps.Select(z => z.WorkId).Contains(x.Id));
 
+                // количество работ текущего месяца и прошлого месяца
+                var nowWorksCount = nowAllWorks.Count(x => nowWorkSteps.Select(z => z.WorkId).Contains(x.Id));
+                var prevWorksCount = prevAllWorks.Count(x => prevWorkSteps.Select(z => z.WorkId).Contains(x.Id));
+
                 // выполненные шаги текущего месяца и прошлого месяца
                 var nowWorkStepsReady = nowWorkSteps.Where(x => x.Status == 9);
                 var prevWorkStepsReady = prevWorkSteps.Where(x => x.Status == 9);
-
-                // количество работ текущего месяца и прошлого месяца
-                var nowWorks = nowAllWorks.Count(x => nowWorkSteps.Select(z => z.WorkId).Contains(x.Id));
-                var prevWorks = prevAllWorks.Count(x => prevWorkSteps.Select(z => z.WorkId).Contains(x.Id));
 
                 // работы с количеством выполненных шагов текущего месяца и прошлого месяца
                 var nowWorksInSteps = nowAllWorks.Select(x => new { ServiceObjectId = x.ServiceObjectId, Ready = nowWorkStepsReady.Count(y => y.WorkId == x.Id), Need = stepsByCount.FirstOrDefault(z => z.Id == x.ServiceObjectId).Need });
@@ -122,10 +122,23 @@ namespace FactPortal.Controllers
                 var nowWorksReady = nowWorksInSteps.Count(x => x.Ready > 0 && x.Ready == x.Need);
                 var prevWorksReady = prevWorksInSteps.Count(x => x.Ready > 0 && x.Ready == x.Need);
 
+                // объекты в обслуживании
+                var nowSOinWorkCount = _business.ServiceObjects.Count(x => nowAllWorks.Select(z => z.ServiceObjectId).Contains(x.Id));
+                var prevSOinWorkCount = _business.ServiceObjects.Count(x => prevAllWorks.Select(z => z.ServiceObjectId).Contains(x.Id));
+
 
                 // вывод
-                ViewBag.SOCount = SOCount;
-                ViewBag.alertSOCount = alertSOCount;
+                ViewBag.NowDT = NowDT.Substring(0, 7);
+
+                ViewBag.SOCount = SOCount; // количество объектов
+                ViewBag.alertSOCount = alertSOCount; // количество объектов с активными уведомлениями
+                ViewBag.nowSOinWorkCount = nowSOinWorkCount; // объекты в обслуживании текущего месяца
+                ViewBag.prevSOinWorkCount = prevSOinWorkCount; // объекты в обслуживании прошлого месяца
+
+                ViewBag.nowWorksCount = nowWorksCount; // количество работ текущего месяца
+                ViewBag.prevWorksCount = prevWorksCount; // количество работ прошлого месяца
+                ViewBag.nowWorksReady = nowWorksReady; // завершенные работы текущего месяца
+                ViewBag.prevWorksReady = prevWorksReady; // завершенные работы прошлого месяца
 
                 return View(stat);
             }

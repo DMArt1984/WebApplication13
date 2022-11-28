@@ -3,8 +3,19 @@
 @{
     ViewData["Title"] = "Главная";
     string FormatValue = "{0:##0.#}";
-    int alertSOCount = ViewBag.alertSOCount;
-    int SOCount = ViewBag.SOCount;
+
+    string NowDT = ViewBag.NowDT;
+
+    int SOCount = ViewBag.SOCount; // количество объектов
+    int alertSOCount = ViewBag.alertSOCount; // количество объектов с активными уведомлениями
+
+    int nowSOinWorkCount = ViewBag.nowSOinWorkCount; // объекты в обслуживании текущего месяца
+    int prevSOinWorkCount = ViewBag.prevSOinWorkCount; // объекты в обслуживании прошлого месяца
+
+    int nowWorksCount = ViewBag.nowWorksCount; // количество работ текущего месяца
+    int prevWorksCount = ViewBag.prevWorksCount; // количество работ прошлого месяца
+    int nowWorksReady = ViewBag.nowWorksReady; // завершенные работы текущего месяца
+    int prevWorksReady = ViewBag.prevWorksReady; // завершенные работы прошлого месяца
 }
 
 @section CSS_first {
@@ -112,17 +123,17 @@
 @if (SOCount > 0)
 {
     <div class="row">
-        <!-- value -->
+        <!-- объекты с активными уведомлениями -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { color = "crimson", percent = string.Format(FormatValue, alertSOCount * 100 / SOCount), title = "Объектов с активными уведомлениями", value = $"{alertSOCount} из {SOCount}", alpha = "", description = "" })
+            @Html.Partial("_CardCircle", new { color = "crimson", percent = string.Format(FormatValue, alertSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertSOCount} из {SOCount}", alpha = "", description = "" })
         </div>
-        <!-- value -->
+        <!-- объекты в работе -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = 30, title = "Заголовок №2", value = 100, alpha = "-5%", description = "text text text" })
+            @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = string.Format(FormatValue, nowSOinWorkCount * 100 / SOCount), title = "Объекты в обслуживании", value = $"{nowSOinWorkCount} из {SOCount}", alpha = (nowSOinWorkCount - prevSOinWorkCount), description = NowDT })
         </div>
-        <!-- value -->
+        <!-- Выполненные обслуживания -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = 10, title = "Заголовок №3", value = 100, alpha = "9%", description = "text text text" })
+            @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = string.Format(FormatValue, nowWorksReady * 100 / nowWorksCount), title = "Выполненные обслуживания", value = $"{nowWorksReady} из {nowWorksCount}", alpha = (nowWorksReady - prevWorksReady), description = NowDT })
         </div>
 
         <!-- icon -->
