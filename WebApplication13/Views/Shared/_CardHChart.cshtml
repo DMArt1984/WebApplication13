@@ -12,17 +12,7 @@
                 <h5 class="text-center">@title</h5>
             }
         <div class="row">
-            <div class="col-3 d-flex align-items-center">
-                <ul class="legend">
-                    @foreach (var item in bars)
-                    {
-                        string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
-                        string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
 
-                        <li><i class="mdi mdi-circle font-size-12 me-1" style="color: @color"></i>@text</li>
-                    }
-                </ul>
-            </div>
             <div class="col-9 d-block">
                 <ul class="hchart">
                     @foreach (var item in bars)
@@ -35,11 +25,22 @@
                             @*@text*@
                             <span>@value</span>
                         </li>
-                        
+
                     }
                 </ul>
             </div>
 
+            <div class="col-3 d-flex align-items-center">
+                <ul class="legend">
+                    @foreach (var item in bars)
+                    {
+                        string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                        string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
+
+                        <li><i class="mdi mdi-circle font-size-12 me-1" style="color: @color"></i>@text</li>
+                    }
+                </ul>
+            </div>
         </div>
         </div>
     </div>

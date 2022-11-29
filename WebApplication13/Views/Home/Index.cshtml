@@ -29,6 +29,11 @@
     int prevWorksCount = ViewBag.prevWorksCount; // количество работ прошлого месяца
     int nowWorksReady = ViewBag.nowWorksReady; // завершенные работы текущего месяца
     int prevWorksReady = ViewBag.prevWorksReady; // завершенные работы прошлого месяца
+
+    int nowAlertsCount = ViewBag.nowAlertsCount; // всего уведомлений
+    int nowAlertsClosedCount = ViewBag.nowAlertsClosedCount; // закрытых уведомлений
+    int nowAlertsNewCount = ViewBag.nowAlertsNewCount; // новых уведомлений
+    int nowAlertsSeeCount = ViewBag.nowAlertsSeeCount; // просмотренных уведомлений
 }
 
 @section CSS_first {
@@ -179,14 +184,14 @@
     </div>
 
     <div class="col-xl-6 col-sm-12">
-        @Html.Partial("_CardVChart", new { title = "Обслуженные объекты по месяцам", bars = new Object[] { new { text = Prev2DT, value = prev2SOinWorkReadyCount, percent = prev2SOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightgray" }, new { text = PrevDT, value = prevSOinWorkReadyCount, percent = prevSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightslategray" }, new { text = NowDT, value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightseagreen" } } })
+        @Html.Partial("_CardVChart", new { title = "Обслуженно объектов по месяцам", bars = new Object[] { new { text = Prev2DT, value = prev2SOinWorkReadyCount, percent = prev2SOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "mediumaquamarine" }, new { text = PrevDT, value = prevSOinWorkReadyCount, percent = prevSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightseagreen" }, new { text = NowDT, value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "teal" } } })
     </div>
 
 </div>
 
 <div class="row">
     <div class="col-xl-12 col-sm-12">
-        @Html.Partial("_CardHChart", new { title = $"Объекты обслуживания за текущий месяц [{NowDT}]", bars = new Object[] { new { text = "Обслужено", value = nowSOinWorkReadyCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", value = nowSOprocess, color = "CornflowerBlue" }, new { text = "Нет обслуживания", value = nowSOnot, color = "lightsalmon" }, new { text = "Всего", value = SOCount, color = "lightslategray" } } })
+        @Html.Partial("_CardHChart", new { title = $"Уведомления", bars = new Object[] { new { text = "Закрыто", value = nowAlertsClosedCount, color = "lightseagreen" }, new { text = "Просмотрено", value = nowAlertsSeeCount, color = "CornflowerBlue" }, new { text = "Новые", value = nowAlertsNewCount, color = "lightsalmon" }, new { text = "Всего", value = nowAlertsCount, color = "lightslategray" } } })
     </div>
 </div>
 

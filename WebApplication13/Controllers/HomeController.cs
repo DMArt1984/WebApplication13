@@ -81,6 +81,8 @@ namespace FactPortal.Controllers
                 var prevAlertsCount = prevAlerts.Count();
                 var nowAlertsClosedCount = nowAlerts.Count(x => x.Status == 9);
                 var prevAlertsClosedCount = prevAlerts.Count(x => x.Status == 9);
+                var nowAlertsNewCount = nowAlerts.Count(x => x.Status == 0); // новое
+                var nowAlertsSeeCount = nowAlerts.Count(x => x.Status == 5); // просмотрено
 
                 // все допустимые шаги
                 var xworkSteps = _business.WorkSteps.Where(x => IdsWork.Contains(x.WorkId));
@@ -133,6 +135,11 @@ namespace FactPortal.Controllers
                 ViewBag.NowDT = Bank.GetNameFromYYYYMM(NowDT.Substring(0, 7)); // текущий месяц
                 ViewBag.PrevDT = Bank.GetNameFromYYYYMM(PrevDT.Substring(0, 7)); // прошлый месяц
                 ViewBag.Prev2DT = Bank.GetNameFromYYYYMM(Prev2DT.Substring(0, 7)); // позапрошлый месяц
+
+                ViewBag.nowAlertsCount = nowAlertsCount; // всего уведомлений
+                ViewBag.nowAlertsClosedCount = nowAlertsClosedCount; // закрытых уведомлений
+                ViewBag.nowAlertsNewCount = nowAlertsNewCount; // новых уведомлений
+                ViewBag.nowAlertsSeeCount = nowAlertsSeeCount; // просмотренных уведомлений
 
                 ViewBag.SOCount = SOCount; // количество объектов
                 ViewBag.alertActiveSOCount = alertActiveSOCount; // количество объектов с активными уведомлениями
