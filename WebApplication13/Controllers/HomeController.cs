@@ -64,7 +64,7 @@ namespace FactPortal.Controllers
                 var usersIDInCompany = (claimsCompany != null) ? claimsCompany.Select(x => x.UserId).ToList() : new List<string>();
                 var usersInCompany = _context.Users.Where(x => usersIDInCompany.Contains(x.Id)).ToList();
 
-
+                // Объекты обслуживания
                 var IdsSO = _business.ServiceObjects.Select(x => x.Id).ToList(); // список ID объектов
                 var IdsWork = _business.Works.Where(x => IdsSO.Contains(x.ServiceObjectId)).Select(x => x.Id).ToList(); // список ID работ
                 var stepsByCount = _business.ServiceObjects.Select(x => new { Id = x.Id, Need = _business.Steps.Count(y => y.ServiceObjectId == x.Id) });
@@ -111,6 +111,9 @@ namespace FactPortal.Controllers
                 var nowSOinWorkCount = _business.ServiceObjects.Count(x => nowAllWorks.Select(z => z.ServiceObjectId).Contains(x.Id));
                 var prevSOinWorkCount = _business.ServiceObjects.Count(x => prevAllWorks.Select(z => z.ServiceObjectId).Contains(x.Id));
 
+                // объекты с завершенным обслуживанием
+                var nowSOinWorkReadyCount = _business.ServiceObjects.Count(x => nowWorksInSteps.Where(x => x.Ready > 0 && x.Ready == x.Need).Select(z => z.ServiceObjectId).Contains(x.Id));
+
 
                 // вывод
                 ViewBag.usersCount = usersCount; // всего пользователей
@@ -123,6 +126,7 @@ namespace FactPortal.Controllers
                 ViewBag.alertActiveSOCount = alertActiveSOCount; // количество объектов с активными уведомлениями
                 ViewBag.nowSOinWorkCount = nowSOinWorkCount; // объекты в обслуживании текущего месяца
                 ViewBag.prevSOinWorkCount = prevSOinWorkCount; // объекты в обслуживании прошлого месяца
+                ViewBag.nowSOinWorkReadyCount = nowSOinWorkReadyCount; // объекты с завершенным обслуживанием
 
                 ViewBag.nowWorksCount = nowWorksCount; // количество работ текущего месяца
                 ViewBag.prevWorksCount = prevWorksCount; // количество работ прошлого месяца

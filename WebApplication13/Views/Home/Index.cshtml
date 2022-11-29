@@ -15,6 +15,11 @@
     int nowSOinWorkCount = ViewBag.nowSOinWorkCount; // объекты в обслуживании текущего месяца
     int prevSOinWorkCount = ViewBag.prevSOinWorkCount; // объекты в обслуживании прошлого месяца
 
+    int nowSOinWorkReadyCount = ViewBag.nowSOinWorkReadyCount; // объекты с завершенным обслуживанием
+
+    int nowSOprocess = nowSOinWorkCount - nowSOinWorkReadyCount; // в процессе обслуживания
+    int nowSOnot = SOCount - nowSOinWorkCount; // нет обслуживания
+
     int nowWorksCount = ViewBag.nowWorksCount; // количество работ текущего месяца
     int prevWorksCount = ViewBag.prevWorksCount; // количество работ прошлого месяца
     int nowWorksReady = ViewBag.nowWorksReady; // завершенные работы текущего месяца
@@ -176,7 +181,7 @@
 
 <div class="row">
     <div class="col-xl-12 col-sm-12">
-        @Html.Partial("_CardHChart", new { title = "Диаграмма", bars = new Object[] { new { text = "Секция #1", value = 3, color = "lightseagreen" }, new { text = "Секция #2", value = 15, color = "lightsalmon" }, new { text = "Секция #3", value = 25, color = "CornflowerBlue" }, new { text = "Всего", value = 3 + 15 + 25, color = "lightslategray" } } })
+        @Html.Partial("_CardHChart", new { title = "Объекты обслуживания по текущему месяцу", bars = new Object[] { new { text = "Обслужено", value = nowSOinWorkReadyCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", value = nowSOprocess, color = "lightsalmon" }, new { text = "Нет обслуживания", value = nowSOnot, color = "CornflowerBlue" }, new { text = "Всего", value = SOCount, color = "lightslategray" } } })
     </div>
 </div>
 
