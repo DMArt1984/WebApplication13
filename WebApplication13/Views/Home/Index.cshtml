@@ -1,13 +1,16 @@
-﻿@model FactPortal.Models.IndexStat
-
+﻿
 @{
     ViewData["Title"] = "Главная";
     string FormatValue = "{0:##0.#}";
 
+    int usersCount = ViewBag.usersCount; // всего пользователей
+    string userCompany = ViewBag.userCompany; // компания пользователя
+    int usersInCompanyCount = ViewBag.usersInCompanyCount; // количество пользователей в этой компании
+
     string NowDT = ViewBag.NowDT;
 
     int SOCount = ViewBag.SOCount; // количество объектов
-    int alertSOCount = ViewBag.alertSOCount; // количество объектов с активными уведомлениями
+    int alertActiveSOCount = ViewBag.alertActiveSOCount; // количество объектов с активными уведомлениями
 
     int nowSOinWorkCount = ViewBag.nowSOinWorkCount; // объекты в обслуживании текущего месяца
     int prevSOinWorkCount = ViewBag.prevSOinWorkCount; // объекты в обслуживании прошлого месяца
@@ -116,16 +119,23 @@
                 padding: 2px; /* Поля вокруг текста */
             }
     </style>
+    <style>
+        .row-flex {
+            display: flex;
+            flex-flow: row wrap;
+        }
+    </style>
 }
 
 
 <!-- Circles -->
 @if (SOCount > 0)
 {
-    <div class="row">
+
+    <div class="row row-flex">
         <!-- объекты с активными уведомлениями -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { color = "crimson", percent = string.Format(FormatValue, alertSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertSOCount} из {SOCount}", alpha = "", description = "" })
+            @Html.Partial("_CardCircle", new { color = "crimson", percent = string.Format(FormatValue, alertActiveSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertActiveSOCount} из {SOCount}", alpha = "", description = "" })
         </div>
         <!-- объекты в работе -->
         <div class="col-xl-3 col-sm-6">
@@ -138,8 +148,14 @@
 
         <!-- icon -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Заголовок №4", value = 100, alpha = "9%", description = "text text text" })
+            @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Пользователи системы", titlenext = userCompany, value = usersInCompanyCount })
         </div>
+
+    </div>
+
+    
+    <div class="row">
+        
     </div>
 }
 
@@ -169,7 +185,13 @@
 @section Scripts {
 
     <script>
-
-
+        // не используется
+        $(function () {
+            var equal_height = 0;
+            $(".rowh div").each(function () {
+                if ($(this).height() > equal_height) { equal_height = $(this).height(); }
+            });
+            $(".rowh div").height(equal_height);
+        });
     </script>
 }

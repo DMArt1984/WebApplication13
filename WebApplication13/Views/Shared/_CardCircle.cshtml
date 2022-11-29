@@ -7,7 +7,8 @@
     string alpha = (@Model.GetType().GetProperty("alpha") != null) ? @Model.GetType().GetProperty("alpha").GetValue(@Model, null).ToString() : null;
     string description = (@Model.GetType().GetProperty("description") != null) ? @Model.GetType().GetProperty("description").GetValue(@Model, null).ToString() : null;
 
-    string title = @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString();
+    string title = (@Model.GetType().GetProperty("title") != null) ? @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString() : null;
+    string titleNext = (@Model.GetType().GetProperty("titlenext") != null) ? @Model.GetType().GetProperty("titlenext").GetValue(@Model, null).ToString() : null;
     string value = @Model.GetType().GetProperty("value").GetValue(@Model, null).ToString();
 
 
@@ -35,7 +36,14 @@
                 }
                 <!-- right -->
                 <div class="flex-grow-1 overflow-hidden">
-                    <p class="mb-1">@title</p>
+                    @if (!String.IsNullOrEmpty(title))
+                    {
+                        <p class="mb-1">@title</p>
+                    }
+                    @if (!String.IsNullOrEmpty(titleNext))
+                    {
+                        <p class="mb-1">@titleNext</p>
+                    }
                     <h5 class="mb-3">@value</h5>
                     @if (!String.IsNullOrEmpty(alpha))
                     {
@@ -48,7 +56,6 @@
                             <p class="text-truncate mb-0"><span class="text-success me-2"> @alpha <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> @description</p>
                         }
                     }
-
                 </div>
             </div>
         </div>

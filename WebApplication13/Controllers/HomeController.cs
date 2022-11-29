@@ -49,43 +49,21 @@ namespace FactPortal.Controllers
         public IActionResult Index()
         {
             try { 
-                // old
-                //string HP = MyHash.HashPassword("Az+12345");
-                //ViewBag.Hash = ""; // HP;
-                //ViewBag.Verify = ""; // MyHash.VerifyHashedPassword(HP, "Az+12345");
-                //return View();
-
-                // new
-                string HP = MyHash.HashPassword("Az+12345");
-                ViewBag.Hash = ""; // HP;
-                ViewBag.Verify = ""; // MyHash.VerifyHashedPassword(HP, "Az+12345");
-                List<Statistic> SS = new List<Statistic>();
-                Dictionary<int, string> B1 = _business.ServiceObjects.ToDictionary(x => x.Id, y => y.ObjectTitle);
-                Dictionary<string, string> B2 = _context.Users.ToDictionary(x => x.Id, y => y.FullName);
-                Dictionary<string, string> B3 = _context.Users.ToDictionary(x => x.Id, y => y.Email);
-                foreach (var item in _business.Works)
-                {
-                    var ObjectName = "Объект удален";
-                    var ObjectActive = false;
-                    if (B1.Where(x => x.Key == item.ServiceObjectId).Any())
-                    {
-                        ObjectName = B1[item.ServiceObjectId];
-                        ObjectActive = true;
-                    }
-                
-                    SS.Add(new Statistic { Id = item.Id, ObjectId = item.ServiceObjectId, ObjectName = ObjectName, ObjectActive = ObjectActive });
-
-                }
-                var stat = new IndexStat() { Statistics = SS.ToList(), Today = DateTime.Today };
-
-                //ViewBag.Alerts = //_business.Alerts.OrderByDescending(x => x.DT).ToList(); //.Take(5);
-
-                ViewBag.Time = Bank.NormDateTimeYMD(DateTime.Now.ToUniversalTime().ToString());
-
-                // =========================================================================
 
                 var NowDT = Bank.GetStringFromDT(DateTime.Now); // текущий месяц
                 var PrevDT = Bank.GetStringFromDT(DateTime.Now.AddMonths(-1)); // предыдущий месяц
+
+                var usersCount = _context.Users.Count(); // количество пользователей
+                // Текущий пользователь
+                var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
+                var userClaimCompany = _context.UserClaims.FirstOrDefault(x => x.UserId == user.Id && x.ClaimType == "Company");
+                var userCompany = (userClaimCompany != null) ? userClaimCompany.ClaimValue : "";
+
+                // Список пользователей для выбора
+                var claimsCompany = _context.UserClaims.Where(x => x.ClaimType.ToLower() == "company" && x.ClaimValue == userCompany);
+                var usersIDInCompany = (claimsCompany != null) ? claimsCompany.Select(x => x.UserId).ToList() : new List<string>();
+                var usersInCompany = _context.Users.Where(x => usersIDInCompany.Contains(x.Id)).ToList();
+
 
                 var IdsSO = _business.ServiceObjects.Select(x => x.Id).ToList(); // список ID объектов
                 var IdsWork = _business.Works.Where(x => IdsSO.Contains(x.ServiceObjectId)).Select(x => x.Id).ToList(); // список ID работ
@@ -94,7 +72,14 @@ namespace FactPortal.Controllers
                 var SOCount = IdsSO.Count; // количество объектов
 
                 // количество объектов с активными уведомлениями
-                var alertSOCount = _business.Alerts.Where(x => IdsSO.Contains(x.ServiceObjectId) && x.Status != 9).Select(x => x.ServiceObjectId).Distinct().Count();
+                var alertActiveSOCount = _business.Alerts.Where(x => IdsSO.Contains(x.ServiceObjectId) && x.Status != 9).Select(x => x.ServiceObjectId).Distinct().Count();
+                // уведомления текущего месяца и прошлого месяца
+                var nowAlerts = _business.Alerts.Where(x => IdsSO.Contains(x.ServiceObjectId) && x.DT.Substring(0, 7) == NowDT.Substring(0, 7));
+                var prevAlerts = _business.Alerts.Where(x => IdsSO.Contains(x.ServiceObjectId) && x.DT.Substring(0, 7) == PrevDT.Substring(0, 7));
+                var nowAlertsCount = nowAlerts.Count();
+                var prevAlertsCount = prevAlerts.Count();
+                var nowAlertsClosedCount = nowAlerts.Count(x => x.Status == 9);
+                var prevAlertsClosedCount = prevAlerts.Count(x => x.Status == 9);
 
                 // все допустимые шаги
                 var xworkSteps = _business.WorkSteps.Where(x => IdsWork.Contains(x.WorkId));
@@ -128,10 +113,14 @@ namespace FactPortal.Controllers
 
 
                 // вывод
+                ViewBag.usersCount = usersCount; // всего пользователей
+                ViewBag.userCompany = userCompany; // компания пользователя
+                ViewBag.usersInCompanyCount = usersInCompany.Count; // количество пользователей в этой компании
+
                 ViewBag.NowDT = NowDT.Substring(0, 7);
 
                 ViewBag.SOCount = SOCount; // количество объектов
-                ViewBag.alertSOCount = alertSOCount; // количество объектов с активными уведомлениями
+                ViewBag.alertActiveSOCount = alertActiveSOCount; // количество объектов с активными уведомлениями
                 ViewBag.nowSOinWorkCount = nowSOinWorkCount; // объекты в обслуживании текущего месяца
                 ViewBag.prevSOinWorkCount = prevSOinWorkCount; // объекты в обслуживании прошлого месяца
 
@@ -140,7 +129,7 @@ namespace FactPortal.Controllers
                 ViewBag.nowWorksReady = nowWorksReady; // завершенные работы текущего месяца
                 ViewBag.prevWorksReady = prevWorksReady; // завершенные работы прошлого месяца
 
-                return View(stat);
+                return View();
             }
             catch (Exception ex)
             {
