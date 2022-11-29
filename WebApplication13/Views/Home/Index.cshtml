@@ -7,7 +7,9 @@
     string userCompany = ViewBag.userCompany; // компания пользователя
     int usersInCompanyCount = ViewBag.usersInCompanyCount; // количество пользователей в этой компании
 
-    string NowDT = ViewBag.NowDT;
+    string NowDT = ViewBag.NowDT; // текущий месяц
+    string PrevDT = ViewBag.PrevDT; // прошлый месяц
+    string Prev2DT = ViewBag.Prev2DT; // позапрошлый месяц
 
     int SOCount = ViewBag.SOCount; // количество объектов
     int alertActiveSOCount = ViewBag.alertActiveSOCount; // количество объектов с активными уведомлениями
@@ -15,7 +17,10 @@
     int nowSOinWorkCount = ViewBag.nowSOinWorkCount; // объекты в обслуживании текущего месяца
     int prevSOinWorkCount = ViewBag.prevSOinWorkCount; // объекты в обслуживании прошлого месяца
 
-    int nowSOinWorkReadyCount = ViewBag.nowSOinWorkReadyCount; // объекты с завершенным обслуживанием
+    int nowSOinWorkReadyCount = ViewBag.nowSOinWorkReadyCount; // объекты с завершенным обслуживанием текущего месяца
+    int prevSOinWorkReadyCount = ViewBag.prevSOinWorkReadyCount; // объекты с завершенным обслуживанием прошлого месяца
+    int prev2SOinWorkReadyCount = ViewBag.prev2SOinWorkReadyCount; // объекты с завершенным обслуживанием позапрошлого месяца
+    int MaxSOinWorkReadyCount = Math.Max(Math.Max(nowSOinWorkReadyCount, prevSOinWorkReadyCount), prev2SOinWorkReadyCount);
 
     int nowSOprocess = nowSOinWorkCount - nowSOinWorkReadyCount; // в процессе обслуживания
     int nowSOnot = SOCount - nowSOinWorkCount; // нет обслуживания
@@ -170,18 +175,18 @@
 <div class="row">
 
     <div class="col-xl-6 col-sm-12">
-        @Html.Partial("_CardBars", new { title = "Диаграмма", bars = new Object[] { new { text = "Секция #1", icon = "ri-checkbox-circle-line", value = 25, percent = 25, color = "lightseagreen" }, new { text = "Секция #2", icon = "ri-calendar-2-line", value = 15, percent = 15, color = "lightsalmon" }, new { text = "Секция #3", icon = "ri-close-circle-line", value = 75, percent = 75, color = "lightslategray" } } })
+        @Html.Partial("_CardBars", new { title = $"Объекты обслуживания за текущий месяц [{NowDT}]", bars = new Object[] { new { text = "Обслужено", icon = "ri-checkbox-circle-line", value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / SOCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", icon = "ri-calendar-2-line", value = nowSOprocess, percent = nowSOprocess * 100 / SOCount, color = "CornflowerBlue" }, new { text = "Нет обслуживания", icon = "ri-close-circle-line", value = nowSOnot, percent = nowSOnot * 100 / SOCount, color = "lightsalmon" } } })
     </div>
 
     <div class="col-xl-6 col-sm-12">
-        @Html.Partial("_CardVChart", new { title = "Диаграмма", bars = new Object[] { new { text = "Секция #1", value = 25, percent = 25, color = "lightseagreen" }, new { text = "Секция #2", value = 15, percent = 15, color = "lightsalmon" }, new { text = "Секция #3", value = 75, percent = 75, color = "lightslategray" } } })
+        @Html.Partial("_CardVChart", new { title = "Обслуженные объекты по месяцам", bars = new Object[] { new { text = Prev2DT, value = prev2SOinWorkReadyCount, percent = prev2SOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightgray" }, new { text = PrevDT, value = prevSOinWorkReadyCount, percent = prevSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightslategray" }, new { text = NowDT, value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightseagreen" } } })
     </div>
 
 </div>
 
 <div class="row">
     <div class="col-xl-12 col-sm-12">
-        @Html.Partial("_CardHChart", new { title = "Объекты обслуживания по текущему месяцу", bars = new Object[] { new { text = "Обслужено", value = nowSOinWorkReadyCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", value = nowSOprocess, color = "lightsalmon" }, new { text = "Нет обслуживания", value = nowSOnot, color = "CornflowerBlue" }, new { text = "Всего", value = SOCount, color = "lightslategray" } } })
+        @Html.Partial("_CardHChart", new { title = $"Объекты обслуживания за текущий месяц [{NowDT}]", bars = new Object[] { new { text = "Обслужено", value = nowSOinWorkReadyCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", value = nowSOprocess, color = "CornflowerBlue" }, new { text = "Нет обслуживания", value = nowSOnot, color = "lightsalmon" }, new { text = "Всего", value = SOCount, color = "lightslategray" } } })
     </div>
 </div>
 

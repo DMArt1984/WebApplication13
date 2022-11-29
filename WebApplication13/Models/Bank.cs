@@ -189,6 +189,32 @@ namespace FactPortal.Models
             return NewDT;
         }
 
+        // Получить текстовый вид даты = май 2021
+        public static string GetNameFromYYYYMM(string SDT)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(SDT))
+                    return "";
+
+                if (SDT.Length == 7)
+                    return $"{GetNameMonth(Convert.ToInt32(SDT.Substring(5, 2)))} {SDT.Substring(0, 4)}";
+            } catch
+            {
+
+            }
+            return SDT;
+        }
+
+        // Получить название месяца
+        public static string GetNameMonth(int month)
+        {
+            string[] Names = new string[] { "январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" };
+            if (month >= 1 && month <= 12)
+                return Names[month - 1];
+
+            return "";
+        }
 
         // Преобразование даты и времени в строку YYYY.MM.DD HH:MM:SS
         public static string NormDateTimeYMD(string SDT)
