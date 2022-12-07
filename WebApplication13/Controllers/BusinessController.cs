@@ -261,7 +261,8 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position, string LoadFileId = null, string DelFileId = null,
+            string[] stepTitle = null, string[] stepDescription = null, string[] stepLoadFileId = null, string[] stepDelFileId = null)
         {
             // Возвращаемый объект
             ServiceObjectEdit outServiceObject = new ServiceObjectEdit
@@ -387,7 +388,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item).ConfigureAwait(false))
+                    if (await DeleteFileAsync(item).ConfigureAwait(false))
                     {
                         claimFiles.ClaimValue = Bank.DelItemToStringList(claimFiles.ClaimValue, ";", item.ToString());
                     }
@@ -401,6 +402,24 @@ namespace FactPortal.Controllers
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
+            // >>>>>>> Добавить шаги к объекту >>>>>>>>
+            if (stepTitle != null)
+            {
+                for (var i = 0; i < stepTitle.Length; i++)
+                {
+                    if (!String.IsNullOrEmpty(stepTitle[i]))
+                    {
+                        var StepId = await AddNewStep(Id, i + 1, stepTitle[i], stepDescription[i]);
+                        // 1. Получить шаг
+                        var step = _business.Steps.FirstOrDefault(x => x.Id == StepId);
+                        // 2. Файлы
+                        WorkStepFile(step, stepLoadFileId[i], stepDelFileId[i]);
+                        // 3. Сохранение изменений
+                        await _business.SaveChangesAsync().ConfigureAwait(false);
+                    }
+                }
+            }
+            
             // 5. Вернуться в список
             return RedirectToAction("Index");
         }
@@ -603,7 +622,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item).ConfigureAwait(false))
+                    if (await DeleteFileAsync(item).ConfigureAwait(false))
                     {
                         alert.groupFilesId = Bank.DelItemToStringList(alert.groupFilesId, ";", item.ToString());
                     }
@@ -760,22 +779,7 @@ namespace FactPortal.Controllers
             // Создание нового элемента
             if (Id == 0)
             {
-                var myIDs = _business.Steps.Select(x => x.Id).ToList();
-                var newID = Bank.maxID(myIDs);
-                var newStep = new Step
-                {
-                    Id = newID,
-                    ServiceObjectId = ServiceObjectId,
-                    Index = Index,
-                    Title = (!String.IsNullOrEmpty(Title)) ? Title : $"Шаг #{Index}",
-                    Description = Description,
-                    groupFilesId = ""
-                };
-                await _business.Steps.AddAsync(newStep);
-                Id = newID;
-                // 4. Сохранение изменений
-                await _business.SaveChangesAsync().ConfigureAwait(false);
-
+                Id = await AddNewStep(ServiceObjectId, Index, Title, Description);
             } 
 
             // 1. Проверка достаточности данных
@@ -788,38 +792,8 @@ namespace FactPortal.Controllers
                 step.Title = Title;
             step.Description = Description;
 
-            // Добавление файлов
-            if (!String.IsNullOrEmpty(LoadFileId))
-            {
-                step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", LoadFileId);
-            }
-
-            // Контроль несуществующих ID файлов
-            if (DelFileId == null)
-                DelFileId = "";
-            var files = await _business.Files.Select(x => x.Id.ToString()).ToListAsync().ConfigureAwait(false);
-            foreach (var item in step.groupFilesId.Split(';'))
-            {
-                if (!files.Contains(item))
-                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item);
-            }
-
-            // Удаление файлов
-            if (!String.IsNullOrEmpty(DelFileId))
-            {
-                foreach (var item in DelFileId.Split(';'))
-                {
-                    if (await DeleteFile(item).ConfigureAwait(false))
-                    {
-                        step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", item.ToString());
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("uploadedFile", $"Ошибка удаления файла #{item}");
-                    }
-                }
-            }
-
+            // Файлы
+            WorkStepFile(step, LoadFileId, DelFileId);
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -840,6 +814,27 @@ namespace FactPortal.Controllers
                 return RedirectToAction("StepsList", new { ServiceObjectId = SOReturn });
             }
 
+        }
+
+        // Добавление нового шага
+        private async Task<int> AddNewStep(int ServiceObjectId, int Index, string Title, string Description)
+        {
+            var myIDs = _business.Steps.Select(x => x.Id).ToList();
+            var newID = Bank.maxID(myIDs);
+            var newStep = new Step
+            {
+                Id = newID,
+                ServiceObjectId = ServiceObjectId,
+                Index = Index,
+                Title = (!String.IsNullOrEmpty(Title)) ? Title : $"Шаг #{Index}",
+                Description = Description,
+                groupFilesId = ""
+            };
+            await _business.Steps.AddAsync(newStep);
+
+            // 4. Сохранение изменений
+            await _business.SaveChangesAsync().ConfigureAwait(false);
+            return newID;
         }
 
         // Удаление параметров шагов объекта обслуживания
@@ -1330,7 +1325,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
-                    if (await DeleteFile(item).ConfigureAwait(false))
+                    if (await DeleteFileAsync(item).ConfigureAwait(false))
                     {
                         workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", item.ToString());
                     }
@@ -2181,6 +2176,39 @@ namespace FactPortal.Controllers
 
 
         #region Files
+        // POST: SO
+        private void WorkStepFile(Step step, string LoadFileId = null, string DelFileId = null)
+        {
+            // Добавление файлов
+            if (!String.IsNullOrEmpty(LoadFileId))
+            {
+                step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", LoadFileId);
+            }
+
+            // Контроль несуществующих ID файлов
+            if (DelFileId == null)
+                DelFileId = "";
+            var files = _business.Files.Select(x => x.Id.ToString()).ToList();
+            foreach (var item in step.groupFilesId.Split(';'))
+            {
+                if (!files.Contains(item))
+                    DelFileId = Bank.AddItemToStringList(DelFileId, ";", item);
+            }
+
+            // Удаление файлов
+            if (!String.IsNullOrEmpty(DelFileId))
+            {
+                foreach (var item in DelFileId.Split(';'))
+                {
+                    if (DeleteFile(item))
+                    {
+                        step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", item.ToString());
+                    }
+                }
+            }
+        }
+
+
         // Добавить файл
         private async Task<int> AddFile(IFormFile uploadedFile, string Folders = "", string Description = "")
         {
@@ -2228,17 +2256,17 @@ namespace FactPortal.Controllers
         }
 
         // Удалить файл
-        private async Task<bool> DeleteFile(string Id)
+        private async Task<bool> DeleteFileAsync(string Id)
         {
             try
             {
-                return await DeleteFile(Convert.ToInt32(Id)).ConfigureAwait(false);
+                return await DeleteFileAsync(Convert.ToInt32(Id)).ConfigureAwait(false);
             } catch
             {
                 return false;
             }
         }
-        private async Task<bool> DeleteFile(int Id)
+        private async Task<bool> DeleteFileAsync(int Id)
         {
             try
             {
@@ -2260,6 +2288,40 @@ namespace FactPortal.Controllers
             }
         }
 
+        private bool DeleteFile(string Id)
+        {
+            try
+            {
+                return DeleteFile(Convert.ToInt32(Id));
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        private bool DeleteFile(int Id)
+        {
+            try
+            {
+                myFiles File = _business.Files.FirstOrDefault(x => x.Id == Id);
+                if (File != null)
+                {
+                    string path = _appEnvironment.WebRootPath + File.Path;
+                    if ((System.IO.File.Exists(path)))
+                        System.IO.File.Delete(path);
+
+                    _business.Files.Remove(File);
+                    _business.SaveChanges();
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
         // Удалить группу файлов
         private async Task<bool> DeleteFiles(string Ids)
         {
@@ -2267,7 +2329,7 @@ namespace FactPortal.Controllers
             {
                 foreach (var item in Ids.Split(";"))
                 {
-                    await DeleteFile(item).ConfigureAwait(false);
+                    await DeleteFileAsync(item).ConfigureAwait(false);
                 }
             }
             return true;
@@ -2404,7 +2466,7 @@ namespace FactPortal.Controllers
             var File = _business.Files.FirstOrDefault(x => x.Id == Id);
             if (File != null)
             {
-                await DeleteFile(Id).ConfigureAwait(false);
+                await DeleteFileAsync(Id).ConfigureAwait(false);
                 //...
                 switch (category.ToLower())
                 {
@@ -2445,7 +2507,7 @@ namespace FactPortal.Controllers
 
         #endregion
 
-        // КЛИЕНТ: Информация для меню
+        // КЛИЕНТ: Информация для меню ===============================================================================
         public async Task<JsonResult> MenuInfo(string inf="")
         {
             var alerts = await _business.Alerts.CountAsync(x => x.Status != 9).ConfigureAwait(false);
@@ -2459,92 +2521,15 @@ namespace FactPortal.Controllers
 
 
 
-        [Breadcrumb("ViewData.Title")]
-        public IActionResult QRCodes()
-        {
-            try
-            {
-                var SObjects = _business.ServiceObjects.ToList();
-                var Claims = _business.Claims.ToList();
-                foreach (var item in SObjects)
-                    item.Claims = Claims.Where(x => x.ServiceObjectId == item.Id).ToList();
-
-                return View(SObjects.OrderBy(x => x.ObjectTitle));
-            }
-            catch (Exception ex)
-            {
-                ErrorCatch ec = new ErrorCatch();
-                ec.Set(ex, "");
-                return RedirectToAction("Error_Catch", ec);
-            }
-
-        }
-
-
-        [HttpGet]
-        [Breadcrumb("ViewData.Title")]
-        public IActionResult diagrams()
-        {
-            //var SS = _business.Service;
-            //DateTime DT = DateTime.Now; //new DateTime(2019, 11, 28, 23, 51, 57); // 
-            //SS.Add(new StatusObject { ServiceObjectId = 1, DT= Bank.NormDateTime(DT.ToString()), myUserId = "100", Status = 500, Description = "Тест" });
-            //_business.SaveChanges();
-
-            var Works = GetWorksInfo();
-            return View(Works);
-        }
-
-        [HttpGet]
-        [Breadcrumb("ViewData.Title")]
-        public IActionResult diagrams2()
-        {
-            
-            return View();
-        }
-
-        [HttpGet]
-        [Breadcrumb("ViewData.Title")]
-        public IActionResult diagrams3()
-        {
-
-            return View();
-        }
-
-        [HttpGet]
-        [Breadcrumb("ViewData.Title")]
-        public IActionResult diagrams4()
-        {
-
-            return View();
-        }
-
-        //[HttpPost]
-        //public async Task<IActionResult> Create_db_So(string objcode, string name, string description)
-        //{
-        //    var SObjects = _business.ServiceObjects;
-        //    ServiceObject obj = new ServiceObject() { ObjectCode = objcode, ObjectTitle = name, Description = description, Id = Bank.maxID(_business.ServiceObjects.Select(x => x.Id).ToList()) };
-        //    SObjects.Add(obj);
-        //    await _business.SaveChangesAsync();
-        //    return RedirectToAction("Index");
-        //}
-
         #endregion
 
 
         // ========= Данные 1 (тест) ====================================================================================
 
         [Breadcrumb("ViewData.Title")]
-        public IActionResult TagsInfo()
-        {
-
-            return View();
-        }
-
-        [Breadcrumb("ViewData.Title")]
         public static ContentResult Test1(string data)
         {
             Random rnd = new Random();
-
             return new ContentResult
             {
                 Content = $"<p>{data} <strong>{rnd.Next()}</strong></p>",
@@ -2552,11 +2537,23 @@ namespace FactPortal.Controllers
             };
         }
 
-        
-        // ========= Данные 2 (тест) ===============================
-
+        [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult TestAjaxForm()
+        public IActionResult diagrams2()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult diagrams3()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult diagrams4()
         {
             return View();
         }

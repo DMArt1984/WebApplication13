@@ -36,31 +36,33 @@ namespace FactPortal
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // первое подключение
+            // Это нам не нужно т.к. строка подключения у нас динамическая
             //services.AddDbContext<ApplicationDbContext>();
-            
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseNpgsql(
             //        Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders()
                 .AddTokenProvider<InvitationTokenProvider<ApplicationUser>>("Invitation")
                 .AddEntityFrameworkStores<ApplicationDbContext>(); //;
 
+            // Возможно когда-то пригодится
             //services.AddTransient<IEmailSender, EmailSender>();
             //services.Configure<AuthMessageSenderOptions>(this.Configuration);
 
-            //============ для работы UserStore в API
+            //Для работы UserStore в API
             //services.AddScoped<IBlogContextProvider, BlogContextProvider>();
 
-            //=============
+            //============================================================================
+
             // Контекст данных для бизнес процессов
-            // v1
+            // вариант 1
             //services.AddDbContext<BusinessContext>(options => options.UseNpgsql(Configuration.GetConnectionString("business")));
 
-            // динамическая строка подключения бизнес контекста
-            // v2
+            // Контекст данных для бизнес процессов
+            // вариант 2
             //services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddDbContext<BusinessContext>((serviceProvider, options) =>
             //{
@@ -70,15 +72,16 @@ namespace FactPortal
             //    options.UseSqlServer(connection);
             //});
 
-            // динамическая строка подключения
-            // v3
+            // Контекст данных для бизнес процессов
+            // вариант 3
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddDbContext<BusinessContext>();
 
             services.AddDbContext<ApplicationDbContext>();
 
-            //=================
+            //===================================================================================
 
+            // Крошки
             services.AddBreadcrumbs(GetType().Assembly, options =>
             {
                 options.TagName = "nav";
@@ -89,7 +92,7 @@ namespace FactPortal
                 options.SeparatorElement = "<li class=\"separator\">/</li>";
             });
 
-            //==================
+            //===================================================================================
 
             services.AddControllers()
             .AddJsonOptions(options =>
@@ -101,10 +104,9 @@ namespace FactPortal
             });
             services.AddControllersWithViews();
             services.AddRazorPages();
-            services.AddDirectoryBrowser(); // Новое 1! Статические файлы
+            services.AddDirectoryBrowser(); // Статические файлы
 
-            //==================
-            services.AddSignalR(); // Новое 2! Обновление данных без перезагрузки страницы
+            services.AddSignalR(); // Обновление данных без перезагрузки страницы
 
             // Ограничение длины запроса...
             services.Configure<IISServerOptions>(options =>
@@ -112,13 +114,12 @@ namespace FactPortal
                options.MaxRequestBodySize = 4294967295; // int.MaxValue;
            });
 
-            // новое!!!!!
+            // Возможно пригодится позже
             //services.AddSession(options =>
             //{
             //    options.IdleTimeout = TimeSpan.FromMinutes(30);
             //    options.Cookie.HttpOnly = true;
             //    options.Cookie.IsEssential = true;
-
             //});
 
 
@@ -149,7 +150,7 @@ namespace FactPortal
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            // <
+            // >>>>>>>>>>>>>>>>>>>> requestPath
             var fileProvider = new PhysicalFileProvider(Path.Combine(env.WebRootPath, "Files/Images"));
             var requestPath = "/MyImages";
 
@@ -165,7 +166,7 @@ namespace FactPortal
                 FileProvider = fileProvider,
                 RequestPath = requestPath
             });
-            // >
+            // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
             app.UseRouting();
 
@@ -178,7 +179,7 @@ namespace FactPortal
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
-                endpoints.MapHub<ChatHub>("/chat"); // Новое 2
+                endpoints.MapHub<ChatHub>("/chat");
             });
 
         }

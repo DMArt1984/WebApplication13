@@ -19,7 +19,7 @@ namespace FactPortal.Data
     {
         public static async Task SeedRolesAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            //Seed Roles
+           
             //var itRole = new IdentityRole(Roles.SuperAdmin.ToString());
             //itRole.Id = "1";
             //await roleManager.CreateAsync(itRole);
@@ -44,7 +44,7 @@ namespace FactPortal.Data
 
         public static async Task SeedSuperAdminAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
-            //Seed Default User
+            // Пользователь по умолчанию
             var defaultUser = new ApplicationUser
             {
                 Id = "100",

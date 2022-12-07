@@ -33,8 +33,8 @@ namespace FactPortal.Data
         {
             _httpContext = httpContextAccessor?.HttpContext;
             Configuration = configuration;
-            //
-            //Database.EnsureCreated();   // создаем базу данных при первом обращении
+
+            //Database.EnsureCreated();   // создаем базу данных при первом обращении?
             
         }
 

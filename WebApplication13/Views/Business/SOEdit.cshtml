@@ -87,11 +87,41 @@
                         <select class="form-control-sm border-0" style="appearance: none" disabled id="e_PosInfo" value="0" asp-items="TextLinkID"></select>
                     </div>
 
-                    <!--Файлы-->
+                    <!--Файлы -->
                     <hr />
                     <small>Файлы:</small>
                     @Html.Partial("_FilesControl2", new FileFront { category = "so", categoryId = @Model.Id })
-                    <!--------->
+                    <!----- ---->
+                    <!-- Шаги -->
+                    <hr />
+                    <h5 class="card-header bg-soft-light">Шаги обслуживания [<span id="nums">0</span>]</h5>
+                    <div id="newsteps">
+                        <!-- место для новых шагов -->
+                    </div>
+                    <p></p>
+                    <!-- step files -->
+                    <div class="d-none" id="sbase">@ViewContext.HttpContext.Request.PathBase</div>
+                    <div class="d-none" id="shost">@ViewContext.HttpContext.Request.Host</div>
+                    <div id="stepdiv" style="display:none" class="pb-2">
+                        <div id="s_Work" class="mx-1 md-2">info...</div>
+                        <div id="s_uplfiles">
+                            <div class="d-flex justify-content-between">
+                                <input id="sfileupload" class="form-control" type="file" name="fileupload" onchange="uploadStepFile(GetInfoValue('sfiledesc'))" />
+                                <input id="sfiledesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
+                                <br>
+                            </div>
+                        </div>
+                        <div id="smessage" class="text-danger"></div>
+                        <hr />
+                        <div id="slistfiles">Загрузка данных...</div>
+                    </div>
+                    <!-- step buttons -->
+                    <div class="d-inline mt-2 mb-2">
+                        <a class="btn btn-secondary btn btn-sm btn-block" href="javascript:AddStep()" title="Добавить"><i class="fas fa-plus"></i> Добавить новый шаг</a>
+                        <a id="delstep" style="display:none" class="btn btn-danger btn btn-sm btn-block" href="javascript:DelStep()" title="Удалить"><i class="fas fa-plus"></i> Удалить последний шаг</a>
+                    </div>
+
+                    <!--     -->
 
                 </div>
                 <div class="card-footer">
@@ -128,6 +158,229 @@
         function Edit() {
             document.getElementById("e_Pos").value = @Model.Position;
             document.getElementById("e_PosInfo").value = document.getElementById("e_Pos").value;
+        }
+
+        // Добавить шаг
+        function AddStep() {
+            let index = GetInfo('nums');
+            index++;
+            let group = document.getElementById('newsteps');
+            let step = document.createElement('div');
+            step.className = 'col-12';
+            step.innerHTML = `<hr />
+                                <h6>Шаг №${index}</h6>
+                                <small>Название шага:</small>
+                                <input type="text" name="stepTitle" value="" class="form-control" required="" placeholder="Введите название" />
+                                <div class="pt-2">
+                                    <small>Описание мероприятий:</small>
+                                    <br />
+                                    <textarea form="myform" name="stepDescription" rows="5" class="form-control"></textarea>
+                                </div>
+                                <input type="text" id="files${index}" name="stepLoadFileId" class="form-control d-none" value="" readonly />
+                                <input type="text" id="delfiles${index}" name="stepDelFileId" class="form-control d-none" value="" readonly />
+                                <ol id="names${index}"></ol>`;
+            group.appendChild(step);
+            SetInfo('nums', index);
+            ShowId('delstep');
+            ShowId('stepdiv');
+            getStepFiles(`files${index}`, 'step', 0, '');
+        }
+
+        // Удалить шаг
+        function DelStep() {
+            let index = GetInfo('nums');
+            if (index > 0) {
+                let group = document.getElementById('newsteps');
+                var lastChild = group.lastElementChild;
+                group.removeChild(lastChild);
+                index--;
+                SetInfo('nums', index);
+                getStepFiles(`files${index}`, 'step', 0, '');
+            }
+            if (index == 0) {
+                HideId('delstep');
+                HideId('stepdiv');
+            }
+        }
+
+        // Получить текст элемента по ID
+        function GetInfo(Id) {
+            return document.getElementById(Id).innerText;
+        }
+
+        // Установить текст для ID
+        function SetInfo(Id, Value) {
+            document.getElementById(Id).innerText = Value;
+        }
+
+        // Показать или скрыть элемент по ID
+        function HideId(id) {
+            document.getElementById(id).style.display = 'none'; // скрыть
+        }
+        function ShowId(id) {
+            document.getElementById(id).style.display = ''; // показать
+        }
+
+        // =============================================================
+
+        // Загрузить файл
+        async function uploadStepFile(description) {
+            let formData = new FormData();
+            formData.append("file", sfileupload.files[0]);
+            formData.append("category", 'step');
+            formData.append("categoryId", 0);
+            formData.append("description", description);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/AddFile_forJS`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                document.getElementById("a_Work").innerHTML = "Загрузка: " + percentComplete + "% выполнено";
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    let index = GetInfo('nums');
+                    var Ids = GetInfoValue(`files${index}`);
+                    if (Ids != "") {
+                        Ids = Ids.concat(';')
+                    }
+                    Ids = Ids.concat(data.Id)
+                    SetInfoValue(`files${index}`, Ids)
+                    document.getElementById("smessage").innerText = ""
+                    getStepFiles(Ids, 'step', 0, '')
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    ShowId("slistfiles")
+                    ShowId("s_uplfiles")
+
+                    let title = "";
+                    let parser = new DOMParser();
+                    const doc = parser.parseFromString(jqXHR.responseText, 'text/html');
+                    links = doc.getElementsByTagName('title');
+                    for (var item of links) {
+                        title = item.innerText;
+                    }
+
+                    document.getElementById("smessage").innerText = `Ошибка загрузки файла: ${textStatus} [${jqXHR.status}] ${title} ${errorThrown}`;
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    HideId("slistfiles")
+                    HideId("s_uplfiles")
+                    document.getElementById("s_Work").innerHTML = "Загрузка файла...";
+                },
+                complete: function () {
+                    document.getElementById("s_Work").innerHTML = "";
+                    $("#sfileupload").val('');
+                },
+                timeout: 60000
+            });
+
+        }
+
+
+        // Получение списка файлов с сервера
+        async function getStepFiles(Ids, category, categoryId, DelIds) {
+            let formData = new FormData();
+            formData.append("Ids", Ids);
+            formData.append("category", category);
+            formData.append("categoryId", categoryId);
+            formData.append("DelIds", DelIds);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/GetFiles_forJS`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Получение: " + percentComplete + "% выполнено")
+                                document.getElementById("a_Work").innerHTML = "Получение: " + percentComplete + "% выполнено";
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Error == undefined) {
+                        document.getElementById("smessage").innerText = ""
+                        BuildStepFiles(data)
+                    } else {
+                        document.getElementById("smessage").innerText = `<span class="badge bg-danger">Ошибка получения файлов! ${data.Error}</span>`;
+                    }
+                    //alert('The file has been uploaded successfully.');
+                },
+                error: function (error) {
+                    // handle error
+                    document.getElementById("smesage").innerText = `<span class="badge bg-danger">Ошибка получения файлов! ${error}</span>`;
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    document.getElementById("s_Work").innerHTML = "Получение списка файлов...";
+                },
+                complete: function () {
+                    document.getElementById("s_Work").innerHTML = "";
+                },
+                timeout: 60000
+            });
+        }
+
+        // Вывод списка файлов
+        function BuildStepFiles(data) {
+            const group = document.getElementById('slistfiles');
+            group.innerHTML = ""
+
+            var req = new XMLHttpRequest();
+
+            let index = GetInfo('nums');
+            let list = document.getElementById(`names${index}`);
+            list.innerHTML = "";
+            
+            for (const element of data.Files) {
+                var line = document.createElement('p')
+
+                req.open("GET", `${GetPathBase()}${element.Path}`, false);
+                req.send();
+                var fileSize = req.getResponseHeader('content-length') // байт; 
+                if (fileSize == null) {
+                    fileSize = ""
+                } else if (fileSize < 1) {
+                    fileSize = "1 байт"
+                } else if (fileSize < 1024) {
+                    fileSize = fileSize + " байт"
+                } else if (fileSize < 1024 * 1024) {
+                    fileSize = Math.ceil(fileSize / 1024) + " Кб"
+                } else {
+                    fileSize = Math.ceil(fileSize / 1024 / 1024) + " Мб"
+                }
+                line.innerHTML = `<i class='${GetIcon(element.Name)} text-secondary px-1'></i> <a class="px-1" target="_blank" href="${base}${element.Path}">${element.Name}</a> <span> ${fileSize}</span>`
+                group.appendChild(line);
+                list.innerHTML += `<li>${element.Name}</li>`
+            }
+
+            ShowId("slistfiles");
+            ShowId("s_uplfiles");
         }
 
     </script>

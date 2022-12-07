@@ -17,10 +17,10 @@ namespace FactPortal
     {
         public async static Task Main(string[] args)
         {
-            // CreateHostBuilder(args).Build().Run();
-            var host = CreateHostBuilder(args).Build();
+            // CreateHostBuilder(args).Build().Run(); // так было в шаблоне, но мы пойдем другим путем...
+            var host = CreateHostBuilder(args).Build(); // нужен host, который используем далее
 
-            // заполнение базы
+            // Заполнение базы данных
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -40,7 +40,6 @@ namespace FactPortal
                 }
             }
             
-
             host.Run();
         }
 

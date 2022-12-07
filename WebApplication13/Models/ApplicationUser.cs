@@ -48,7 +48,6 @@ namespace FactPortal.Models
                     return "SuperAdmin";
                 case "администратор":
                     return "Admin";
-
                 case "модератор":
                     return "Moderator";
                 case "пользователь":

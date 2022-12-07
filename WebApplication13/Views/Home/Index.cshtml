@@ -144,10 +144,11 @@
 
 
 <!-- Circles -->
-@if (SOCount > 0)
-{
 
-    <div class="row row-flex">
+
+<div class="row row-flex">
+    @if (SOCount > 0)
+    {
         <!-- объекты с активными уведомлениями -->
         <div class="col-xl-3 col-sm-6">
             @Html.Partial("_CardCircle", new { color = "crimson", percent = string.Format(FormatValue, alertActiveSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertActiveSOCount} из {SOCount}", alpha = "", description = "" })
@@ -156,42 +157,55 @@
         <div class="col-xl-3 col-sm-6">
             @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = string.Format(FormatValue, nowSOinWorkCount * 100 / SOCount), title = "Объекты в обслуживании", value = $"{nowSOinWorkCount} из {SOCount}", alpha = (nowSOinWorkCount - prevSOinWorkCount), description = NowDT })
         </div>
+    }
+
+    @if (nowWorksCount > 0)
+    {
         <!-- Выполненные обслуживания -->
         <div class="col-xl-3 col-sm-6">
             @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = string.Format(FormatValue, nowWorksReady * 100 / nowWorksCount), title = "Выполненные обслуживания", value = $"{nowWorksReady} из {nowWorksCount}", alpha = (nowWorksReady - prevWorksReady), description = NowDT })
         </div>
-
-        <!-- icon -->
+    }
+    else
+    {
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Пользователи системы", titlenext = userCompany, value = usersInCompanyCount })
+            @Html.Partial("_CardCircle", new { color = "lightseagreen", percent = 0, title = "Выполненные обслуживания", value = $"{nowWorksReady} из {nowWorksCount}", alpha = (nowWorksReady - prevWorksReady), description = NowDT })
         </div>
-
+    }
+    <!-- icon -->
+    <div class="col-xl-3 col-sm-6">
+        @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Пользователи системы", titlenext = "МойЗавод", value = usersInCompanyCount })  
     </div>
+
+</div>
 
     
     <div class="row">
         
     </div>
-}
+
 
 @Html.Partial("_DiagramCircle")
 
 <!-- Bars -->
 <div class="row">
-
-    <div class="col-xl-6 col-sm-12">
-        @Html.Partial("_CardBars", new { title = $"Объекты обслуживания за текущий месяц [{NowDT}]", bars = new Object[] { new { text = "Обслужено", icon = "ri-checkbox-circle-line", value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / SOCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", icon = "ri-calendar-2-line", value = nowSOprocess, percent = nowSOprocess * 100 / SOCount, color = "CornflowerBlue" }, new { text = "Нет обслуживания", icon = "ri-close-circle-line", value = nowSOnot, percent = nowSOnot * 100 / SOCount, color = "lightsalmon" } } })
+    @if (SOCount > 0)
+    {
+        <div class="col-xl-6 col-sm-12">
+            @Html.Partial("_CardBars", new { title = $"Объекты обслуживания за текущий месяц [{NowDT}]", bars = new Object[] { new { text = "Обслужено", icon = "ri-checkbox-circle-line", value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / SOCount, color = "lightseagreen" }, new { text = "В процессе обслуживания", icon = "ri-calendar-2-line", value = nowSOprocess, percent = nowSOprocess * 100 / SOCount, color = "CornflowerBlue" }, new { text = "Нет обслуживания", icon = "ri-close-circle-line", value = nowSOnot, percent = nowSOnot * 100 / SOCount, color = "lightsalmon" } } })
+        </div>
+    }
+    @if (MaxSOinWorkReadyCount > 0)
+    {
+        <div class="col-xl-6 col-sm-12">
+            @Html.Partial("_CardVChart", new { title = "Обслуженно объектов по месяцам", bars = new Object[] { new { text = Prev2DT, value = prev2SOinWorkReadyCount, percent = prev2SOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "mediumaquamarine" }, new { text = PrevDT, value = prevSOinWorkReadyCount, percent = prevSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightseagreen" }, new { text = NowDT, value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "teal" } } })
+        </div>
+    }
     </div>
-
-    <div class="col-xl-6 col-sm-12">
-        @Html.Partial("_CardVChart", new { title = "Обслуженно объектов по месяцам", bars = new Object[] { new { text = Prev2DT, value = prev2SOinWorkReadyCount, percent = prev2SOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "mediumaquamarine" }, new { text = PrevDT, value = prevSOinWorkReadyCount, percent = prevSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "lightseagreen" }, new { text = NowDT, value = nowSOinWorkReadyCount, percent = nowSOinWorkReadyCount * 100 / MaxSOinWorkReadyCount, color = "teal" } } })
-    </div>
-
-</div>
 
 <div class="row">
     <div class="col-xl-12 col-sm-12">
-        @Html.Partial("_CardHChart", new { title = $"Уведомления", bars = new Object[] { new { text = "Закрыто", value = nowAlertsClosedCount, color = "lightseagreen" }, new { text = "Просмотрено", value = nowAlertsSeeCount, color = "CornflowerBlue" }, new { text = "Новые", value = nowAlertsNewCount, color = "lightsalmon" }, new { text = "Всего", value = nowAlertsCount, color = "lightslategray" } } })
+        @Html.Partial("_CardHChart", new { title = $"Уведомления", bars = new Object[] { new { text = "Новые", value = nowAlertsNewCount, color = "lightsalmon" }, new { text = "Просмотрено", value = nowAlertsSeeCount, color = "CornflowerBlue" }, new { text = "Закрыто", value = nowAlertsClosedCount, color = "lightseagreen" },  new { text = "Всего", value = nowAlertsCount, color = "lightslategray" } } })
     </div>
 </div>
 

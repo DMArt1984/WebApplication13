@@ -187,6 +187,17 @@ namespace FactPortal.Models
         public bool EnableDel { get; set; } // разрешение удаления
     }
 
+    // Шаги обслуживания: в объекте
+    public class StepInSO
+    {
+        public int Index { get; set; } // Номер шага
+        public string Title { get; set; } // Название шага
+        public string Description { get; set; } // Описание
+        public string LoadFileId { get; set; } // Список загружаемых файлов
+        public string DelFileId { get; set; } // Список удаляемых файлов
+
+    }
+
     // Выполнение обслуживания по шагам
     public class WorkStep
     {

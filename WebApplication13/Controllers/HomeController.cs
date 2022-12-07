@@ -48,7 +48,7 @@ namespace FactPortal.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            try { 
+            try {
 
                 var usersCount = _context.Users.Count(); // количество пользователей
                 // Текущий пользователь

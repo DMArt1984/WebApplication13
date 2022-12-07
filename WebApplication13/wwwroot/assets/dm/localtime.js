@@ -64,7 +64,8 @@ function get_CalendarDateTime(dt) {
 
 // Преобразование даты и времени js в YYYY.MM.DD HH:MM
 function jsDT_To_YMDHM(jdatetime) {
-    return `${jdatetime.getFullYear().toString().padStart(2, '0')}.${(jdatetime.getMonth()+1).toString().padStart(2, '0')}.${jdatetime.getDate()} ${jdatetime.getHours().toString().padStart(2, '0')}:${jdatetime.getMinutes().toString().padStart(2, '0')}`;
+
+    return `${jdatetime.getFullYear().toString().padStart(2, '0')}.${(jdatetime.getMonth() + 1).toString().padStart(2, '0')}.${jdatetime.getDate().toString().padStart(2, '0')} ${jdatetime.getHours().toString().padStart(2, '0')}:${jdatetime.getMinutes().toString().padStart(2, '0')}`;
 }
 
 // Преобразование из DD.MM.YYYY HH:MM:SS в YYYY.MM.DD HH:MM:SS

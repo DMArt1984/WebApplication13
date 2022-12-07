@@ -16,7 +16,7 @@
     List<SelectListItem> listStatus = new List<SelectListItem>();
     listStatus.Add(new SelectListItem { Value = "0", Text = "новое" });
     listStatus.Add(new SelectListItem { Value = "5", Text = "просмотрено" });
-    listStatus.Add(new SelectListItem { Value = "9", Text = "исправлено" });
+    listStatus.Add(new SelectListItem { Value = "9", Text = "закрыто" });
     listStatus.Add(new SelectListItem { Value = "10", Text = "редактирование" });
     listStatus.Add(new SelectListItem { Value = "99", Text = "изменено" });
     var X = listStatus.FirstOrDefault(x => x.Value == Model.Status.ToString());

@@ -21,12 +21,16 @@
                         string value = item.GetType().GetProperty("value").GetValue(item, null).ToString();
                         string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
 
+                        @if (value != "0")
+                        {
+
                         <li style="grid-column: span @value; background: @color;">
                             @*@text*@
                             <span>@value</span>
                         </li>
+                            }
 
-                    }
+                        }
                 </ul>
             </div>
 
@@ -35,9 +39,13 @@
                     @foreach (var item in bars)
                     {
                         string text = item.GetType().GetProperty("text").GetValue(item, null).ToString();
+                        string value = item.GetType().GetProperty("value").GetValue(item, null).ToString();
                         string color = item.GetType().GetProperty("color").GetValue(item, null).ToString();
 
-                        <li><i class="mdi mdi-circle font-size-12 me-1" style="color: @color"></i>@text</li>
+                        @if (value != "0")
+                        {
+                            <li><i class="mdi mdi-circle font-size-12 me-1" style="color: @color"></i>@text</li>
+                        }
                     }
                 </ul>
             </div>

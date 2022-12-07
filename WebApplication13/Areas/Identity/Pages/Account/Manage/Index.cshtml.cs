@@ -85,10 +85,7 @@ namespace FactPortal.Areas.Identity.Pages.Account.Manage
             if (!String.IsNullOrEmpty(CompanyName))
             {
                 ViewData["MyCompanyName"] = CompanyName;
-
-                // Получение информации о компании
-                var Info = _business.BEvents.First();
-                ViewData["Info"] = $"{Info.Id} {Info.Title} {Info.Description} {Info.Date}";
+                ViewData["Info"] = "none";
             }
 
             // QR код

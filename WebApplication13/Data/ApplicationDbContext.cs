@@ -23,25 +23,28 @@ namespace FactPortal.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //if (!optionsBuilder.IsConfigured)
-            //{
-            //    var ConnectionName_Header = _httpContext.Request.Headers["db"].ToString();
-            //    var ConnectionName_Cookie = _httpContext.Request.Cookies["connname"];
+            // Динамическая строка подключения в этой версии пока не нужна!
 
-            //    if (String.IsNullOrEmpty(ConnectionName_Header))
-            //    {
-            //        ConnectionName_Header = ConnectionName_Cookie;
-            //        if (String.IsNullOrEmpty(ConnectionName_Cookie))
-            //            ConnectionName_Header = "default";
-            //    }
+                //if (!optionsBuilder.IsConfigured)
+                //{
+                //    var ConnectionName_Header = _httpContext.Request.Headers["db"].ToString();
+                //    var ConnectionName_Cookie = _httpContext.Request.Cookies["connname"];
 
-            //    var ConnectionString = Configuration.GetConnectionString(ConnectionName_Header);
-            //    if (String.IsNullOrEmpty(ConnectionString))
-            //        ConnectionString = Configuration.GetConnectionString("default");
+                //    if (String.IsNullOrEmpty(ConnectionName_Header))
+                //    {
+                //        ConnectionName_Header = ConnectionName_Cookie;
+                //        if (String.IsNullOrEmpty(ConnectionName_Cookie))
+                //            ConnectionName_Header = "default";
+                //    }
 
-            //    optionsBuilder.UseNpgsql(ConnectionString);
-            //}
+                //    var ConnectionString = Configuration.GetConnectionString(ConnectionName_Header);
+                //    if (String.IsNullOrEmpty(ConnectionString))
+                //        ConnectionString = Configuration.GetConnectionString("default");
 
+                //    optionsBuilder.UseNpgsql(ConnectionString);
+                //}
+
+            // Будет так:
             string ConnectionString = Configuration.GetConnectionString("default");
 
                 optionsBuilder.UseNpgsql(ConnectionString);
