@@ -1,0 +1,57 @@
+﻿@model StepInfo
+@{
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
+}
+
+<!-- получение локального времени -->
+<script src="~/assets/dm/localtime.js"></script>
+
+<div class="card border border-secondary">
+    <div class="card-body">
+        <div class="row g-0 d-flex justify-content-start">
+
+            <div class="col-3 col-md-3 pb-2">
+                <small>Шаг: </small>
+                <br />
+                @Model.Index
+            </div>
+            <div class="col-6 col-md-3 pb-2">
+                <small>Название: </small>
+                <br />
+                @Model.Title
+            </div>
+            @if (IsAdmin)
+            {
+                <div class="col-3 col-md-3 pb-2">
+                    <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@Model.Id" asp-route-ServiceObjectId="@Model.ServiceObjectId" asp-route-pageInfo="@ViewData["pageInfo"]">
+                        <i class="fas fa-pencil-alt"></i>
+                    </a>
+                </div>
+            }
+            <hr />
+            <div class="col-12 col-md-3 pb-2">
+                <small>Описание мероприятий: </small>
+                <br />
+                @Model.Description
+            </div>
+
+        </div>
+
+        <!--Файлы-->
+        @if (Model.FileLinks.Count > 0)
+        {
+            <hr />
+            <div class="col-12 pt-2">
+
+                <small class="mb-2">Файлы:</small>
+                <br />
+                <div class="d-flex flex-wrap">
+                    @Html.Partial("_FilesH", @Model.FileLinks)
+                </div>
+            </div>
+        }
+        <!---->
+    </div>
+</div>
+
+

@@ -93,32 +93,36 @@
                     @Html.Partial("_FilesControl2", new FileFront { category = "so", categoryId = @Model.Id })
                     <!----- ---->
                     <!-- Шаги -->
-                    <hr />
-                    <h5 class="card-header bg-soft-light">Шаги обслуживания [<span id="nums">0</span>]</h5>
-                    <div id="newsteps">
-                        <!-- место для новых шагов -->
-                    </div>
-                    <p></p>
-                    <!-- step files -->
-                    <div class="d-none" id="sbase">@ViewContext.HttpContext.Request.PathBase</div>
-                    <div class="d-none" id="shost">@ViewContext.HttpContext.Request.Host</div>
-                    <div id="stepdiv" style="display:none" class="pb-2">
-                        <div id="s_Work" class="mx-1 md-2">info...</div>
-                        <div id="s_uplfiles">
-                            <div class="d-flex justify-content-between">
-                                <input id="sfileupload" class="form-control" type="file" name="fileupload" onchange="uploadStepFile(GetInfoValue('sfiledesc'))" />
-                                <input id="sfiledesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
-                                <br>
-                            </div>
-                        </div>
-                        <div id="smessage" class="text-danger"></div>
+                    @if (Model.Id == 0)
+                    {
                         <hr />
-                        <div id="slistfiles">Загрузка данных...</div>
-                    </div>
+                        <h5 class="card-header bg-soft-light">Шаги обслуживания [<span id="nums">0</span>]</h5>
+                        <div id="newsteps">
+                            <!-- место для новых шагов -->
+                        </div>
+                        <p></p>
+                        <hr />
+                        <!-- step files -->
+                        <div class="d-none" id="sbase">@ViewContext.HttpContext.Request.PathBase</div>
+                        <div class="d-none" id="shost">@ViewContext.HttpContext.Request.Host</div>
+                        <div id="stepdiv" style="display:none" class="pb-2">
+                            <div id="s_Work" class="mx-1 md-2">info...</div>
+                            <div id="s_uplfiles">
+                                <div class="d-flex justify-content-between">
+                                    <input id="sfileupload" class="form-control" type="file" name="fileupload" onchange="uploadStepFile(GetInfoValue('sfiledesc'))" />
+                                    <input id="sfiledesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
+                                    <br>
+                                </div>
+                            </div>
+                            <div id="smessage" class="text-danger"></div>
+                            <hr />
+                            <div id="slistfiles">Загрузка данных...</div>
+                        </div>
+                    }
                     <!-- step buttons -->
                     <div class="d-inline mt-2 mb-2">
                         <a class="btn btn-secondary btn btn-sm btn-block" href="javascript:AddStep()" title="Добавить"><i class="fas fa-plus"></i> Добавить новый шаг</a>
-                        <a id="delstep" style="display:none" class="btn btn-danger btn btn-sm btn-block" href="javascript:DelStep()" title="Удалить"><i class="fas fa-plus"></i> Удалить последний шаг</a>
+                        <a id="delstep" style="display:none" class="btn btn-danger btn btn-sm btn-block" href="javascript:DelStep()" title="Удалить"><i class="fas fa-trash"></i> Удалить последний шаг</a>
                     </div>
 
                     <!--     -->
@@ -167,8 +171,11 @@
             let group = document.getElementById('newsteps');
             let step = document.createElement('div');
             step.className = 'col-12';
-            step.innerHTML = `<hr />
-                                <h6>Шаг №${index}</h6>
+            step.innerHTML = `
+                                <div class="card border border-secondary">
+                                <div class="card-body">
+                                <strong>Шаг №${index}</strong>
+                                <br>
                                 <small>Название шага:</small>
                                 <input type="text" name="stepTitle" value="" class="form-control" required="" placeholder="Введите название" />
                                 <div class="pt-2">
@@ -178,12 +185,14 @@
                                 </div>
                                 <input type="text" id="files${index}" name="stepLoadFileId" class="form-control d-none" value="" readonly />
                                 <input type="text" id="delfiles${index}" name="stepDelFileId" class="form-control d-none" value="" readonly />
-                                <ol id="names${index}"></ol>`;
+                                <ol id="names${index}"></ol>
+                                </div>
+                                </div>`;
             group.appendChild(step);
             SetInfo('nums', index);
             ShowId('delstep');
             ShowId('stepdiv');
-            getStepFiles(`files${index}`, 'step', 0, '');
+            getStepFiles(GetInfoValue(`files${index}`), 'step', 0, '');
         }
 
         // Удалить шаг
@@ -195,11 +204,12 @@
                 group.removeChild(lastChild);
                 index--;
                 SetInfo('nums', index);
-                getStepFiles(`files${index}`, 'step', 0, '');
             }
-            if (index == 0) {
+            if (index <= 0) {
                 HideId('delstep');
                 HideId('stepdiv');
+            } else {
+                getStepFiles(GetInfoValue(`files${index}`), 'step', 0, '');
             }
         }
 
