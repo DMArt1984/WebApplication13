@@ -39,7 +39,7 @@
     <!-- Шаги -->
     @if (Model != null && Model.Count() > 0)
     {
-        <div class="m-2">
+        <div class="m-3">
             @foreach (var item in Model.OrderBy(x => x.Index))
             {
                 @Html.Partial("tbl_Steps_InfoCompact", item)

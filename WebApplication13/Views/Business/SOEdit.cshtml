@@ -108,6 +108,10 @@
                         <div id="stepdiv" style="display:none" class="pb-2">
                             <div id="s_Work" class="mx-1 md-2">info...</div>
                             <div id="s_uplfiles">
+                                <small>Файлы текущего шага:</small>
+                                <div class="d-flex justify-content-end">
+                                    <span class="text-right text-info">Если Вы хотите добавить описание к файлу, то сделайте это до выбора файла</span>
+                                </div>
                                 <div class="d-flex justify-content-between">
                                     <input id="sfileupload" class="form-control" type="file" name="fileupload" onchange="uploadStepFile(GetInfoValue('sfiledesc'))" />
                                     <input id="sfiledesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
@@ -118,13 +122,13 @@
                             <hr />
                             <div id="slistfiles">Загрузка данных...</div>
                         </div>
-                    }
-                    <!-- step buttons -->
-                    <div class="d-inline mt-2 mb-2">
-                        <a class="btn btn-secondary btn btn-sm btn-block" href="javascript:AddStep()" title="Добавить"><i class="fas fa-plus"></i> Добавить новый шаг</a>
-                        <a id="delstep" style="display:none" class="btn btn-danger btn btn-sm btn-block" href="javascript:DelStep()" title="Удалить"><i class="fas fa-trash"></i> Удалить последний шаг</a>
-                    </div>
 
+                        <!-- step buttons -->
+                        <div class="d-inline mt-2 mb-2">
+                            <a class="btn btn-secondary btn btn-sm btn-block" href="javascript:AddStep()" title="Добавить"><i class="fas fa-plus"></i> Добавить новый шаг</a>
+                            <a id="delstep" style="display:none" class="btn btn-danger btn btn-sm btn-block" href="javascript:DelStep()" title="Удалить"><i class="fas fa-trash"></i> Удалить последний шаг</a>
+                        </div>
+                    }
                     <!--     -->
 
                 </div>
@@ -384,9 +388,9 @@
                 } else {
                     fileSize = Math.ceil(fileSize / 1024 / 1024) + " Мб"
                 }
-                line.innerHTML = `<i class='${GetIcon(element.Name)} text-secondary px-1'></i> <a class="px-1" target="_blank" href="${base}${element.Path}">${element.Name}</a> <span> ${fileSize}</span>`
-                group.appendChild(line);
-                list.innerHTML += `<li>${element.Name}</li>`
+                //line.innerHTML = `<i class='${GetIcon(element.Name)} text-secondary px-1'></i> <a class="px-1" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a> <span> ${fileSize}</span>`
+                //group.appendChild(line);
+                list.innerHTML += `<li><a class="px-1" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a> <span> ${fileSize}</span></li>`
             }
 
             ShowId("slistfiles");
