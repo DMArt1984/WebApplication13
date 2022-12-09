@@ -28,19 +28,8 @@
 </style>
 
 <!-- Уведомления -->
-@if (Model.Alerts != null && Model.Alerts.Count() > 0)
-{
-    @Html.Partial("tbl_Alerts_Short", Model.Alerts)
-}
-else
-{
-    @if (IsAdmin)
-    {
-        <div class="mb-2">
-            <a class="btn btn-danger btn btn-sm btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id" asp-route-pageInfo="true"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
-        </div>
-    }
-}
+@Html.Partial("tbl_Alerts_Short", Model.Alerts)
+
 <!-- Позиция, Описание, QR-код и файлы -->
 <div class="card">
     <div class="card-body">
@@ -121,11 +110,16 @@ else
             }
         </div>
 
+        <!-- Шаги -->
+        @Html.Partial("tbl_Steps_Short", Model.Steps)
+
     </div>
     <!-- редактировать -->
     @if (IsAdmin)
     {
-        <a asp-action="SOEdit" asp-route-id="@Model.Id" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block">Редактировать</a>
+        <div class="card-footer bg-body">
+            <a asp-action="SOEdit" asp-route-id="@Model.Id" type="button" class="col col-sm-12 col-md-6 col-lg-4 mb-2 btn btn-primary btn btn-block">Редактировать</a>
+        </div> 
     }
 </div>
 
@@ -133,43 +127,10 @@ else
 <div id="accordion">
 
     <!-- Обслуживание -->
-    @if (Model.Works != null && Model.Works.Count() > 0)
-    {
-        @Html.Partial("tbl_Works_Short", Model.Works)
+    @Html.Partial("tbl_Works_Short", Model.Works)
         
-        <!-- Обслуживание по шагам -->
-        @*@if (Model.Works != null && Model.Works.Last().Steps.Count() > 0)
-            {
-                @Html.Partial("tbl_WorkSteps_Short", Model.Works.Last().Steps)
-            }*@
+    
 
-    }
-    else
-    {
-        @if (IsAdmin && StepsAvailable)
-        {
-            <div class="mb-2">
-                <a class="btn btn-primary btn btn-sm btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id" asp-route-pageInfo="true"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
-            </div>
-        }
-    }
-
-
-
-    <!-- Шаги -->
-    @if (StepsAvailable)
-    {
-        @Html.Partial("tbl_Steps_Short", Model.Steps)
-    }
-    else
-    {
-        @if (IsAdmin)
-        {
-            <div class="mb-2">
-                <a class="btn btn-secondary btn btn-sm btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@Model.Id" asp-route-pageInfo="true"><i class="fas fa-plus"></i> Добавить новый шаг</a>
-            </div>
-        }
-    }
 </div>
 
 @section Scripts {

@@ -2,8 +2,10 @@
 
 @{
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
-    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+    //var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    //int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+    int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]);
+    int ItemsCount = (Model != null) ? Model.Count : 0;
 }
 
 <!-- Таблица -->
@@ -14,8 +16,15 @@
                
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <i id="steps" class="fas fa-arrow-up"></i>
-                        Шаги обслуживания <span class="badge bg-dark">@Model.Count()</span>
+                        @if (ItemsCount > 0)
+                        {
+                            <i id="steps" class="fas fa-arrow-up"></i>
+                            <span>Шаги обслуживания <span class="badge bg-dark">@ItemsCount</span></span>
+                        }
+                        else
+                        {
+                            <span>Нет шагов обслуживания</span>
+                        }
                     </div>
                     <div>
                         <a class="col btn btn-outline-secondary btn-sm edit" title="Все шаги объекта >>>" asp-action="StepsList" asp-route-ServiceObjectId="@FilterSO">
@@ -36,31 +45,48 @@
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion" style="">
         <div class="">
-            <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-                <thead class="bg-secondary text-white">
-                    <tr>
-                        <th>№ шага</th>
-                        <th>Название</th>
-                        <th>Мероприятия</th>
-                        <th>Файлы</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.OrderBy(x => x.Index))
-                    {
-                    <tr>
-                        <td>@item.Index</td>
-                        <td>@item.Title</td>
-                        <td style="max-width:300px; word-break: break-all">
-                            @item.Description
-                        </td>
-                        <td>
-                            @Html.Partial("_FilesV", item.FileLinks)
-                        </td>
-                    </tr>
-                    }
-                </tbody>
-            </table>
+            @if (ItemsCount > 0)
+            {
+                <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-secondary text-white">
+                        <tr>
+                            <th>№ шага</th>
+                            <th>Название</th>
+                            <th>Мероприятия</th>
+                            <th>Файлы</th>
+                            @if (IsAdmin)
+                            {
+                                <th>Подробнее</th>
+                            }
+                            </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(x => x.Index))
+                        {
+                            <tr>
+                                <td>@item.Index</td>
+                                <td>@item.Title</td>
+                                <td style="max-width:300px; word-break: break-all">
+                                    @item.Description
+                                </td>
+                                <td>
+                                    @Html.Partial("_FilesV", item.FileLinks)
+                                </td>
+                                @if (IsAdmin)
+                                {
+                                <td>
+                                    <div class="d-flex justify-content-start">
+                                        <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="true">
+                                            <i class="fas fa-pencil-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         </div>
     </div>
 </div>

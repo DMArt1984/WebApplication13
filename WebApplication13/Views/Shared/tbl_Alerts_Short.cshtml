@@ -2,8 +2,10 @@
 
 @{
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
-    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+    //var Obj = (Model != null && Model.Count > 0) ? Model.Select(x => x.ServiceObjectId).Distinct() : null;
+    //int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+    int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]);
+    int ItemsCount = (Model != null) ? Model.Count : 0;
 }
 
 <!-- получение локального времени -->
@@ -18,8 +20,15 @@
                     
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <i id="alerts" class="fas fa-arrow-up"></i>
-                            Активные уведомления <span class="badge bg-danger">@Model.Count()</span>
+                            @if (ItemsCount > 0)
+                            {
+                                <i id="alerts" class="fas fa-arrow-up"></i>
+                                <span>Активные уведомления <span class="badge bg-danger">@ItemsCount</span></span>
+                            }
+                            else
+                            {
+                                <span>Нет активных уведомлений</span>
+                            }
                         </div>
                         <div>
                             <a class="col btn btn-outline-danger btn-sm edit" title="Все уведомления объекта >>>" asp-action="AlertsList" asp-route-ServiceObjectId="@FilterSO">
@@ -40,21 +49,29 @@
         <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion2">
             <div class="">
                 <!--card-body-->
-                <table id="datatable-buttons" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-                    <thead class="bg-danger text-white">
-                        <tr>
-                            <th>Дата и время</th>
-                            <th>Статус</th>
-                            <th>Сотрудник</th>
-                            <th>Сообщение</th>
-                            <th>Файл</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.OrderByDescending(x => x.DT))
-                        {
+                @if (ItemsCount > 0)
+                {
+                    <table id="datatable-buttons" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                        <thead class="bg-danger text-white">
                             <tr>
-                                <td><script>document.write(UTC_To_LocalTime('@item.DT'));</script></td>
+                                <th>Дата и время</th>
+                                <th>Статус</th>
+                                <th>Сотрудник</th>
+                                <th>Сообщение</th>
+                                <th>Файл</th>
+                                @if (IsAdmin)
+                                {
+                                    <th>Подробнее</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderByDescending(x => x.DT))
+                            {
+                            <tr>
+                                <td>
+                                    <script>document.write(UTC_To_LocalTime('@item.DT'));</script>
+                                </td>
                                 <td>@item.StatusRus()</td>
                                 <td>
                                     @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
@@ -63,13 +80,22 @@
                                     @item.Message
                                 </td>
                                 <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                                @if (IsAdmin)
+                                {
+                                    <td>
+                                        <div class="d-flex justify-content-start">
+                                            <a class="btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="true">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                }
                             </tr>
-                        }
-                    </tbody>
-                </table>
-
+                            }
+                        </tbody>
+                    </table>
+                }
             </div>
-
         </div>
     </div>
 </div>

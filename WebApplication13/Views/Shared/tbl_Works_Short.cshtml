@@ -2,8 +2,11 @@
 
 @{
     bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
-    var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
-    int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+    //var Obj = Model.Select(x => x.ServiceObjectId).Distinct();
+    //int FilterSO = (Obj != null && Obj.Count() == 1) ? Obj.First() : 0;
+    int FilterSO = Convert.ToInt32(ViewData["ServiceObjectId"]);
+    int ItemsCount = (Model != null) ? Model.Count : 0;
+    bool EnableAdd = Convert.ToInt32(ViewData["StepsCount"]) > 0;
 }
 
 <!-- получение локального времени -->
@@ -17,14 +20,21 @@
 
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <i id="works" class="fas fa-arrow-up"></i>
-                        Последнее обслуживание <span class="badge bg-primary">@Model.Count()</span>
+                        @if (ItemsCount > 0)
+                        {
+                            <i id="works" class="fas fa-arrow-up"></i>
+                            <span>Последнее обслуживание <span class="badge bg-primary">@ItemsCount</span></span>
+                        }
+                        else
+                        {
+                            <span>Нет обслуживаний</span>
+                        }
                     </div>
                     <div>
                         <a class="col btn btn-outline-primary btn-sm edit" title="Все обслуживания объекта >>>" asp-action="WorksList" asp-route-ServiceObjectId="@FilterSO">
                             <i class="fas fa-align-justify"></i> Все обслуживания объекта
                         </a>
-                        @if (IsAdmin)
+                        @if (EnableAdd && IsAdmin)
                         {
                             <a class="col btn btn-primary btn-sm edit" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO">
                                 <i class="fas fa-plus"></i> Добавить новое обслуживание
@@ -39,60 +49,61 @@
     <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordion">
         <div class="">
             <!--card-body-->
-            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        <th>Начало</th>
-                        <th>Выполнено</th>
-                        <th>Статус</th>
-                        <th>Шаги</th>
-                        <th>Подробнее</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.OrderByDescending(x => x.Id))
-                    {
-
-                        var DT_Stop = (item.Status == 9) ? item.DT_Stop : "";
-
+            @if (ItemsCount > 0)
+            {
+                <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-primary text-white">
                         <tr>
-                            <td><script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script></td>
-                            <td><script>document.write(UTC_To_LocalTime('@DT_Stop'));</script></td>
-                            <td>@item.StatusRus()</td>
-                            <td>
-                                <small>
-                                    <ol>
-                                        @foreach (var st in item.Steps.OrderBy(x => x.Index))
-                                        {
-
-                                            if (st.Status > 0)
-                                            {
-                                                //var DT = st.DT_Start;
-                                                //if (st.DT_Stop != "")
-                                                //    DT += "/" + st.DT_Stop;
-
-                                                <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail }) <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> / <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script></li>
-                                            }
-                                        }
-                                    </ol>
-                                    <small>
-                            </td>
-                            <td>
-                                <div class="row px-1">
-                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="true">
-                                        <i class="far fa-eye"></i>
-                                    </a>
-                                    @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="true">
-                                        <i class="fas fa-align-justify"></i>
-                                    </a>*@
-                                </div>
-                            </td>
+                            <th>Начало</th>
+                            <th>Выполнено</th>
+                            <th>Статус</th>
+                            <th>Шаги</th>
+                            <th>Подробнее</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(x => x.Id))
+                        {
+                            var DT_Stop = (item.Status == 9) ? item.DT_Stop : "";
 
+                            <tr>
+                                <td>
+                                <script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script></td>
+                                <td>
+                                <script>document.write(UTC_To_LocalTime('@DT_Stop'));</script></td>
+                                <td>@item.StatusRus()</td>
+                                <td>
+                                    <small>
+                                        <ol>
+                                            @foreach (var st in item.Steps.OrderBy(x => x.Index))
+                                            {
+
+                                                if (st.Status > 0)
+                                                {
+                                                    <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail })
+                                                    <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> /
+                                                    <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script></li>
+                                                }
+                                            }
+                                        </ol>
+                                     </small>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-start">
+                                        <a class="btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="true">
+                                            <i class="far fa-eye"></i>
+                                        </a>
+                                        @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="true">
+                                        <i class="fas fa-align-justify"></i>
+                                        </a>*@
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
     </div>
 </div>
 

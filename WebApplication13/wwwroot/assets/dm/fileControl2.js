@@ -43,6 +43,8 @@ async function uploadFile2(category, categoryId, description) {
     formData.append("categoryId", categoryId);
     formData.append("description", description);
 
+    SetInfoValue('filedesc', '');
+
     $.ajax({
         type: "POST",
         url: `${GetPathBase()}/Business/AddFile_forJS`,

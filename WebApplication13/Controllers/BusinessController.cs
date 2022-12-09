@@ -137,7 +137,7 @@ namespace FactPortal.Controllers
                     Message = y.Message,
                     Status = y.Status,
                     ServiceObjectId = y.ServiceObjectId
-                }).ToList() : null;
+                }).ToList() : new List<AlertInfo>();
 
                 // Обслуживания
                 var worksOUT = new List<WorkInfo>();
@@ -178,7 +178,7 @@ namespace FactPortal.Controllers
                     Index = y.Index,
                     Title = y.Title,
                     ServiceObjectId = y.ServiceObjectId
-                }).ToList() : null;
+                }).ToList() : new List<StepInfo>();
 
                 // Объект
                 var SObjectOUT = new ServiceObjectInfo
@@ -194,6 +194,10 @@ namespace FactPortal.Controllers
                     Works = worksOUT,
                     Steps = stepsOUT
                 };
+
+                // Вывод
+                ViewData["ServiceObjectId"] = SObjectOUT.Id;
+                ViewData["StepsCount"] = SObjectOUT.Steps.Count;
 
                 return View(SObjectOUT);
             }
@@ -262,7 +266,9 @@ namespace FactPortal.Controllers
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position, string LoadFileId = null, string DelFileId = null,
-            string[] stepTitle = null, string[] stepDescription = null, string[] stepLoadFileId = null, string[] stepDelFileId = null)
+            int next = 0
+            //string[] stepTitle = null, string[] stepDescription = null, string[] stepLoadFileId = null, string[] stepDelFileId = null
+            )
         {
             // Возвращаемый объект
             ServiceObjectEdit outServiceObject = new ServiceObjectEdit
@@ -403,23 +409,31 @@ namespace FactPortal.Controllers
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
             // >>>>>>> Добавить шаги к объекту >>>>>>>>
-            if (stepTitle != null)
-            {
-                for (var i = 0; i < stepTitle.Length; i++)
-                {
-                    if (!String.IsNullOrEmpty(stepTitle[i]))
-                    {
-                        var StepId = await AddNewStep(Id, i + 1, stepTitle[i], stepDescription[i]);
-                        // 1. Получить шаг
-                        var step = _business.Steps.FirstOrDefault(x => x.Id == StepId);
-                        // 2. Файлы
-                        WorkStepFile(step, stepLoadFileId[i], stepDelFileId[i]);
-                        // 3. Сохранение изменений
-                        await _business.SaveChangesAsync().ConfigureAwait(false);
-                    }
-                }
-            }
-            
+            //if (stepTitle != null)
+            //{
+            //    for (var i = 0; i < stepTitle.Length; i++)
+            //    {
+            //        if (!String.IsNullOrEmpty(stepTitle[i]))
+            //        {
+            //            var StepId = await AddNewStep(Id, i + 1, stepTitle[i], stepDescription[i]);
+            //            // 1. Получить шаг
+            //            var step = _business.Steps.FirstOrDefault(x => x.Id == StepId);
+            //            // 2. Файлы
+            //            WorkStepFile(step, stepLoadFileId[i], stepDelFileId[i]);
+            //            // 3. Сохранение изменений
+            //            await _business.SaveChangesAsync().ConfigureAwait(false);
+            //        }
+            //    }
+            //}
+
+            // 5. Просмотр
+            if (next == 1)
+                return RedirectToAction("SOInfo", new { Id });
+
+            // 5. Редактирование шагов
+            if (next == 2)
+                return RedirectToAction("StepEdit", new {Id = 0, ServiceObjectId = Id, pageInfo = false });
+
             // 5. Вернуться в список
             return RedirectToAction("Index");
         }
@@ -893,8 +907,8 @@ namespace FactPortal.Controllers
             ViewData["pageInfo"] = false;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;
-            var CountSteps = _business.Steps.Count(x => x.ServiceObjectId == ServiceObjectId);
-            ViewBag.EnableAdd = ServiceObjectId > 0 && CountSteps > 0;
+            var StepsCount = _business.Steps.Count(x => x.ServiceObjectId == ServiceObjectId);
+            ViewBag.EnableAdd = ServiceObjectId > 0 && StepsCount > 0;
             return View(Works);
         }
 

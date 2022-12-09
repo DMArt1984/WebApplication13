@@ -62,6 +62,7 @@
                 <div class="card-body">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="number" name="id" value="@Model.Id" readonly class="btn btn-default" style="display: none" />
+                    <input type="number" id="next" name="next" value="0" readonly class="btn btn-default" style="display: none" />
                     <div class="col-12">
                         <small>Название:</small>
                         <input type="text" name="ObjectTitle" value="@Model.ObjectTitle" class="form-control" required="" placeholder="Введите название" />
@@ -93,42 +94,39 @@
                     @Html.Partial("_FilesControl2", new FileFront { category = "so", categoryId = @Model.Id })
                     <!----- ---->
                     <!-- Шаги -->
-                    @if (Model.Id == 0)
+                    <!--if (Model.Id == 0)
                     {
                         <hr />
                         <h5 class="card-header bg-soft-light">Шаги обслуживания [<span id="nums">0</span>]</h5>
-                        <div id="newsteps">
+                        <div id="newsteps">-->
                             <!-- место для новых шагов -->
-                        </div>
+                        <!--</div>
                         <p></p>
-                        <hr />
+                        <hr />-->
                         <!-- step files -->
-                        <div class="d-none" id="sbase">@ViewContext.HttpContext.Request.PathBase</div>
+                        <!--<div class="d-none" id="sbase">@ViewContext.HttpContext.Request.PathBase</div>
                         <div class="d-none" id="shost">@ViewContext.HttpContext.Request.Host</div>
                         <div id="stepdiv" style="display:none" class="pb-2">
                             <div id="s_Work" class="mx-1 md-2">info...</div>
                             <div id="s_uplfiles">
                                 <small>Файлы текущего шага:</small>
-                                <div class="d-flex justify-content-end">
-                                    <span class="text-right text-info">Если Вы хотите добавить описание к файлу, то сделайте это до выбора файла</span>
-                                </div>
                                 <div class="d-flex justify-content-between">
                                     <input id="sfileupload" class="form-control" type="file" name="fileupload" onchange="uploadStepFile(GetInfoValue('sfiledesc'))" />
-                                    <input id="sfiledesc" type="text" name="fileDesc" value="" class="form-control" placeholder="описание файла" />
+                                    <input id="sfiledesc" type="text" name="fileDesc" value="" class="form-control" placeholder="Если Вы хотите добавить описание к файлу, то сделайте это до выбора файла" />
                                     <br>
                                 </div>
                             </div>
                             <div id="smessage" class="text-danger"></div>
                             <hr />
                             <div id="slistfiles">Загрузка данных...</div>
-                        </div>
+                        </div>-->
 
                         <!-- step buttons -->
-                        <div class="d-inline mt-2 mb-2">
+                        <!--<div class="d-inline mt-2 mb-2">
                             <a class="btn btn-secondary btn btn-sm btn-block" href="javascript:AddStep()" title="Добавить"><i class="fas fa-plus"></i> Добавить новый шаг</a>
                             <a id="delstep" style="display:none" class="btn btn-danger btn btn-sm btn-block" href="javascript:DelStep()" title="Удалить"><i class="fas fa-trash"></i> Удалить последний шаг</a>
                         </div>
-                    }
+                    }-->
                     <!--     -->
 
                 </div>
@@ -137,10 +135,20 @@
                         @if (Model.Id != 0)
                         {
                             <!-- удалить -->
-                            <button type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ObjectTitle')"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            <button type="button" class="col col-sm-3 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ObjectTitle')"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            <!-- сохранить -->
+                            <button type="submit" class="col col-sm-3 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <!-- все шаги -->
+                            <a class="col col-sm-2 col-md-2 mx-2 mb-1 btn btn-outline-secondary btn btn-block" asp-action="StepsList" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-align-justify px-1"></i> Все шаги объекта</a>
                         }
-                        <!-- сохранить -->
-                        <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+                        else
+                        {
+                            <!-- сохранить -->
+                            <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 1)"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <!-- сохранить и продолжить -->
+                            <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 2)"><i class="fas fa-align-justify px-1"></i> Сохранить и продолжить >>></button>
+                        }
+
                         <!-- отмена -->
                         <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                     </div>
@@ -227,6 +235,15 @@
             document.getElementById(Id).innerText = Value;
         }
 
+        // value
+        function GetInfoValue(Id) {
+            return document.getElementById(Id).value;
+        }
+
+        function SetInfoValue(Id, Value) {
+            document.getElementById(Id).value = Value;
+        }
+
         // Показать или скрыть элемент по ID
         function HideId(id) {
             document.getElementById(id).style.display = 'none'; // скрыть
@@ -244,6 +261,8 @@
             formData.append("category", 'step');
             formData.append("categoryId", 0);
             formData.append("description", description);
+
+            SetInfoValue('sfiledesc', '');
 
             $.ajax({
                 type: "POST",
