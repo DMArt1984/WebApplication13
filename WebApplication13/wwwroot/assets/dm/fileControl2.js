@@ -216,13 +216,37 @@ function BuildFiles(data) {
         }
         // <button type="button" class="btn btn-outline-light waves-effect">Light</button>
         // <button type="button" class="btn btn-outline-danger waves-effect waves-light">Danger</button>
-        line.innerHTML = `<button type="button" class="btn btn-s btn-outline-danger waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#myModalDelFile" onclick="SetInfo('delfileId',${element.Id})"><i class="fas fa-trash-alt px-1"></i></button> <i class='${GetIcon(element.Name)} text-secondary px-1'></i> <a class="px-1" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a> <span> ${fileSize}</span>`
+
+        if (element.Description == undefined) {
+            element.Description = "";
+        }
+
+        line.innerHTML = `<div class="row align-items-between">
+                            <div class="col-4">
+                                <button type="button" class="btn btn-s btn-outline-danger waves-effect waves-light" data-bs-toggle="modal" data-bs-target="#myModalDelFile" onclick="SetInfo('delfileId',${element.Id})">
+                                <i class="fas fa-trash-alt px-1"></i></button> <i class='${GetIcon(element.Name)} text-secondary px-1'></i> 
+                                <a class="px-1" target="_blank" href="${GetPathBase()}${element.Path}">${element.Name}</a> <span> ${fileSize}</span>
+                            </div>
+                            <div class="col-8">
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text">Описание файла</div>
+                                    </div>
+                                    <input type="text" class="form-control" name="DescFiles" value="${element.Description}" placeholder="" />
+                                </div>
+                            </div>
+                           </div>`
         group.appendChild(line)
     }
 
     ShowId("listfiles")
     ShowId("uplfiles")
 }
+
+
+
+
+
 
 // Иконка для файла
 function GetIcon(filename) {

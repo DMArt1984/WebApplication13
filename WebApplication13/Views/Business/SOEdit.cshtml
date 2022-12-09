@@ -137,28 +137,28 @@
                         @if (Model.Id != 0)
                         {
                             <!-- удалить -->
-                            <button type="button" class="col col-sm-3 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ObjectTitle')"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
+                            <button type="button" class="col col-12 col-md-3 mx-2 mb-1 btn btn-danger btn btn-block" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@Model.Id, '@Model.ObjectTitle')"><i class="fas fa-trash-alt px-1"></i> Удалить</button>
                             <!-- сохранить -->
-                            <button type="submit" class="col col-sm-3 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                             <!-- все шаги -->
-                            <a class="col col-sm-2 col-md-2 mx-2 mb-1 btn btn-outline-secondary btn btn-block" asp-action="StepsList" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-align-justify px-1"></i> Все шаги объекта</a>
+                            <a class="col col-12 col-md-2 mx-2 mb-1 btn btn-outline-secondary btn btn-block" asp-action="StepsList" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-align-justify px-1"></i> Все шаги объекта</a>
                         }
                         else
                         {
                             <!-- сохранить -->
-                            <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 1)"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 1)"><i class="fas fa-save px-1"></i> Сохранить</button>
                             <!-- сохранить и продолжить -->
-                            <button type="submit" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 2)"><i class="fas fa-align-justify px-1"></i> Сохранить и продолжить >>></button>
+                            <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 2)"><i class="fas fa-align-justify px-1"></i> Сохранить и продолжить >>></button>
                         }
 
                         <!-- отмена -->
                         @if (pageInfo)
                         {
-                            <a asp-action="SOInfo" asp-route-id="@Model.Id" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                            <a asp-action="SOInfo" asp-route-id="@Model.Id" type="button" class="col col-12 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                         }
                         else
                         {
-                            <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                            <a asp-action="Index" type="button" class="col col-12 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
                         }
 
 

@@ -269,7 +269,8 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position, string LoadFileId = null, string DelFileId = null,
+        public async Task<IActionResult> SOEdit(int Id, string ObjectTitle, string ObjectCode, string Description, int Position,
+            string LoadFileId = null, string DelFileId = null, string[] DescFiles = null,
             int next = 0
             //string[] stepTitle = null, string[] stepDescription = null, string[] stepLoadFileId = null, string[] stepDelFileId = null
             )
@@ -582,7 +583,9 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0, int SOReturn = 0, bool pageInfo = false, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> AlertEdit(int Id = 0, int Status = 0, string Message = "", int ServiceObjectId = 0,
+            int SOReturn = 0, bool pageInfo = false,
+            string LoadFileId = null, string DelFileId = null, string[] DescFiles = null)
         {
             // Текущий пользователь
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -783,7 +786,8 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Title = "", string Description = "", int ServiceObjectId = 0, int SOReturn = 0, bool pageInfo = false, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> StepEdit(int Id = 0, int Index = 0, string Title = "", string Description = "", int ServiceObjectId = 0, int SOReturn = 0, bool pageInfo = false,
+            string LoadFileId = null, string DelFileId = null, string[] DescFiles = null)
         {
             // Проверка на доступность номера шага (Index)
             //var IndexSteps = await _business.Steps.Where(x => x.ServiceObjectId == ServiceObjectId && x.Id != Id).Select(x => x.Index).ToListAsync();
@@ -1225,7 +1229,9 @@ namespace FactPortal.Controllers
         [HttpPost]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT_Start = "", string NewDT_Stop = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0, int WorkReturn = 0, int SOReturn = 0, bool pageInfo = false, bool workInfo = false, string LoadFileId = null, string DelFileId = null)
+        public async Task<IActionResult> WorkStepEdit(int Id = 0, int Index = 0, string Title = "", int Status = 0, string NewDT_Start = "", string NewDT_Stop = "", int TimezoneOffset = 0, string NewUser="", int WorkId = 0,
+            int WorkReturn = 0, int SOReturn = 0, bool pageInfo = false, bool workInfo = false,
+            string LoadFileId = null, string DelFileId = null, string[] DescFiles = null)
         {
             
             // Текущий пользователь
