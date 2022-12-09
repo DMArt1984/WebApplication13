@@ -43,6 +43,8 @@ async function uploadFile2(category, categoryId, description) {
     formData.append("categoryId", categoryId);
     formData.append("description", description);
 
+    //alert(fileupload.files[0]);
+
     SetInfoValue('filedesc', '');
 
     $.ajax({
@@ -79,6 +81,8 @@ async function uploadFile2(category, categoryId, description) {
 
             document.getElementById("message").innerText = ""
             getFiles(Ids, GetInfo('category'), GetInfo('categoryId'), GetInfoValue('delfiles'))
+
+            //alert(Ids);
         },
         error: function (jqXHR, textStatus, errorThrown) {
             // handle error

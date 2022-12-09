@@ -355,7 +355,7 @@ namespace FactPortal.Controllers
             var claimPos = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType.ToLower() == "position"); // позиция
             if (claimPos == null)
             {
-                await AddObjectClaim(Id, "position", Position.ToString());
+                AddObjectClaim(Id, "position", Position.ToString());
             }
             else
             {
@@ -373,10 +373,11 @@ namespace FactPortal.Controllers
             var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType == "groupFilesId"); // файлы
             if (claimFiles == null)
             {
-                await AddObjectClaim(Id, "groupFilesId", "");
+                AddObjectClaim(Id, "groupFilesId", "");
+                // снова
+                claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType == "groupFilesId"); // файлы
             }
-            // снова
-            claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == Id && x.ClaimType == "groupFilesId"); // файлы
+            
 
             // Добавление файлов
             if (!String.IsNullOrEmpty(LoadFileId))
@@ -1658,15 +1659,15 @@ namespace FactPortal.Controllers
         // ============================================================
 
         // Добавление атрибута к объекту
-        private async Task<bool> AddObjectClaim(int SObjectId, string ClaimType, string ClaimValue)
+        private bool AddObjectClaim(int SObjectId, string ClaimType, string ClaimValue)
         {
             // Добавление атрибута
-            var myClaimIDs = await _business.Claims.Select(x => x.Id).ToListAsync().ConfigureAwait(false);
+            var myClaimIDs = _business.Claims.Select(x => x.Id).ToList();
             var newClaimID = Bank.maxID(myClaimIDs);
-            await _business.Claims.AddAsync(new ObjectClaim { Id = newClaimID, ServiceObjectId = SObjectId, ClaimType = ClaimType, ClaimValue = ClaimValue });
+            _business.Claims.Add(new ObjectClaim { Id = newClaimID, ServiceObjectId = SObjectId, ClaimType = ClaimType, ClaimValue = ClaimValue });
 
             // Сохранение изменений
-            await _business.SaveChangesAsync().ConfigureAwait(false);
+             _business.SaveChanges();
 
             return true;
         }
@@ -2496,6 +2497,11 @@ namespace FactPortal.Controllers
                     if (SObject != null)
                     {
                         var claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == categoryId && x.ClaimType == "groupFilesId");
+                        if (claimFiles == null)
+                        {
+                            AddObjectClaim(categoryId, "groupFilesId", "");
+                            claimFiles = _business.Claims.FirstOrDefault(x => x.ServiceObjectId == categoryId && x.ClaimType == "groupFilesId");
+                        }
                         if (claimFiles != null)
                         {
                             ID = await AddFile(file, $"/Files/SO{SObject.Id}/Info/", description).ConfigureAwait(false);
