@@ -9,6 +9,8 @@
     {
         ViewData["Title"] = "Новый объект обслуживания";
     }
+
+    bool pageInfo = Convert.ToBoolean(ViewData["pageInfo"]);
 }
 
 <style>
@@ -62,7 +64,7 @@
                 <div class="card-body">
                     <div asp-validation-summary="All" class="text-danger"></div>
                     <input type="number" name="id" value="@Model.Id" readonly class="btn btn-default" style="display: none" />
-                    <input type="number" id="next" name="next" value="0" readonly class="btn btn-default" style="display: none" />
+                    <input type="number" id="next" name="next" value="@(pageInfo ? 1 : 0)" readonly class="btn btn-default" style="display: none" />
                     <div class="col-12">
                         <small>Название:</small>
                         <input type="text" name="ObjectTitle" value="@Model.ObjectTitle" class="form-control" required="" placeholder="Введите название" />
@@ -150,7 +152,17 @@
                         }
 
                         <!-- отмена -->
-                        <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                        @if (pageInfo)
+                        {
+                            <a asp-action="SOInfo" asp-route-id="@Model.Id" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена</a>
+                        }
+
+
+
                     </div>
                 </div>
             </form>

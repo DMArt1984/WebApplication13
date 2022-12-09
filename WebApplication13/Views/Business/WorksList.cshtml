@@ -29,94 +29,102 @@
 
 <!-- Карточка-->
 <div class="card">
-    <!-- Добавить -->
-    @if (IsAdmin && FilterSO > 0 && ViewBag.EnableAdd)
-    {
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="text-secondary">Список обслуживаний</h4>
-            <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
-        </div>
-    }
-    <!-- Таблица -->
-    <div class="card-body">
-        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-            <thead class="bg-primary text-white">
-                <tr>
-                    <th>ID</th>
-                    @if (FilterSO == 0)
-                    {
-                        <th>Объект</th>
-                    }
-                    <th>Начало</th>
-                    <th>Выполнено</th>
-                    <th>Статус</th>
-                    <th>Шаги</th>
-                    <th>Подробнее</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.OrderByDescending(x => x.Id))
-                {
-                    var DT_Stop = (item.Status == 9) ? item.DT_Stop : "";
 
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="text-secondary">Список обслуживаний</h4>
+        <div class="">
+            @if (FilterSO > 0)
+            {
+                <a class="btn btn-outline-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up"></i> Перейти в объект</a>
+                @if (IsAdmin && ViewBag.EnableAdd)
+                {
+                    <!-- Добавить -->
+                    <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
+                }
+            }
+        </div>
+    </div>
+    
+        <!-- Таблица -->
+        <div class="card-body">
+            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <thead class="bg-primary text-white">
                     <tr>
-                        <th scope="row">@item.Id</th>
+                        <th>ID</th>
                         @if (FilterSO == 0)
                         {
-                            <td>
-                                @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
-                            </td>
+                            <th>Объект</th>
                         }
-                        <td>
-                            <script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script>
-                        </td>
-                        <td>
-                            <script>document.write(UTC_To_LocalTime('@DT_Stop'));</script>
-                        </td>
-                        <td>@item.StatusRus()</td>
-                        <td>
-                            <small>
-                                <ol>
-                                    @foreach (var st in item.Steps.OrderBy(x => x.Index))
-                                    {
-                                        if (st.Status > 0)
-                                        {
-                                            //var DT = st.DT_Start;
-                                            //if (st.DT_Stop != "")
-                                            //    DT += "/" + st.DT_Stop;
-                                            <li>
-                                                @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail })
-                                                <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> /
-                                                <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script>
-                                            </li>
-                                        }
-                                    }
-                                </ol>
-                            </small>
-                        </td>
-                        <td>
-                            <div class="row px-1">
-                                <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false">
-                                    <i class="far fa-eye"></i>
-                                </a>
-                                @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="false">
-                                    <i class="fas fa-align-justify"></i>
-                                </a>*@
-                                @if (IsAdmin)
-                                {
-                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
-                                        <i class="fas fa-trash-alt px-1"></i>
-                                    </a>
-                                }
-                            </div>
-                        </td>
+                        <th>Начало</th>
+                        <th>Выполнено</th>
+                        <th>Статус</th>
+                        <th>Шаги</th>
+                        <th>Подробнее</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(x => x.Id))
+                    {
+                        var DT_Stop = (item.Status == 9) ? item.DT_Stop : "";
 
-</div>
+                        <tr>
+                            <th scope="row">@item.Id</th>
+                            @if (FilterSO == 0)
+                            {
+                                <td>
+                                    @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                                </td>
+                            }
+                            <td>
+                                <script>document.write(UTC_To_LocalTime('@item.DT_Start'));</script>
+                            </td>
+                            <td>
+                                <script>document.write(UTC_To_LocalTime('@DT_Stop'));</script>
+                            </td>
+                            <td>@item.StatusRus()</td>
+                            <td>
+                                <small>
+                                    <ol>
+                                        @foreach (var st in item.Steps.OrderBy(x => x.Index))
+                                        {
+                                            if (st.Status > 0)
+                                            {
+                                                //var DT = st.DT_Start;
+                                                //if (st.DT_Stop != "")
+                                                //    DT += "/" + st.DT_Stop;
+                                                <li>
+                                                    @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail })
+                                                    <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> /
+                                                    <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script>
+                                                </li>
+                                            }
+                                        }
+                                    </ol>
+                                </small>
+                            </td>
+                            <td>
+                                <div class="row px-1">
+                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false">
+                                        <i class="far fa-eye"></i>
+                                    </a>
+                                    @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="false">
+                                        <i class="fas fa-align-justify"></i>
+                                    </a>*@
+                                    @if (IsAdmin)
+                                    {
+                                        <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
+                                            <i class="fas fa-trash-alt px-1"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 
 <!-- sample modal [ myModalDel ] content -->
 @Html.Partial("popup_WorkDel")

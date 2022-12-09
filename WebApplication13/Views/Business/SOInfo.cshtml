@@ -118,7 +118,7 @@
     @if (IsAdmin)
     {
         <div class="card-footer bg-body">
-            <a asp-action="SOEdit" asp-route-id="@Model.Id" type="button" class="col col-sm-12 col-md-6 col-lg-4 mb-2 btn btn-primary btn btn-block">Редактировать</a>
+            <a asp-action="SOEdit" asp-route-id="@Model.Id" asp-route-pageInfo="true" type="button" class="col col-sm-12 col-md-6 col-lg-4 mb-2 btn btn-primary btn btn-block">Редактировать</a>
         </div> 
     }
 </div>

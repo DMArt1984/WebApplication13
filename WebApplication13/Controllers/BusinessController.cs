@@ -213,7 +213,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> SOEdit(int id = 0)
+        public async Task<IActionResult> SOEdit(int id = 0, bool pageInfo = false)
         {
             try
             {
@@ -250,6 +250,10 @@ namespace FactPortal.Controllers
                         Position = position,
                         Levels = await _business.Levels.OrderBy(x => x.Name).ToListAsync().ConfigureAwait(false)
                     };
+
+                    // Вывод
+                    ViewData["pageInfo"] = pageInfo;
+
                     return View(SObjectOUT);
                 }
 
