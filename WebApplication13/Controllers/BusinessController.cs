@@ -410,6 +410,12 @@ namespace FactPortal.Controllers
                 }
             }
 
+            // Изменение описаний файлов
+            if (DescFiles != null)
+            {
+                var x = ChangeDescriptionFiles(claimFiles.ClaimValue.Split(';'), DescFiles);
+            }
+
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
@@ -654,7 +660,12 @@ namespace FactPortal.Controllers
                 }
             }
 
-            
+            // Изменение описаний файлов
+            if (DescFiles != null)
+            {
+                var x = ChangeDescriptionFiles(alert.groupFilesId.Split(';'), DescFiles);
+            }
+
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
 
@@ -816,6 +827,12 @@ namespace FactPortal.Controllers
 
             // Файлы
             WorkStepFile(step, LoadFileId, DelFileId);
+
+            // Изменение описаний файлов
+            if (DescFiles != null)
+            {
+                var x = ChangeDescriptionFiles(step.groupFilesId.Split(';'), DescFiles);
+            }
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -1360,6 +1377,11 @@ namespace FactPortal.Controllers
                 }
             }
 
+            // Изменение описаний файлов
+            if (DescFiles != null)
+            {
+                var x = ChangeDescriptionFiles(workStep.groupFilesId.Split(';'), DescFiles);
+            }
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -2358,6 +2380,37 @@ namespace FactPortal.Controllers
             }
             return true;
         }
+
+        // Изменить описания файлов
+        private bool ChangeDescriptionFiles(string[] files, string[] descriptions)
+        {
+            // Изменение описаний файлов
+            if (descriptions != null && files != null)
+            {
+                if (files.Length == descriptions.Length)
+                {
+                    for (var i = 0; i < files.Length; i++)
+                    {
+                        var x = ChangeDescriptionFile(Convert.ToInt32(files[i]), descriptions[i]);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool ChangeDescriptionFile(int Id, string Description)
+        {
+            var item = _business.Files.FirstOrDefault(x => x.Id == Id);
+            if (item != null)
+            {
+                item.Description = Description;
+                _business.SaveChanges();
+                return true;
+            }
+            return false;
+        }
+
 
         // КЛИЕНТ: Получить файлы 
         public JsonResult GetFiles(IFormFile file, string description, string category, int categoryId)
