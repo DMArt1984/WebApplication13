@@ -21,6 +21,8 @@ using Microsoft.Extensions.FileProviders;
 using System.IO;
 using SmartBreadcrumbs.Extensions;
 using System.Reflection;
+using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.OpenApi.Models;
 
 namespace FactPortal
 {
@@ -47,6 +49,11 @@ namespace FactPortal
                 .AddDefaultTokenProviders()
                 .AddTokenProvider<InvitationTokenProvider<ApplicationUser>>("Invitation")
                 .AddEntityFrameworkStores<ApplicationDbContext>(); //;
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "The API", Version = "v1" });
+            });
 
             // Возможно когда-то пригодится
             //services.AddTransient<IEmailSender, EmailSender>();
@@ -128,6 +135,12 @@ namespace FactPortal
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
             //env.EnvironmentName = "Production"; // test
             if (env.IsDevelopment())
             {

@@ -32,10 +32,27 @@
 
 <!-- Позиция, Описание, QR-код и файлы -->
 <div class="card">
+    <div class="card-header bg-white" >
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <small>Название: </small>
+                    <h5>@Model.ObjectTitle</h5>
+                </div>
+                <div>
+                    <!-- редактировать -->
+                    @if (IsAdmin)
+                    {
+                        <a asp-action="SOEdit" asp-route-id="@Model.Id" asp-route-pageInfo="true" type="button" class="btn btn-primary">
+                            <i class="fas fa-pencil-alt px-1"></i> Редактировать
+                        </a>
+                    }
+                </div>
+            </div>
+    </div>
     <div class="card-body">
         <div class="row d-flex justify-content-between">
             <!-- Позиция, описание и Файлы -->
-            <div class="col-12 col-sm-8 pb-2 pb-sm-0">
+            <div class="col-12 col-sm-8">
                 <div class="pb-2">
                     <small>Позиция:</small>
                     <br />
@@ -58,7 +75,7 @@
                         <div class="text-danger">Не задана</div>
                     }
                 </div>
-                <div class="pb-2">
+                <div class="pb-0">
                     <small>Описание:</small>
                     <br />
                     @if (!String.IsNullOrEmpty(Model.Description))
@@ -73,7 +90,7 @@
                 @if (Model.FileLinks != null && Model.FileLinks.Count() > 0)
                 {
                     <hr />
-                    <div class="pb-2">
+                    <div class="pb-0">
                         <small class="mb-2">Файлы:</small>
                         <br />
                         <div class="d-flex flex-wrap">
@@ -110,17 +127,8 @@
             }
         </div>
 
-        <!-- Шаги -->
-        @Html.Partial("tbl_Steps_Short", Model.Steps)
-
     </div>
-    <!-- редактировать -->
-    @if (IsAdmin)
-    {
-        <div class="card-footer bg-body">
-            <a asp-action="SOEdit" asp-route-id="@Model.Id" asp-route-pageInfo="true" type="button" class="col col-sm-12 col-md-6 col-lg-4 mb-2 btn btn-primary btn btn-block">Редактировать</a>
-        </div> 
-    }
+    
 </div>
 
 <!-- Шаги и обслуживание -->
@@ -128,8 +136,9 @@
 
     <!-- Обслуживание -->
     @Html.Partial("tbl_Works_Short", Model.Works)
-        
-    
+
+    <!-- Шаги -->
+    @Html.Partial("tbl_Steps_Short", Model.Steps)
 
 </div>
 

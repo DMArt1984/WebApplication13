@@ -149,9 +149,9 @@
 <div class="row row-flex">
     @if (SOCount > 0)
     {
-        <!-- объекты с активными уведомлениями -->
+        <!-- объекты с активными уведомлениями IndianRed -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new { color = "crimson", percent = string.Format(FormatValue, alertActiveSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertActiveSOCount} из {SOCount}", alpha = "", description = "" })
+            @Html.Partial("_CardCircle", new { color = "LightCoral", percent = string.Format(FormatValue, alertActiveSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertActiveSOCount} из {SOCount}", alpha = "", description = "" })
         </div>
         <!-- объекты в работе -->
         <div class="col-xl-3 col-sm-6">
@@ -174,7 +174,7 @@
     }
     <!-- icon -->
     <div class="col-xl-3 col-sm-6">
-        @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Пользователи системы", titlenext = "МойЗавод", value = usersInCompanyCount })  
+        @Html.Partial("_CardCircle", new { icon = "ri-group-line", title = "Пользователи системы", titlenext = "МойЗавод", value = usersInCompanyCount })
     </div>
 
 </div>

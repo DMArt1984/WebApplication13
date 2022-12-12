@@ -88,7 +88,15 @@
                             <!-- отмена -->
                             @if (Convert.ToBoolean(ViewData["pageInfo"]))
                             {
-                                <a asp-action="SOInfo" asp-route-id="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена <small>(в объект)</small></a>
+                                @if (!Convert.ToBoolean(ViewData["editSO"]))
+                                {
+                                    <a asp-action="SOInfo" asp-route-id="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Отмена <small>(в объект)</small></a>
+                                }
+                                else
+                                {
+                                    <a asp-action="SOedit" asp-route-id="@ViewData["ServiceObjectId"]" type="button" class="col col-sm-4 col-md-3 mx-2 mb-1 btn btn-secondary btn btn-block"> Вернуться в объект</a>
+                                }
+
                             }
                             else
                             {

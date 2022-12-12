@@ -141,14 +141,14 @@
                             <!-- сохранить -->
                             <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block"><i class="fas fa-save px-1"></i> Сохранить</button>
                             <!-- все шаги -->
-                            <a class="col col-12 col-md-2 mx-2 mb-1 btn btn-outline-secondary btn btn-block" asp-action="StepsList" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-align-justify px-1"></i> Все шаги объекта</a>
+                            <a class="col col-12 col-md-2 mx-2 mb-1 btn btn-outline-secondary btn btn-block" asp-action="StepsList" asp-route-ServiceObjectId="@Model.Id"><i class="fas fa-align-justify px-1"></i> Редактировать шаги объекта</a>
                         }
                         else
                         {
                             <!-- сохранить -->
-                            <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 1)"><i class="fas fa-save px-1"></i> Сохранить</button>
+                            @*<button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 1)"><i class="fas fa-save px-1"></i> Сохранить</button>*@
                             <!-- сохранить и продолжить -->
-                            <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 2)"><i class="fas fa-align-justify px-1"></i> Сохранить и продолжить >>></button>
+                            <button type="submit" class="col col-12 col-md-3 mx-2 mb-1 btn btn-primary btn btn-block" onclick="SetInfoValue('next', 2)"><i class="fas fa-align-justify px-1"></i> Перейти к добавлению шагов >>></button>
                         }
 
                         <!-- отмена -->

@@ -412,10 +412,7 @@ namespace FactPortal.Controllers
             }
 
             // Изменение описаний файлов
-            if (DescFiles != null)
-            {
-                var x = ChangeDescriptionFiles(claimFiles.ClaimValue.Split(';'), DescFiles);
-            }
+            var x = ChangeDescriptionFiles(claimFiles.ClaimValue.Split(';'), DescFiles);
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -442,9 +439,8 @@ namespace FactPortal.Controllers
             if (next == 1)
                 return RedirectToAction("SOInfo", new { Id });
 
-            // 5. Редактирование шагов
             if (next == 2)
-                return RedirectToAction("StepEdit", new {Id = 0, ServiceObjectId = Id, pageInfo = false });
+                return RedirectToAction("StepEdit", new {Id = 0, ServiceObjectId = Id, pageInfo = true, editSO = true });
 
             // 5. Вернуться в список
             return RedirectToAction("Index");
@@ -662,10 +658,7 @@ namespace FactPortal.Controllers
             }
 
             // Изменение описаний файлов
-            if (DescFiles != null)
-            {
-                var x = ChangeDescriptionFiles(alert.groupFilesId.Split(';'), DescFiles);
-            }
+            var x = ChangeDescriptionFiles(alert.groupFilesId.Split(';'), DescFiles);
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -774,7 +767,7 @@ namespace FactPortal.Controllers
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
         [Authorize(Roles = "Admin, SuperAdmin")]
-        public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false)
+        public async Task<IActionResult> StepEdit(int Id = 0, int ServiceObjectId = 0, bool pageInfo = false, bool editSO = false)
         {
             // Поиск
             var step = await GetStepInfo(Id, ServiceObjectId).ConfigureAwait(false);
@@ -790,6 +783,7 @@ namespace FactPortal.Controllers
 
             // Вывод
             ViewData["pageInfo"] = pageInfo;
+            ViewData["editSO"] = editSO;
             ViewData["BreadcrumbNode"] = thisNode;
             ViewData["ServiceObjectId"] = ServiceObjectId;      
             return View(step);
@@ -830,10 +824,7 @@ namespace FactPortal.Controllers
             WorkStepFile(step, LoadFileId, DelFileId);
 
             // Изменение описаний файлов
-            if (DescFiles != null)
-            {
-                var x = ChangeDescriptionFiles(step.groupFilesId.Split(';'), DescFiles);
-            }
+            var x = ChangeDescriptionFiles(step.groupFilesId.Split(';'), DescFiles);
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -1379,10 +1370,7 @@ namespace FactPortal.Controllers
             }
 
             // Изменение описаний файлов
-            if (DescFiles != null)
-            {
-                var x = ChangeDescriptionFiles(workStep.groupFilesId.Split(';'), DescFiles);
-            }
+            var x = ChangeDescriptionFiles(workStep.groupFilesId.Split(';'), DescFiles);
 
             // 4. Сохранение изменений
             await _business.SaveChangesAsync().ConfigureAwait(false);
@@ -2388,11 +2376,14 @@ namespace FactPortal.Controllers
             // Изменение описаний файлов
             if (descriptions != null && files != null)
             {
-                if (files.Length == descriptions.Length)
+                if (files.Length == descriptions.Length && files.Length > 0)
                 {
                     for (var i = 0; i < files.Length; i++)
                     {
-                        var x = ChangeDescriptionFile(Convert.ToInt32(files[i]), descriptions[i]);
+                        if (!String.IsNullOrEmpty(files[i]))
+                        {
+                            ChangeDescriptionFile(Convert.ToInt32(files[i]), descriptions[i]);
+                        }
                     }
                     return true;
                 }
