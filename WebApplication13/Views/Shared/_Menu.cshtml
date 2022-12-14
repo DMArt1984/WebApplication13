@@ -19,10 +19,23 @@
 
 <li class="menu-title d-none">Обслуживание</li>
 <li>
-    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="AlertsList">
-        <i class="mdi mdi-alert"></i>
-        <span id="menu_alerts" class="badge rounded-pill bg-danger float-end" style="display:none"></span>
-        <span>Уведомления</span>
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Levels_Tree">
+        <i class="mdi mdi-graph-outline"></i>
+        <span>Структура</span>
+    </a>
+</li>
+
+<li class="d-none">
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams">
+        <i class="mdi mdi-sticker-circle-outline"></i>
+        <span>Диаграммы</span>
+    </a>
+</li>
+
+<li>
+    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Index">
+        <i class="mdi mdi-engine"></i>
+        <span>Объекты</span>
     </a>
 </li>
 <li>
@@ -37,17 +50,11 @@
         <span>Выполненные шаги</span>
     </a>
 </li>
-<li class="d-none">
-    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="diagrams">
-        <i class="mdi mdi-sticker-circle-outline"></i>
-        <span>Диаграммы</span>
-    </a>
-</li>
-
 <li>
-    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Index">
-        <i class="mdi mdi-engine"></i>
-        <span>Объекты</span>
+    <a class="waves-effect" asp-area="" asp-controller="Business" asp-action="AlertsList">
+        <i class="mdi mdi-alert"></i>
+        <span id="menu_alerts" class="badge rounded-pill bg-danger float-end" style="display:none"></span>
+        <span>Уведомления</span>
     </a>
 </li>
 
@@ -71,12 +78,7 @@
     </a>
 </li>
 
-<li>
-    <a class=" waves-effect" asp-area="" asp-controller="Business" asp-action="Levels_Tree">
-        <i class="mdi mdi-graph-outline"></i>
-        <span>Структура</span>
-    </a>
-</li>
+
 
 <li>
     <a class="waves-effect" asp-area="" asp-controller="Files" asp-action="Index">
@@ -145,6 +147,7 @@
     </a>
 </li>
 
+
 @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
 {
     <li class="menu-title d-none">Администрирование</li>
@@ -205,6 +208,52 @@
         <span>Руководство</span>
     </a>
 </li>
+
+<li class="menu-title">Тестирование</li>
+<ul class="">
+
+    <li class="">
+        <a class=" waves-effect" asp-area="" asp-controller="Home" asp-action="TestTables">
+            <i class="mdi mdi-texture-box"></i>
+            <span>Тест Таблицы 1</span>
+        </a>
+    </li>
+
+    <li class="">
+        <a class=" waves-effect" asp-area="" asp-controller="Home" asp-action="TestTables2">
+            <i class="mdi mdi-texture-box"></i>
+            <span>Тест Таблицы 2</span>
+        </a>
+    </li>
+
+    <li class="">
+        <a class=" waves-effect" asp-area="" asp-controller="Home" asp-action="TestTables3">
+            <i class="mdi mdi-texture-box"></i>
+            <span>Тест Таблицы 3</span>
+        </a>
+    </li>
+
+    <li class="">
+        <a class=" waves-effect" asp-area="" asp-controller="Home" asp-action="TestTables4">
+            <i class="mdi mdi-texture-box"></i>
+            <span>Тест Таблицы 4</span>
+        </a>
+    </li>
+
+    <li class="">
+        <a class=" waves-effect" asp-area="" asp-controller="Home" asp-action="TestTables5">
+            <i class="mdi mdi-texture-box"></i>
+            <span>Тест Таблицы 5</span>
+        </a>
+    </li>
+
+    <li class="">
+        <a class=" waves-effect" asp-area="" asp-controller="Home" asp-action="TestTables6">
+            <i class="mdi mdi-texture-box"></i>
+            <span>Тест Таблицы 6</span>
+        </a>
+    </li>
+</ul>
 
 
 

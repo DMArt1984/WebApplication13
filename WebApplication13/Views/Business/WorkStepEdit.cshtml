@@ -125,39 +125,38 @@
                     <input type="number" id="TimezoneOffset" name="TimezoneOffset" class="form-control d-none" value="0" readonly />
 
                     @*<div class="col-12 pt-2">
-                    @if (ViewBag.Indexes != null)
-                    {
-                        <small>Новый установленный шаг:</small>
-                        <select class="form-select" name="Index" value="0" asp-items="listIndex"></select>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Шаги обслуживания не назначены</span>
-                        <input name="Index" class="form-control d-none" asp-for="@Model.Index" required="" />
-                    }
-                    </div>*@
+        @if (ViewBag.Indexes != null)
+        {
+            <small>Новый установленный шаг:</small>
+            <select class="form-select" name="Index" value="0" asp-items="listIndex"></select>
+        }
+        else
+        {
+            <span class="badge bg-danger">Шаги обслуживания не назначены</span>
+            <input name="Index" class="form-control d-none" asp-for="@Model.Index" required="" />
+        }
+        </div>*@
 
-                    <div class="col-12">
+                    <div class="col-12 pb-1">
                         <small>Название:</small>
                         <input type="text" class="form-control" name="Title" value="@Model.Title" required="" placeholder="Введите название" />
                     </div>
 
-                    <div class="col-12 col-lg-6 pt-2">
+                    <div class="col-12 pb-1">
                         <small>Статус:</small>
                         <select class="form-select" name="Status" value="0" asp-items="listStatus"></select>
                     </div>
 
-                    <hr />
-                    <div class="col-12 col-lg-6 pt-2">
+                    <div class="col-12 pb-1">
                         <small>Дата и время начала:</small>
                         <input id="datetime-local-input1" type="datetime-local" class="form-control" name="NewDT_Start" value="">
                     </div>
-                    <div class="col-12 col-lg-6 pt-2">
+                    <div class="col-12 pb-1">
                         <small>Дата и время окончания:</small>
                         <input id="datetime-local-input2" type="datetime-local" class="form-control" name="NewDT_Stop" value="">
                     </div>
 
-                    <div class="col-12 col-lg-6 pt-2">
+                    <div class="col-12">
                         <small>Сохранить изменения от имени сотрудника:</small>
                         @*<input id="email-input" type="email" class="form-control" name="NewUser" value="@Model.UserEmail">*@
                         <select class="form-select" name="NewUser" value="0" asp-items="listUsers"></select>

@@ -1,0 +1,246 @@
+﻿$(document).ready(function(){
+    // DataTable
+    var table = $("#datatable").DataTable({
+        language:{
+            emptyTable:  "Нет данных для отображения в таблице",
+            zeroRecords: "Записи не найдены",
+            lengthMenu:  "Показывать _MENU_ записей",
+            search:      "Поиск:",
+            info:        "Показаны записи с _START_ по _END_. Всего записей _TOTAL_",
+            infoEmpty:   "Нет записей",
+            infoFiltered:"(отфильтровано из _MAX_ записей)",
+            //подписи кнопок навигации по страницам
+            paginate:{
+                previous:"<i class='mdi mdi-chevron-left'>",
+                next:"<i class='mdi mdi-chevron-right'>"
+            },
+            //подписи в окне выбора фильтра
+            searchPanes: {
+                title: {
+                    _: 'Выбрано фильтров: %d шт.',
+                    0: 'Фильтры не выбраны'
+                },
+                collapseMessage: 'Свернуть панели',
+                showMessage: 'Развернуть панели',
+                clearMessage: 'Сбросить фильтры',
+                collapse: {0: 'Фильтр', _: 'Фильтр (%d)'},
+                emptyPanes: "Нет панелей для отображения. :/",
+                emptyMessage: "(пусто)"
+            }
+        },
+        drawCallback:function(){
+            $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+        },
+        //вкл/откл разбиения на страницы
+        paging: true,
+        //вкл/откл поля поиска
+        searching: true,
+        //вкл/откл строки информации внизу таблицы
+        info: true,
+        //вкл/откл сортировки столбцов
+        ordering: true,
+        //сохранения состояния таблицы при возврате на нее
+        stateSave: true,
+
+        retrieve: true,
+
+        //отключение сортировки отдельных столбцов
+        // "columns": [
+        //     {"orderable": false },
+        //     {"orderable": false },
+        //     null,
+        //     null,
+        //     null,
+        //     {"orderable": false },
+        //     {"orderable": false }
+        // ]
+
+        // searchPanes: {
+        //     //viewTotal: true,
+        //     //columns: [1, 3, 4]
+        //     collapse: {0: 'Search Options', _: 'Search Options (%d)'}
+        //  },
+      
+        // lengthMenu: [
+        //     [10, 25, 50, -1],
+        //     [10, 25, 50, 'все'],
+        // ],
+
+        buttons: [
+            {//Кнопка "Фильтр" 
+                extend: 'searchPanes', 
+                text: '<i class="fas fa-file-pdf"></i> Фильтр',
+                titleAttr: 'Фильтр',
+                config: {
+                    cascadePanes: false,
+                    //columns: [0, 1, 4]
+                    //clear: false
+                },
+            },
+        ],
+
+        dom: 'lBfrtip',
+        columnDefs: [
+            { "orderable": false, targets: -1 } //отключение сортировки последнего столбца
+            // {
+            //     searchPanes: {
+            //         show: true
+            //     },
+            //     targets: [1, 2, 3, 4]
+            // }
+        ]
+    });
+
+    //Отдельная группа кнопок
+    new $.fn.dataTable.Buttons( table, {
+        buttons: [
+            {//Кнопка PDF
+                extend: 'pdfHtml5',
+                text: '<i class="fas fa-file-pdf"></i> PDF',
+                titleAttr: 'Экспорт в PDF',
+                orientation: 'landscape',
+                download: 'open',
+                exportOptions: {
+                    columns: [ ':visible:not(:last-child)' ],
+                }
+            },
+            {//Кнопка CSV
+                extend: 'csvHtml5',
+                text: '<i class="fas fa-file-csv"></i> CSV',
+                titleAttr: 'Экспорт в CSV',
+                exportOptions: {
+                    columns: [ ':visible:not(:last-child)' ],
+                }
+            },
+        ]
+    } );
+
+
+    //Размещение кнопок в контейнере на странице
+    table.buttons(1, null).container().appendTo($('#test'));
+    table.buttons(0, null).container().appendTo($('#test_2'));
+
+    // // Apply the filter
+    // table.columns().every( function () {
+    //     var column = this;
+
+    //     $( 'input', this.footer() ).on( 'keyup change', function () {
+    //         column
+    //             .search( this.value )
+    //             .draw();
+    //     });
+    // });
+
+
+    // table.columns('.select-filter' ).every( function () {
+    //     var that = this;
+
+    //     // Create the select list and search operation
+    //     var select = $('<select />')
+    //         .appendTo(
+    //             this.footer()
+    //         )
+    //         .on( 'change', function () {
+    //             that
+    //                 .search( $(this).val() )
+    //                 .draw();
+    //         } );
+        
+    //     // Get the search data for the first column and add to the select list
+    //     this
+    //         .cache( 'search' )
+    //         .sort()
+    //         .unique()
+    //         .each( function ( d ) {
+    //             select.append( $('<option value="'+d+'">'+d+'</option>') );
+    //         } );
+    // });
+
+//     var a=$("#datatable-buttons").DataTable({
+//         lengthChange:!1,
+//         language:{
+//             paginate:{previous:"<i class='mdi mdi-chevron-left'>",
+//             next:"<i class='mdi mdi-chevron-right'>"}
+//         },
+//         drawCallback:function(){
+//             $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+//         },
+//         buttons:["copy","excel","pdf","colvis"]
+//     });
+//     a.buttons().container().appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
+//     $(".dataTables_length select").addClass("form-select form-select-sm"),
+//     $("#selection-datatable").DataTable({
+//         select:{style:"multi"},
+//         language:{
+//             paginate:{
+//                 previous:"<i class='mdi mdi-chevron-left'>",
+//                 next:"<i class='mdi mdi-chevron-right'>"}
+//         },
+//         drawCallback:function(){
+//             $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+//         }
+//     }),
+
+// $("#key-datatable").DataTable({
+//     keys:!0,
+//     language:{
+//         paginate:{
+//             previous:"<i class='mdi mdi-chevron-left'>",
+//             next:"<i class='mdi mdi-chevron-right'>"
+//         }
+//     },
+//     drawCallback:function(){
+//         $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+//     }
+// }),
+
+// a.buttons().container().appendTo("#datatable-buttons_wrapper .col-md-6:eq(0)"),
+// $(".dataTables_length select").addClass("form-select form-select-sm"),
+// $("#alternative-page-datatable").DataTable({
+//     pagingType:"full_numbers",
+//         drawCallback:function(){
+//             $(".dataTables_paginate > .pagination").addClass("pagination-rounded"),
+//             $(".dataTables_length select").addClass("form-select form-select-sm")
+//         }
+// }),
+// $("#scroll-vertical-datatable").DataTable({
+//     scrollY:"350px",
+//     scrollCollapse:!0,
+//     paging:!1,
+//     language:{
+//         paginate:{
+//             previous:"<i class='mdi mdi-chevron-left'>",
+//             next:"<i class='mdi mdi-chevron-right'>"
+//         }
+//     },
+//     drawCallback:function(){
+//         $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+//     }
+// }),
+// $("#complex-header-datatable").DataTable({
+//     language:{
+//         paginate:{
+//             previous:"<i class='mdi mdi-chevron-left'>",
+//             next:"<i class='mdi mdi-chevron-right'>"
+//         }
+//     },
+//     drawCallback:function(){
+//         $(".dataTables_paginate > .pagination").addClass("pagination-rounded"),
+//         $(".dataTables_length select").addClass("form-select form-select-sm")
+//     },
+//     columnDefs:[{visible:!1,targets:-1}]
+// }),
+// $("#state-saving-datatable").DataTable({
+//     stateSave:!0,
+//     language:{
+//         paginate:{
+//             previous:"<i class='mdi mdi-chevron-left'>",
+//             next:"<i class='mdi mdi-chevron-right'>"
+//         }
+//     },
+//     drawCallback:function(){
+//         $(".dataTables_paginate > .pagination").addClass("pagination-rounded"),
+//         $(".dataTables_length select").addClass("form-select form-select-sm")
+//     }
+// })
+});

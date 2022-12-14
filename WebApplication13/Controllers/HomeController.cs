@@ -186,7 +186,36 @@ namespace FactPortal.Controllers
             return View();
         }
 
-        
+        // Тестирование работы таблиц
+        public IActionResult TestTables()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables2()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables3()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables4()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables5()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables6()
+        {
+            return View();
+        }
 
 
     }
