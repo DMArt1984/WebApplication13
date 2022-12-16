@@ -18,7 +18,7 @@
         <div class="card-body">
             <div class="d-flex align-items-center">
                 <!-- left -->
-                @if (String.IsNullOrEmpty(icon))
+                @if (String.IsNullOrWhiteSpace(icon))
                 {
                     <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
                         <div size="220" color="@color" widthback="5" widthfront="7" class="circle">@percent</div>
@@ -36,16 +36,16 @@
                 }
                 <!-- right -->
                 <div class="flex-grow-1 overflow-hidden">
-                    @if (!String.IsNullOrEmpty(title))
+                    @if (!String.IsNullOrWhiteSpace(title))
                     {
                         <p class="mb-1">@title</p>
                     }
-                    @if (!String.IsNullOrEmpty(titleNext))
+                    @if (!String.IsNullOrWhiteSpace(titleNext))
                     {
                         <p class="mb-1">@titleNext</p>
                     }
                     <h5 class="mb-3">@value</h5>
-                    @if (!String.IsNullOrEmpty(alpha))
+                    @if (!String.IsNullOrWhiteSpace(alpha))
                     {
                         @if (alpha[0] == '-')
                         {

@@ -82,7 +82,7 @@ namespace FactPortal.Areas.Identity.Pages.Account.Manage
 
             // Получение компании пользователя
             var CompanyName = _httpContextAccessor.HttpContext.Request.Cookies["company"];
-            if (!String.IsNullOrEmpty(CompanyName))
+            if (!String.IsNullOrWhiteSpace(CompanyName))
             {
                 ViewData["MyCompanyName"] = CompanyName;
                 ViewData["Info"] = "none";

@@ -49,7 +49,7 @@ namespace FactPortal.Areas.Identity.Pages.Account
             {
 
                 // Установка строки подключения - 14.06.2022
-                //if (!String.IsNullOrEmpty(Input.NameConnection))
+                //if (!String.IsNullOrWhiteSpace(Input.NameConnection))
                 //{
                 //    ConnectionDBManager.NameConnection = Input.NameConnection;
                 //}

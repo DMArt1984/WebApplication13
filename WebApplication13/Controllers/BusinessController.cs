@@ -287,14 +287,14 @@ namespace FactPortal.Controllers
             };
 
             // Проверка названия
-            if (String.IsNullOrEmpty(ObjectTitle))
+            if (String.IsNullOrWhiteSpace(ObjectTitle))
             {
                 ModelState.AddModelError("ObjectTitle", $"Название не задано");
                 return View(outServiceObject);
             }
 
             // Проверка кода
-            if (String.IsNullOrEmpty(ObjectCode))
+            if (String.IsNullOrWhiteSpace(ObjectCode))
             {
                 ModelState.AddModelError("ObjectCode", $"Код не задан");
                 return View(outServiceObject);
@@ -366,7 +366,7 @@ namespace FactPortal.Controllers
             SObject.ObjectTitle = ObjectTitle;
             SObject.ObjectCode = ObjectCode;
 
-            if (!String.IsNullOrEmpty(Description))
+            if (!String.IsNullOrWhiteSpace(Description))
                 SObject.Description = Description;
 
             // Атрибут: Файлы
@@ -380,7 +380,7 @@ namespace FactPortal.Controllers
             
 
             // Добавление файлов
-            if (!String.IsNullOrEmpty(LoadFileId))
+            if (!String.IsNullOrWhiteSpace(LoadFileId))
             {
                 claimFiles.ClaimValue = Bank.AddItemToStringList(claimFiles.ClaimValue, ";", LoadFileId);
             }
@@ -396,7 +396,7 @@ namespace FactPortal.Controllers
             }
 
             // Удаление файлов
-            if (!String.IsNullOrEmpty(DelFileId))
+            if (!String.IsNullOrWhiteSpace(DelFileId))
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
@@ -422,7 +422,7 @@ namespace FactPortal.Controllers
             //{
             //    for (var i = 0; i < stepTitle.Length; i++)
             //    {
-            //        if (!String.IsNullOrEmpty(stepTitle[i]))
+            //        if (!String.IsNullOrWhiteSpace(stepTitle[i]))
             //        {
             //            var StepId = await AddNewStep(Id, i + 1, stepTitle[i], stepDescription[i]);
             //            // 1. Получить шаг
@@ -626,7 +626,7 @@ namespace FactPortal.Controllers
             alert.myUserId = (user != null) ? user.Id : "?";
 
             // Добавление файлов
-            if (!String.IsNullOrEmpty(LoadFileId))
+            if (!String.IsNullOrWhiteSpace(LoadFileId))
             {
                     alert.groupFilesId = Bank.AddItemToStringList(alert.groupFilesId, ";", LoadFileId);
             }
@@ -642,7 +642,7 @@ namespace FactPortal.Controllers
             }
 
             // Удаление файлов
-            if (!String.IsNullOrEmpty(DelFileId))
+            if (!String.IsNullOrWhiteSpace(DelFileId))
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
@@ -816,7 +816,7 @@ namespace FactPortal.Controllers
                 return NotFound();
 
             // 3. Изменение элемента
-            if (!String.IsNullOrEmpty(Title))
+            if (!String.IsNullOrWhiteSpace(Title))
                 step.Title = Title;
             step.Description = Description;
 
@@ -857,7 +857,7 @@ namespace FactPortal.Controllers
                 Id = newID,
                 ServiceObjectId = ServiceObjectId,
                 Index = Index,
-                Title = (!String.IsNullOrEmpty(Title)) ? Title : $"Шаг #{Index}",
+                Title = (!String.IsNullOrWhiteSpace(Title)) ? Title : $"Шаг #{Index}",
                 Description = Description,
                 groupFilesId = ""
             };
@@ -1215,8 +1215,8 @@ namespace FactPortal.Controllers
             var users2 = users1.Select(x => new
             {
                 x.Id,
-                Name = (String.IsNullOrEmpty(x.FullName)) ? x.UserName : $"{x.FullName} ({x.UserName})",
-                jobs = (x.jobs.Any()) ? x.jobs.Select(y => y.ClaimValue).Where(y => !String.IsNullOrEmpty(y)).Distinct().ToList() : new List<string>(),
+                Name = (String.IsNullOrWhiteSpace(x.FullName)) ? x.UserName : $"{x.FullName} ({x.UserName})",
+                jobs = (x.jobs.Any()) ? x.jobs.Select(y => y.ClaimValue).Where(y => !String.IsNullOrWhiteSpace(y)).Distinct().ToList() : new List<string>(),
                 roles = (x.roles.Any()) ? x.roles.Select(y => (NameRoles.Select(w => w.Id).Contains(y.RoleId)) ? NameRoles.FirstOrDefault(z => z.Id == y.RoleId).Name : "").Distinct().ToList() : new List<string>()
             });
             var usersOUT = users2.Select(x => ($"{x.Id}:{x.Name} {x.jobs.FirstOrDefault()}").Trim()).ToList();
@@ -1247,7 +1247,7 @@ namespace FactPortal.Controllers
             var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
 
             // Изменения произведены от имени другого пользователя
-            if (!String.IsNullOrEmpty(NewUser))
+            if (!String.IsNullOrWhiteSpace(NewUser))
             {
                 var new_user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == NewUser.ToLower() || x.Id == NewUser);
                 if (new_user != null && user != new_user)
@@ -1300,7 +1300,7 @@ namespace FactPortal.Controllers
                     DT_Start = DT_Start,
                     DT_Stop = DT_Stop,
                     Index = Index,
-                    Title = (!String.IsNullOrEmpty(Title)) ? Title : $"Шаг #{Index}",
+                    Title = (!String.IsNullOrWhiteSpace(Title)) ? Title : $"Шаг #{Index}",
                     Status = Status,
                     myUserId = user.Id,
                     groupFilesId = ""
@@ -1326,19 +1326,19 @@ namespace FactPortal.Controllers
             workStep.Status = Status;
             workStep.Index = Index;
 
-            if (!String.IsNullOrEmpty(Title))
+            if (!String.IsNullOrWhiteSpace(Title))
                 workStep.Title = Title;
 
-            workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
-            workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
-            if (!String.IsNullOrEmpty(workStep.DT_Stop) && String.IsNullOrEmpty(workStep.DT_Start))
+            workStep.DT_Start = (!String.IsNullOrWhiteSpace(DT_Start)) ? DT_Start : workStep.DT_Start;
+            workStep.DT_Stop = (!String.IsNullOrWhiteSpace(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
+            if (!String.IsNullOrWhiteSpace(workStep.DT_Stop) && String.IsNullOrWhiteSpace(workStep.DT_Start))
                 workStep.DT_Start = workStep.DT_Stop;
 
 
             workStep.myUserId = (user != null) ? user.Id : "?";
 
             // Добавление файлов
-            if (!String.IsNullOrEmpty(LoadFileId))
+            if (!String.IsNullOrWhiteSpace(LoadFileId))
             {
                 workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", LoadFileId);
             }
@@ -1354,7 +1354,7 @@ namespace FactPortal.Controllers
             }
 
             // Удаление файлов
-            if (!String.IsNullOrEmpty(DelFileId))
+            if (!String.IsNullOrWhiteSpace(DelFileId))
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
@@ -1472,7 +1472,7 @@ namespace FactPortal.Controllers
         //    if (Id < 0)
         //        Id = 0;
         //    Name = Bank.NormPosName(Name);
-        //    if (String.IsNullOrEmpty(Name))
+        //    if (String.IsNullOrWhiteSpace(Name))
         //        return RedirectToAction("Levels", new { Message = $"Новое название позиции ID {Id} не задано" });
 
         //    if (LinkId < 0 || LinkId == Id)
@@ -1526,7 +1526,7 @@ namespace FactPortal.Controllers
             if (Id < 0)
                 Id = 0;
             Name = Bank.NormPosName(Name);
-            if (String.IsNullOrEmpty(Name))
+            if (String.IsNullOrWhiteSpace(Name))
                 return RedirectToAction("Levels_Tree", new { Message = $"Новое название позиции ID {Id} не задано" });
 
             if (LinkId == Id)
@@ -1634,7 +1634,7 @@ namespace FactPortal.Controllers
             {
                 var PS = Paths_String.FirstOrDefault(x => x.Key == item.Id).Value;
                 var PI = ""; // Paths_Id.FirstOrDefault(x => x.Key == item.Id).Value;
-                if (!String.IsNullOrEmpty(PS))
+                if (!String.IsNullOrWhiteSpace(PS))
                 {
                     int Objects = ClaimsPos.Count(x => x == item.Id);
                     EL.Add(new EditLevel { IT = item, PathString = (PS != null) ? PS : "", PathId = (PI != null) ? PI : "", Objects = Objects });
@@ -2109,7 +2109,7 @@ namespace FactPortal.Controllers
         // Крошки: Объект обслуживания
         private MvcBreadcrumbNode GetBreadObj(int ServiceObjectId = 0, string Title = "")
         {
-            return new MvcBreadcrumbNode("SOInfo", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Объект обслуживания")
+            return new MvcBreadcrumbNode("SOInfo", "Business", (!String.IsNullOrWhiteSpace(Title)) ? Title : "Объект обслуживания")
             {
                 Parent = GetBreadMain(),
                 RouteValues = new { Id = ServiceObjectId }
@@ -2129,7 +2129,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadAlertsList_Filter(int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("AlertsList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Уведомления от сотрудников")
+            return new MvcBreadcrumbNode("AlertsList", "Business", (!String.IsNullOrWhiteSpace(Title)) ? Title : "Уведомления от сотрудников")
             {
                 Parent = (SObject != null) ? GetBreadObj(ServiceObjectId, (SObject != null) ? SObject.ObjectTitle : "") : GetBreadMain(),
                 RouteValues = new { ServiceObjectId = ServiceObjectId }
@@ -2149,7 +2149,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadStepsList_Filter(int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("StepsList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Шаги объекта")
+            return new MvcBreadcrumbNode("StepsList", "Business", (!String.IsNullOrWhiteSpace(Title)) ? Title : "Шаги объекта")
             {
                 Parent = (SObject != null) ? GetBreadObj(ServiceObjectId, (SObject != null) ? SObject.ObjectTitle : "") : GetBreadMain(),
                 RouteValues = new { ServiceObjectId = ServiceObjectId }
@@ -2169,7 +2169,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWorksList_Filter(int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("WorksList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Статистика обслуживания")
+            return new MvcBreadcrumbNode("WorksList", "Business", (!String.IsNullOrWhiteSpace(Title)) ? Title : "Статистика обслуживания")
             {
                 Parent = (SObject != null) ? GetBreadObj(ServiceObjectId, (SObject != null) ? SObject.ObjectTitle : "") : GetBreadMain(),
                 RouteValues = new { ServiceObjectId = ServiceObjectId }
@@ -2179,7 +2179,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWork(int WorkId = 0, int ServiceObjectId = 0, string Title = "")
         {
             var SObject = _business.ServiceObjects.FirstOrDefault(x => x.Id == ServiceObjectId);
-            return new MvcBreadcrumbNode("WorkInfo", "Business", (!String.IsNullOrEmpty(Title)) ? Title : $"Обслуживание ID {WorkId}")
+            return new MvcBreadcrumbNode("WorkInfo", "Business", (!String.IsNullOrWhiteSpace(Title)) ? Title : $"Обслуживание ID {WorkId}")
             {
                 Parent = (SObject != null) ? GetBreadWorksList_Filter(SObject.Id, "Статистика обслуживания") : GetBreadWorksList_All(),
                 RouteValues = new { Id = WorkId, ServiceObjectId = ServiceObjectId }
@@ -2199,7 +2199,7 @@ namespace FactPortal.Controllers
         private MvcBreadcrumbNode GetBreadWorkStepsList_Filter(int WorkId, int ServiceObjectId = 0, string Title = "")
         {
             var work = _business.Works.FirstOrDefault(x => x.Id == WorkId);
-            return new MvcBreadcrumbNode("WorkStepsList", "Business", (!String.IsNullOrEmpty(Title)) ? Title : "Выполненные шаги")
+            return new MvcBreadcrumbNode("WorkStepsList", "Business", (!String.IsNullOrWhiteSpace(Title)) ? Title : "Выполненные шаги")
             {
                 Parent = (work != null) ? GetBreadWork(WorkId, ServiceObjectId, $"Обслуживание ID {@WorkId}") : GetBreadWorksList_All(),
                 RouteValues = new { WorkId = WorkId, ServiceObjectId = ServiceObjectId }
@@ -2215,7 +2215,7 @@ namespace FactPortal.Controllers
         private void WorkStepFile(Step step, string LoadFileId = null, string DelFileId = null)
         {
             // Добавление файлов
-            if (!String.IsNullOrEmpty(LoadFileId))
+            if (!String.IsNullOrWhiteSpace(LoadFileId))
             {
                 step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", LoadFileId);
             }
@@ -2231,7 +2231,7 @@ namespace FactPortal.Controllers
             }
 
             // Удаление файлов
-            if (!String.IsNullOrEmpty(DelFileId))
+            if (!String.IsNullOrWhiteSpace(DelFileId))
             {
                 foreach (var item in DelFileId.Split(';'))
                 {
@@ -2252,7 +2252,7 @@ namespace FactPortal.Controllers
                 if (uploadedFile != null)
                 {
                     // путь к папке (/Files/Images/)
-                    if (String.IsNullOrEmpty(Folders))
+                    if (String.IsNullOrWhiteSpace(Folders))
                         Folders = "/Files/";
                     if (Folders.PadLeft(1) != "/")
                         Folders = "/" + Folders;
@@ -2360,7 +2360,7 @@ namespace FactPortal.Controllers
         // Удалить группу файлов
         private bool DeleteFiles(string Ids)
         {
-            if (!String.IsNullOrEmpty(Ids))
+            if (!String.IsNullOrWhiteSpace(Ids))
             {
                 foreach (var item in Ids.Split(";"))
                 {
@@ -2380,7 +2380,7 @@ namespace FactPortal.Controllers
                 {
                     for (var i = 0; i < files.Length; i++)
                     {
-                        if (!String.IsNullOrEmpty(files[i]))
+                        if (!String.IsNullOrWhiteSpace(files[i]))
                         {
                             ChangeDescriptionFile(Convert.ToInt32(files[i]), descriptions[i]);
                         }
@@ -2421,7 +2421,7 @@ namespace FactPortal.Controllers
         {
             try
             {
-                if (!String.IsNullOrEmpty(Ids))
+                if (!String.IsNullOrWhiteSpace(Ids))
                     Ids += ";";
 
                 switch (category)
@@ -2449,7 +2449,7 @@ namespace FactPortal.Controllers
                 }
 
                 // ID для удаления
-                if (!String.IsNullOrEmpty(DelIds))
+                if (!String.IsNullOrWhiteSpace(DelIds))
                     Ids = Bank.DelItemToStringList(Ids, ";", DelIds);
 
                 // Выборка файлов

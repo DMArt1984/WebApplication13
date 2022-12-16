@@ -16,7 +16,7 @@
                 </span>
                 <a class="" target="_blank" href=@Html.Partial("_requestPathBase", file.Path.Replace(" ", "%20")) )>
                     <!--<i class="Html.Partial("_FileIcon", file.Split(";").First()) fa-1x align-middle text-secondary"></i>-->
-                    @if (String.IsNullOrEmpty(@file.Description))
+                    @if (String.IsNullOrWhiteSpace(@file.Description))
                     {
                         @file.Name
                     }

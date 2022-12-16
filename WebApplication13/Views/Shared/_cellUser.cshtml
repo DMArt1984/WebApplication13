@@ -1,10 +1,10 @@
 ﻿@model ApplicationUser
 
 
-@if (!String.IsNullOrEmpty(Model.Email))
+@if (!String.IsNullOrWhiteSpace(Model.Email))
 {
     <a asp-controller="Admin" asp-action="Profile" asp-route-Email="@Model.Email">
-        @if (!String.IsNullOrEmpty(Model.UserName))
+        @if (!String.IsNullOrWhiteSpace(Model.UserName))
         {
             @Model.UserName <small>(@Model.Email)</small>
         }
@@ -16,7 +16,7 @@
 }
 else
 {
-    if (!String.IsNullOrEmpty(Model.UserName))
+    if (!String.IsNullOrWhiteSpace(Model.UserName))
     {
         @Model.UserName
     }

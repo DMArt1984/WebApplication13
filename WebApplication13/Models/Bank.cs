@@ -11,6 +11,9 @@ namespace FactPortal.Models
 
         public static int nextID(List<int> ids)
         {
+            if (ids == null)
+                return 1;
+
             ids.Sort();
             var Id = 1;
             for (int i = 0; i < ids.Count; i++)
@@ -170,7 +173,7 @@ namespace FactPortal.Models
         // Преобразование строки из 2022-01-07T08:09 в YYYY.MM.DD HH:MM:SS
         public static string CalendarToDateTimeYMD(string SDT)
         {
-            if (String.IsNullOrEmpty(SDT))
+            if (String.IsNullOrWhiteSpace(SDT))
                 return "";
             
             if (SDT.Length !=16)
@@ -194,7 +197,7 @@ namespace FactPortal.Models
         {
             try
             {
-                if (String.IsNullOrEmpty(SDT))
+                if (String.IsNullOrWhiteSpace(SDT))
                     return "";
 
                 if (SDT.Length == 7)
@@ -287,16 +290,16 @@ namespace FactPortal.Models
         // Проверить дату на вхождение в диапазон  2020.10.25
         public static bool DateInRange(string Date="", string DateFrom="", string DateTo="")
         {
-            if (String.IsNullOrEmpty(Date))
+            if (String.IsNullOrWhiteSpace(Date))
                 return false;
 
-            if (String.IsNullOrEmpty(DateFrom) && String.IsNullOrEmpty(DateTo))
+            if (String.IsNullOrWhiteSpace(DateFrom) && String.IsNullOrWhiteSpace(DateTo))
                 return true;
 
-            if (String.IsNullOrEmpty(DateFrom))
+            if (String.IsNullOrWhiteSpace(DateFrom))
                 return GetDTfromStringYMD(Date) <= GetDTfromStringYMD(DateTo);
 
-            if (String.IsNullOrEmpty(DateTo))
+            if (String.IsNullOrWhiteSpace(DateTo))
                 return GetDTfromStringYMD(Date) >= GetDTfromStringYMD(DateFrom);
 
             var OUT = GetDTfromStringYMD(Date) >= GetDTfromStringYMD(DateFrom) && GetDTfromStringYMD(Date) <= GetDTfromStringYMD(DateTo);
@@ -306,7 +309,7 @@ namespace FactPortal.Models
         // Получить дату из строки YYYY.MM.DD
         public static DateTime GetDTfromStringYMD(string SDT, int OffsetMinutes = 0)
         {
-            if (String.IsNullOrEmpty(SDT) || String.IsNullOrWhiteSpace(SDT))
+            if (String.IsNullOrWhiteSpace(SDT))
                 return DateTime.UtcNow;
 
             try
@@ -338,7 +341,7 @@ namespace FactPortal.Models
         {
             try
             {
-                if (String.IsNullOrEmpty(SDT))
+                if (String.IsNullOrWhiteSpace(SDT))
                     return DateTime.UtcNow;
 
 
@@ -374,7 +377,7 @@ namespace FactPortal.Models
         public static bool DTinValues(string SDT, int year, int month)
         {
             return true;
-            if (String.IsNullOrEmpty(SDT) || String.IsNullOrWhiteSpace(SDT))
+            if (String.IsNullOrWhiteSpace(SDT) || String.IsNullOrWhiteSpace(SDT))
                 return false;
             
             var Big = SDT.Split(' ');
@@ -407,13 +410,13 @@ namespace FactPortal.Models
         // Время и дата начала работы
         public static string GetWork_DTStart(int Status, string DT = "")
         {
-            return (Status == 5) ? (String.IsNullOrEmpty(DT)) ? NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString()): DT : "";
+            return (Status == 5) ? (String.IsNullOrWhiteSpace(DT)) ? NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString()): DT : "";
         }
 
         // Время и дата окончания работы
         public static string GetWork_DTStop(int Status, string DT = "")
         {
-            return (Status == 9) ? (String.IsNullOrEmpty(DT)) ? NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString()) : DT : "";
+            return (Status == 9) ? (String.IsNullOrWhiteSpace(DT)) ? NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString()) : DT : "";
         }
 
         // Получить минимальную дату и время
@@ -469,7 +472,7 @@ namespace FactPortal.Models
                 if (myList.Contains(item) == false)
                     myList.Add(item);
             }
-            myList.RemoveAll(x => String.IsNullOrEmpty(x));
+            myList.RemoveAll(x => String.IsNullOrWhiteSpace(x));
             return String.Join(Delim, myList.Distinct());
         }
 
@@ -481,7 +484,7 @@ namespace FactPortal.Models
             {
                 myList.Remove(item);
             }
-            myList.RemoveAll(x => String.IsNullOrEmpty(x));
+            myList.RemoveAll(x => String.IsNullOrWhiteSpace(x));
             return String.Join(Delim, myList.Distinct());
         }
 
@@ -509,12 +512,12 @@ namespace FactPortal.Models
 
         public static string inf_SSOne(Dictionary<string, string> SS, string Ids)
         {
-            return (String.IsNullOrEmpty(Ids)) ? "" : String.Join(';', Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : ""));
+            return (String.IsNullOrWhiteSpace(Ids)) ? "" : String.Join(';', Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : ""));
         }
 
         public static List<string> inf_SSList(Dictionary<string, string> SS, string Ids, bool NoEmpty = false)
         {
-            if (String.IsNullOrEmpty(Ids))
+            if (String.IsNullOrWhiteSpace(Ids))
                 return new List<string>();
 
             if (Ids.Split(';').Any() == false)
@@ -523,16 +526,16 @@ namespace FactPortal.Models
             var OUT = Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "");
             if (NoEmpty)
             {
-                OUT = OUT.Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                OUT = OUT.Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
             }
             return OUT.ToList();
 
-            //return (Ids == null) ? new List<string>() : (Ids.Split(';').Count()==0) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "").ToList(); // Where(x => !String.IsNullOrEmpty(x)).Distinct()
+            //return (Ids == null) ? new List<string>() : (Ids.Split(';').Count()==0) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(z)) ? SS[z] : "").ToList(); // Where(x => !String.IsNullOrWhiteSpace(x)).Distinct()
         }
 
         public static List<myFiles> inf_SSFiles(List<myFiles> Files, string Ids)
         {
-            if (String.IsNullOrEmpty(Ids))
+            if (String.IsNullOrWhiteSpace(Ids))
                 return new List<myFiles>();
 
             if (Ids.Split(';').Any() == false)
@@ -548,12 +551,12 @@ namespace FactPortal.Models
             if (SL == null)
                 return null;
 
-            return SL.Where(x => !String.IsNullOrEmpty(x)).Distinct().ToList();
+            return SL.Where(x => !String.IsNullOrWhiteSpace(x)).Distinct().ToList();
         }
 
         public static List<string> inf_ISList(Dictionary<int, string> SS, string Ids)
         {
-            return (Ids == null) ? new List<string>() : (Ids.Split(';').Any() == false) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(Convert.ToInt32(z))) ? SS[Convert.ToInt32(z)] : "").ToList(); //Where(x => !String.IsNullOrEmpty(x)).Distinct()
+            return (Ids == null) ? new List<string>() : (Ids.Split(';').Any() == false) ? new List<string>() : Ids.Split(';').Select(z => z = (SS.ContainsKey(Convert.ToInt32(z))) ? SS[Convert.ToInt32(z)] : "").ToList(); //Where(x => !String.IsNullOrWhiteSpace(x)).Distinct()
         }
 
         // --------------------------------------------------------------------------------
@@ -606,7 +609,7 @@ namespace FactPortal.Models
 
         public static Dictionary<string, string> GetDicFiles(List<myFiles> Files)
         {
-            return Files.ToDictionary(x => x.Id.ToString(), y => y.Path + ";" + (String.IsNullOrEmpty(y.Description) ? y.Path.Split("/").Last() : y.Description));
+            return Files.ToDictionary(x => x.Id.ToString(), y => y.Path + ";" + (String.IsNullOrWhiteSpace(y.Description) ? y.Path.Split("/").Last() : y.Description));
         }
 
         public static Dictionary<int, int> GetDicPos(List<ObjectClaim> Claims)

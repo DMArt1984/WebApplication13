@@ -100,7 +100,7 @@ namespace FactPortal.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 // Установка строки подключения - 14.06.2022
-                //if (!String.IsNullOrEmpty(Input.NameConnection))
+                //if (!String.IsNullOrWhiteSpace(Input.NameConnection))
                 //{
                 //    Response.Cookies.Append("connname", Input.NameConnection, new Microsoft.AspNetCore.Http.CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
                 //    _httpContextAccessor.HttpContext.Request.Headers["db"] = Input.NameConnection;
@@ -121,7 +121,7 @@ namespace FactPortal.Areas.Identity.Pages.Account
 
                         // Добавляем Cookies с именем компании (базы данных)
                         string company = await GetValueUserClaim(ituser, "Company");
-                        if (!String.IsNullOrEmpty(company))
+                        if (!String.IsNullOrWhiteSpace(company))
                             Response.Cookies.Append("company", company, new Microsoft.AspNetCore.Http.CookieOptions { Expires = DateTimeOffset.UtcNow.AddMonths(1) });
 
                         return LocalRedirect(returnUrl);

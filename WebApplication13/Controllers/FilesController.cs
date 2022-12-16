@@ -41,7 +41,7 @@ namespace FactPortal.Controllers
             {
                 // Получение компании пользователя
                 var CompanyName = _httpContextAccessor.HttpContext.Request.Cookies["company"];
-                if (!String.IsNullOrEmpty(CompanyName))
+                if (!String.IsNullOrWhiteSpace(CompanyName))
                 {
                     ViewData["MyCompanyName"] = CompanyName;
                 }
@@ -67,7 +67,7 @@ namespace FactPortal.Controllers
                 if (uploadedFile != null)
                 {
                     // путь к папке (/Files/Images/)
-                    if (String.IsNullOrEmpty(Folders))
+                    if (String.IsNullOrWhiteSpace(Folders))
                         Folders = "/Files/";
                     if (Folders.PadLeft(1) != "/")
                         Folders = "/" + Folders;
@@ -114,10 +114,10 @@ namespace FactPortal.Controllers
             if (File == null)
                 return NotFound();
 
-            if (!String.IsNullOrEmpty(Name))
+            if (!String.IsNullOrWhiteSpace(Name))
                 File.Name = Name;
 
-            if (!String.IsNullOrEmpty(Description))
+            if (!String.IsNullOrWhiteSpace(Description))
                 File.Description = Description;
 
             _business.SaveChanges();
@@ -206,7 +206,7 @@ namespace FactPortal.Controllers
             {
                 // Получение компании пользователя
                 var CompanyName = _httpContextAccessor.HttpContext.Request.Cookies["company"];
-                if (!String.IsNullOrEmpty(CompanyName))
+                if (!String.IsNullOrWhiteSpace(CompanyName))
                 {
                     ViewData["MyCompanyName"] = CompanyName;
                 }

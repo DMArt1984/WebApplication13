@@ -240,7 +240,7 @@ namespace FactPortal.Controllers
             try
             {
                 // получение пользователя для профиля
-                var user = (String.IsNullOrEmpty(Email)) ? await _userManager.FindByIdAsync(_userManager.GetUserId(User)).ConfigureAwait(false) : await _userManager.FindByEmailAsync(Email).ConfigureAwait(false);
+                var user = (String.IsNullOrWhiteSpace(Email)) ? await _userManager.FindByIdAsync(_userManager.GetUserId(User)).ConfigureAwait(false) : await _userManager.FindByEmailAsync(Email).ConfigureAwait(false);
                 if (user == null)
                     return RedirectToAction("Index");
 
@@ -447,7 +447,7 @@ namespace FactPortal.Controllers
         {
             user = (user == null) ? GetMe() : user;
             var listCompany = _userManager.GetClaimsAsync(user).Result.Where(y => y.Type.ToLower() == "company").Select(z => z.Value).Distinct().ToList();
-            listCompany.RemoveAll(s => String.IsNullOrEmpty(s));
+            listCompany.RemoveAll(s => String.IsNullOrWhiteSpace(s));
             return listCompany;
         }
 

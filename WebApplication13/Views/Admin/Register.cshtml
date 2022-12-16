@@ -38,7 +38,7 @@
         <form method="post">
 
             <!-- Company -->
-            @if (String.IsNullOrEmpty(Model.Company))
+            @if (String.IsNullOrWhiteSpace(Model.Company))
             {
                 <div class="form-group mb-3 @viewCompany">
                     <input asp-for="@Model.Company" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Company)" />

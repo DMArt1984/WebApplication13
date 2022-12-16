@@ -50,6 +50,10 @@ namespace FactPortal.Controllers
         {
             try {
 
+                //TextDateTime TEMP1 = new TextDateTime("2020.11.12 15:16");
+                //var X = TEMP1.Equals(new TextDateTime("2020.11.12 15:17"));
+                //var X1 = TEMP1.ToString();
+
                 var usersCount = _context.Users.Count(); // количество пользователей
                 // Текущий пользователь
                 var user = _context.Users.FirstOrDefault(x => x.UserName.ToLower() == HttpContext.User.Identity.Name.ToLower());
@@ -213,6 +217,16 @@ namespace FactPortal.Controllers
         }
 
         public IActionResult TestTables6()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables7()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables8()
         {
             return View();
         }

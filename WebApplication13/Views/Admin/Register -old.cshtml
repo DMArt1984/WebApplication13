@@ -16,7 +16,7 @@
             <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
             <form method="post">
                
-                @if (String.IsNullOrEmpty(Model.Company))
+                @if (String.IsNullOrWhiteSpace(Model.Company))
                 {
                     <div class="form-group mb-3 @viewCompany">
                         <input asp-for="@Model.Company" class="form-control" required="" placeholder="@Html.DisplayNameFor(m => m.Company)" />

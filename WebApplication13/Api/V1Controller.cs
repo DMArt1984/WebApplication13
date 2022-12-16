@@ -84,7 +84,7 @@ namespace FactPortal.Api
         // Получить пользователя по логину и паролю
         private async Task<ApplicationUser> getUser_fromPassword(string login, string password)
         {
-            if (!String.IsNullOrEmpty(login))
+            if (!String.IsNullOrWhiteSpace(login))
             {
                 var user = (login.Contains("@")) ? await _userManager.FindByEmailAsync(login).ConfigureAwait(false) : await _userManager.FindByNameAsync(login).ConfigureAwait(false);
                 if (user != null)
@@ -100,7 +100,7 @@ namespace FactPortal.Api
         // Получить пользователя по логину и токену
         private async Task<ApplicationUser> getUser_fromToken(string login, string token)
         {
-            if (!String.IsNullOrEmpty(login))
+            if (!String.IsNullOrWhiteSpace(login))
             {
                 var user = (login.Contains("@")) ? await _userManager.FindByEmailAsync(login).ConfigureAwait(false) : await _userManager.FindByNameAsync(login).ConfigureAwait(false);
                 if (user != null)
@@ -151,7 +151,7 @@ namespace FactPortal.Api
                 //var unAllNames = _context.Users.Select(x => x.UserName); // имена всех пользователей
                 var uUsers = from u in _context.Users select new { Id = u.Id, UserName = u.UserName};
             
-                if (!String.IsNullOrEmpty(role)) // если нужны пользователи только заданной роли
+                if (!String.IsNullOrWhiteSpace(role)) // если нужны пользователи только заданной роли
                 {
                     var uRoles = from r in _context.Roles select new { Id = r.Id, Name = r.Name, NormName = r.NormalizedName };
                     var uUserRole = from x in _context.UserRoles select new { UserId = x.UserId, RoleId = x.RoleId };
@@ -173,7 +173,7 @@ namespace FactPortal.Api
         public async Task<JsonResult> Enter([FromHeader] string login = "", [FromHeader] string password = "")
         {
             try {
-                if (!String.IsNullOrEmpty(login) && !String.IsNullOrEmpty(password))
+                if (!String.IsNullOrWhiteSpace(login) && !String.IsNullOrWhiteSpace(password))
                 { 
                     ApplicationUser user = await getUser_fromPassword(login, password).ConfigureAwait(false);
                     if (user != null)
@@ -237,7 +237,7 @@ namespace FactPortal.Api
         [HttpGet("user/newpassword")]
         public async Task<JsonResult> Enter([FromHeader] string login = "", [FromHeader] string curPassword = "", [FromHeader] string newPassword = "")
         {
-            if (!String.IsNullOrEmpty(login) && !String.IsNullOrEmpty(curPassword) && !String.IsNullOrEmpty(curPassword))
+            if (!String.IsNullOrWhiteSpace(login) && !String.IsNullOrWhiteSpace(curPassword) && !String.IsNullOrWhiteSpace(curPassword))
             {
                 ApplicationUser user = await getUser_fromPassword(login, curPassword).ConfigureAwait(false);
                 if (user != null)
@@ -255,7 +255,7 @@ namespace FactPortal.Api
         public async Task<JsonResult> Recovery( [FromHeader] string Email = "")
         {
             try {
-                if (!String.IsNullOrEmpty(Email))
+                if (!String.IsNullOrWhiteSpace(Email))
                 {
                     var infoUserEmail = new { Result = 0, Message = "Инструкции придут на указанную почту", Email };
                     var user = await _userManager.FindByEmailAsync(Email).ConfigureAwait(false);
@@ -337,16 +337,16 @@ namespace FactPortal.Api
         {
             //try
             //{
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // 1) список объектов по коду (или все)
-                var SObjects = _business.ServiceObjects.Where(x => (x.ObjectCode.Contains(Code) == true || String.IsNullOrEmpty(Code)));
+                var SObjects = _business.ServiceObjects.Where(x => (x.ObjectCode.Contains(Code) == true || String.IsNullOrWhiteSpace(Code)));
                 if (SObjects == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // 2) фильтр на атрибуты
-                if (!String.IsNullOrEmpty(FilterClaim))
+                if (!String.IsNullOrWhiteSpace(FilterClaim))
                 {
                     SObjects = SObjects.Where(x => x.Claims.Any());
                     if (SObjects == null)
@@ -359,7 +359,7 @@ namespace FactPortal.Api
                 }
 
                 // 3) фильтрация по позиции
-                if (!String.IsNullOrEmpty(FilterPosition))
+                if (!String.IsNullOrWhiteSpace(FilterPosition))
                 {
                     List<int> positions = new List<int>();
                     Dictionary<int, int> ItLevels = new Dictionary<int, int>();
@@ -378,7 +378,7 @@ namespace FactPortal.Api
                 }
 
                 //
-                if (!String.IsNullOrEmpty(ViewClaim))
+                if (!String.IsNullOrWhiteSpace(ViewClaim))
                     ViewClaim += ";position";
 
                 // 4) Словари
@@ -394,10 +394,10 @@ namespace FactPortal.Api
                 var alerts = _business.Alerts.ToList();
                 var claims = _business.Claims.ToList();
 
-                var ListView = (!String.IsNullOrEmpty(ViewClaim)) ? ViewClaim.Split(';').Select(x => x.ToLower()) : null; // список атрибутов, которые необходимо оставить
+                var ListView = (!String.IsNullOrWhiteSpace(ViewClaim)) ? ViewClaim.Split(';').Select(x => x.ToLower()) : null; // список атрибутов, которые необходимо оставить
                 var SObjects2 = SObjects.ToList().Select(m => new
                 { m.Id, m.ObjectTitle, m.ObjectCode, m.Description,
-                    Claims = claims.Where(w => w.ServiceObjectId == m.Id).Select(w => new { Type = w.ClaimType, Value = w.ClaimValue }).Where(u => String.IsNullOrEmpty(ViewClaim) || ListView.Contains(u.Type.ToLower())).ToList(),
+                    Claims = claims.Where(w => w.ServiceObjectId == m.Id).Select(w => new { Type = w.ClaimType, Value = w.ClaimValue }).Where(u => String.IsNullOrWhiteSpace(ViewClaim) || ListView.Contains(u.Type.ToLower())).ToList(),
                     Alerts = alerts.Where(k => k.ServiceObjectId == m.Id && k.Status != 9).Select(j => new {
                         Id = j.Id,
                         ServiceObjectId = j.ServiceObjectId,
@@ -478,10 +478,10 @@ namespace FactPortal.Api
         {
             try { 
 
-                if (String.IsNullOrEmpty(db) || (Id==0 && String.IsNullOrEmpty(Code)))
+                if (String.IsNullOrWhiteSpace(db) || (Id==0 && String.IsNullOrWhiteSpace(Code)))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var SObject = _business.ServiceObjects.FirstOrDefault(x => (x.Id == Id || Id==0) && (x.ObjectCode == Code || String.IsNullOrEmpty(Code)));
+                var SObject = _business.ServiceObjects.FirstOrDefault(x => (x.Id == Id || Id==0) && (x.ObjectCode == Code || String.IsNullOrWhiteSpace(Code)));
                 if (SObject == null)
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
@@ -554,7 +554,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // список объектов
@@ -581,7 +581,7 @@ namespace FactPortal.Api
                     ).ToList();
 
                 // фильтрация по позиции
-                if (!String.IsNullOrEmpty(FilterPosition))
+                if (!String.IsNullOrWhiteSpace(FilterPosition))
                 {
                     List<int> positions = new List<int>();
                     Dictionary<int, int> ItLevels = new Dictionary<int, int>();
@@ -612,7 +612,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(OldCode) || String.IsNullOrEmpty(NewCode))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(OldCode) || String.IsNullOrWhiteSpace(NewCode))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // объект по коду
@@ -643,7 +643,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code) || String.IsNullOrEmpty(Title))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Code) || String.IsNullOrWhiteSpace(Title))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // объект по коду
@@ -669,7 +669,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Code))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // объект по коду
@@ -699,7 +699,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Title) || String.IsNullOrEmpty(Code))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Title) || String.IsNullOrWhiteSpace(Code))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var Old_SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code || x.ObjectTitle == Title);
@@ -724,7 +724,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Code))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
@@ -789,7 +789,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code) || String.IsNullOrEmpty(Type) || String.IsNullOrEmpty(Value))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Code) || String.IsNullOrWhiteSpace(Type) || String.IsNullOrWhiteSpace(Value))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
@@ -799,7 +799,7 @@ namespace FactPortal.Api
                 var ItId = SObject.Id;
 
                 Dictionary<string, string> TV = new Dictionary<string, string>();
-                if (!String.IsNullOrEmpty(Separator))
+                if (!String.IsNullOrWhiteSpace(Separator))
                 {
                     string[] mType = Type.Split(Separator);
                     string[] mValue = Value.Split(Separator);
@@ -844,7 +844,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code) || String.IsNullOrEmpty(Type))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Code) || String.IsNullOrWhiteSpace(Type))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var SObject = _business.ServiceObjects.FirstOrDefault(x => x.ObjectCode == Code);
@@ -878,7 +878,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var SOClaims = _business.Claims.Select(x => x.ClaimType).Distinct().OrderBy(s => s);
@@ -900,10 +900,10 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var listIds = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
+                var listIds = Ids.Split(';').Where(x => !String.IsNullOrWhiteSpace(x) && x != "0").Distinct();
                 return new JsonResult(new { Result = 0, Positions = _business.Levels.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Any() == false).OrderBy(x => x.Id).ToList() }, jsonOptions);
             }
             catch (Exception ex)
@@ -948,7 +948,7 @@ namespace FactPortal.Api
             try
             {
                 Name = Bank.NormPosName(Name);
-                if (String.IsNullOrEmpty(Name))
+                if (String.IsNullOrWhiteSpace(Name))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var IsPos = _business.Levels.Where(x => x.Name == Name && x.LinkId == LinkId).ToList();
@@ -973,7 +973,7 @@ namespace FactPortal.Api
             try
             {
                 Name = Bank.NormPosName(Name);
-                if (String.IsNullOrEmpty(Name))
+                if (String.IsNullOrWhiteSpace(Name))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 if (LinkId == Id)
@@ -1051,7 +1051,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 if (_context.Users.Where(x => x.Id == UserId) == null)
@@ -1093,7 +1093,7 @@ namespace FactPortal.Api
             try
             {
                 // Проверка достаточности данных
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 if (_context.Users.Where(x => x.Id == UserId) == null)
@@ -1172,10 +1172,10 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
+                var listIDs = Ids.Split(';').Where(x => !String.IsNullOrWhiteSpace(x) && x != "0").Distinct();
                 var alerts = _business.Alerts.Where(x => listIDs.Any(y => y == x.Id.ToString()) || !listIDs.Any()).ToList().OrderBy(x => x.DT).OrderBy(x => x.ServiceObjectId).ToList();
                 if (!alerts.Any())
                     return new JsonResult(new { Result = 0, alerts }, jsonOptions);
@@ -1217,7 +1217,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(ServiceObjectId > 0) || String.IsNullOrEmpty(UserId))
+                if (String.IsNullOrWhiteSpace(db) || !(ServiceObjectId > 0) || String.IsNullOrWhiteSpace(UserId))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // ServiceObjectId
@@ -1225,15 +1225,15 @@ namespace FactPortal.Api
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // UserId
-                if (String.IsNullOrEmpty(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
+                if (String.IsNullOrWhiteSpace(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT
-                if (String.IsNullOrEmpty(DT))
+                if (String.IsNullOrWhiteSpace(DT))
                     DT = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // groupFilesId
-                var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files.Any())
                 {
                     if (!Files.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1283,15 +1283,15 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(UserId) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(UserId) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // UserId
-                if (String.IsNullOrEmpty(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
+                if (String.IsNullOrWhiteSpace(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // AddFilesId
-                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1299,14 +1299,14 @@ namespace FactPortal.Api
                 }
 
                 // DelFilesId
-                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Del.Any())
                 {
                     await DeleteFiles(DelFilesId);
                 }
 
                 // DT
-                if (String.IsNullOrEmpty(DT))
+                if (String.IsNullOrWhiteSpace(DT))
                     DT = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // Поиск                
@@ -1358,7 +1358,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
@@ -1393,14 +1393,14 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var list_user = _business.WorkSteps.Where(x => x.myUserId == UserId || String.IsNullOrEmpty(UserId)).Select(x => x.WorkId).Distinct();
-                var list_IDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
+                var list_user = _business.WorkSteps.Where(x => x.myUserId == UserId || String.IsNullOrWhiteSpace(UserId)).Select(x => x.WorkId).Distinct();
+                var list_IDs = Ids.Split(';').Where(x => !String.IsNullOrWhiteSpace(x) && x != "0").Distinct();
                 
-                var Works_user = _business.Works.Where(x => String.IsNullOrEmpty(UserId) || list_user.Any(y => y == x.Id));
-                var Works_ids = Works_user.Where(x => String.IsNullOrEmpty(Ids) || list_IDs.Any(y => y == x.Id.ToString())).ToList();
+                var Works_user = _business.Works.Where(x => String.IsNullOrWhiteSpace(UserId) || list_user.Any(y => y == x.Id));
+                var Works_ids = Works_user.Where(x => String.IsNullOrWhiteSpace(Ids) || list_IDs.Any(y => y == x.Id.ToString())).ToList();
                 if (Works_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Works = Works_ids }, jsonOptions);
 
@@ -1443,7 +1443,7 @@ namespace FactPortal.Api
         public JsonResult WorkAdd([FromHeader] string db, [FromForm] int ServiceObjectId = 0, [FromForm] int Status = 0, [FromForm] string UserId = "", [FromForm] string DT = "")
         {
             try {
-                if (String.IsNullOrEmpty(db) || !(ServiceObjectId > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(ServiceObjectId > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // ServiceObjectId
@@ -1451,7 +1451,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // DT
-                if (String.IsNullOrEmpty(DT))
+                if (String.IsNullOrWhiteSpace(DT))
                     DT = Bank.NormDateTimeYMD(System.DateTime.Now.ToUniversalTime().ToString());
 
                 // Добавить работу
@@ -1527,7 +1527,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
@@ -1552,7 +1552,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
@@ -1592,10 +1592,10 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
+                var listIDs = Ids.Split(';').Where(x => !String.IsNullOrWhiteSpace(x) && x != "0").Distinct();
                 var Steps_ids = _business.Steps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || listIDs.Any() == false).ToList().OrderBy(x => x.Index).ToList();
                 if (Steps_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Steps = Steps_ids }, jsonOptions);
@@ -1630,7 +1630,7 @@ namespace FactPortal.Api
              [FromForm] string Title = "")
         {
             try { 
-                if (String.IsNullOrEmpty(db) || !(ServiceObjectId > 0) || !(Index > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(ServiceObjectId > 0) || !(Index > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // ServiceObjectId
@@ -1638,7 +1638,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonSONotFound, jsonOptions);
 
                 // groupFilesId
-                var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files.Any())
                 {
                     if (!Files.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1666,11 +1666,11 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // AddFilesId
-                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1678,7 +1678,7 @@ namespace FactPortal.Api
                 }
 
                 // DelFilesId
-                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Del.Any())
                 {
                     await DeleteFiles(DelFilesId);
@@ -1692,9 +1692,9 @@ namespace FactPortal.Api
                 // Изменить
                 step.groupFilesId = Bank.DelItemToStringList(step.groupFilesId, ";", String.Join(';', Files_for_Del));
                 step.groupFilesId = Bank.AddItemToStringList(step.groupFilesId, ";", String.Join(';', Files_for_Add));
-                step.Description = (!String.IsNullOrEmpty(Description)) ? Description : step.Description;
+                step.Description = (!String.IsNullOrWhiteSpace(Description)) ? Description : step.Description;
                 step.Index = (Index > 0) ? Index : step.Index;
-                step.Title = (!String.IsNullOrEmpty(Title)) ? Title : step.Title;
+                step.Title = (!String.IsNullOrWhiteSpace(Title)) ? Title : step.Title;
 
                 await _business.SaveChangesAsync();
 
@@ -1723,7 +1723,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
@@ -1755,10 +1755,10 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var listIDs = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
+                var listIDs = Ids.Split(';').Where(x => !String.IsNullOrWhiteSpace(x) && x != "0").Distinct();
                 var WorkSteps_ids = _business.WorkSteps.Where(x => listIDs.Any(y => y == x.Id.ToString()) || !listIDs.Any()).ToList();
                 if (WorkSteps_ids.Any() == false)
                     return new JsonResult(new { Result = 0, Works = WorkSteps_ids }, jsonOptions);
@@ -1800,7 +1800,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(WorkId > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(WorkId > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // WorkId
@@ -1809,7 +1809,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // UserId
-                if (String.IsNullOrEmpty(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
+                if (String.IsNullOrWhiteSpace(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT_Start
@@ -1819,7 +1819,7 @@ namespace FactPortal.Api
                 string DT_Stop = Bank.GetWork_DTStop(Status);
 
                 // groupFilesId
-                var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files = groupFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files.Any())
                 {
                     if (!Files.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1827,7 +1827,7 @@ namespace FactPortal.Api
                 }
 
                 // Title
-                if (String.IsNullOrEmpty(Title))
+                if (String.IsNullOrWhiteSpace(Title))
                 {
                     var step = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
                     if (step != null)
@@ -1875,21 +1875,21 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // UserId
-                if (String.IsNullOrEmpty(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
+                if (String.IsNullOrWhiteSpace(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT_Start
-                DT_Start = (String.IsNullOrEmpty(DT_Start)) ? Bank.GetWork_DTStart(Status) : DT_Start;
+                DT_Start = (String.IsNullOrWhiteSpace(DT_Start)) ? Bank.GetWork_DTStart(Status) : DT_Start;
 
                 // DT_Stop
-                DT_Stop = (String.IsNullOrEmpty(DT_Stop)) ? Bank.GetWork_DTStop(Status) : DT_Stop;
+                DT_Stop = (String.IsNullOrWhiteSpace(DT_Stop)) ? Bank.GetWork_DTStop(Status) : DT_Stop;
 
                 // AddFilesId
-                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1897,7 +1897,7 @@ namespace FactPortal.Api
                 }
 
                 // DelFilesId
-                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Del.Any())
                 {
                     await DeleteFiles(DelFilesId);
@@ -1912,13 +1912,13 @@ namespace FactPortal.Api
                 workStep.myUserId = UserId;
                 workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Del));
                 workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
-                workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
-                workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
-                if (!String.IsNullOrEmpty(workStep.DT_Stop) && String.IsNullOrEmpty(workStep.DT_Start))
+                workStep.DT_Start = (!String.IsNullOrWhiteSpace(DT_Start)) ? DT_Start : workStep.DT_Start;
+                workStep.DT_Stop = (!String.IsNullOrWhiteSpace(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
+                if (!String.IsNullOrWhiteSpace(workStep.DT_Stop) && String.IsNullOrWhiteSpace(workStep.DT_Start))
                     workStep.DT_Start = workStep.DT_Stop;
 
                 workStep.Status = Status;
-                workStep.Title = (!String.IsNullOrEmpty(Title)) ? Title : workStep.Title;
+                workStep.Title = (!String.IsNullOrWhiteSpace(Title)) ? Title : workStep.Title;
 
                 await _business.SaveChangesAsync();
 
@@ -1959,7 +1959,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // WorkId
@@ -1968,7 +1968,7 @@ namespace FactPortal.Api
                     return new JsonResult(jsonWorkNotFound, jsonOptions);
 
                 // UserId
-                if (String.IsNullOrEmpty(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
+                if (String.IsNullOrWhiteSpace(UserId) || _context.Users.FirstOrDefault(x => x.Id == UserId) == null)
                     return new JsonResult(jsonUserNotFound, jsonOptions);
 
                 // DT_Start
@@ -1978,7 +1978,7 @@ namespace FactPortal.Api
                 string DT_Stop = Bank.GetWork_DTStop(Status, DT);
 
                 // AddFilesId
-                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Add = AddFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Add.Any())
                 {
                     if (!Files_for_Add.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1986,7 +1986,7 @@ namespace FactPortal.Api
                 }
 
                 // DelFilesId
-                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrEmpty(x)).Distinct();
+                var Files_for_Del = DelFilesId.Split(';').Where(x => !String.IsNullOrWhiteSpace(x)).Distinct();
                 if (Files_for_Del.Any())
                 {
                     //if (!Files_for_Del.All(x => _business.Files.Any(y => y.Id.ToString() == x)))
@@ -1994,7 +1994,7 @@ namespace FactPortal.Api
                 }
 
                 // Title
-                if (String.IsNullOrEmpty(Title))
+                if (String.IsNullOrWhiteSpace(Title))
                 {
                     var step = _business.Steps.FirstOrDefault(x => x.ServiceObjectId == work.ServiceObjectId && x.Index == Index);
                     if (step != null)
@@ -2022,8 +2022,8 @@ namespace FactPortal.Api
                     workStep.myUserId = UserId;
                     workStep.groupFilesId = Bank.DelItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Del));
                     workStep.groupFilesId = Bank.AddItemToStringList(workStep.groupFilesId, ";", String.Join(';', Files_for_Add));
-                    workStep.DT_Start = (!String.IsNullOrEmpty(DT_Start)) ? DT_Start : workStep.DT_Start;
-                    workStep.DT_Stop = (!String.IsNullOrEmpty(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
+                    workStep.DT_Start = (!String.IsNullOrWhiteSpace(DT_Start)) ? DT_Start : workStep.DT_Start;
+                    workStep.DT_Stop = (!String.IsNullOrWhiteSpace(DT_Stop)) ? DT_Stop : workStep.DT_Stop;
                     workStep.Status = Status;
                     workStep.Title = Title;
                 }
@@ -2063,7 +2063,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || !(Id > 0))
+                if (String.IsNullOrWhiteSpace(db) || !(Id > 0))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // Поиск                
@@ -2096,7 +2096,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(Code))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(Code))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -2127,11 +2127,11 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
-                var Files = (String.IsNullOrEmpty(Path)) ? _business.Files : _business.Files.Where(x => x.Path.Contains(Path));
-                var listIds = Ids.Split(';').Where(x => !String.IsNullOrEmpty(x) && x != "0").Distinct();
+                var Files = (String.IsNullOrWhiteSpace(Path)) ? _business.Files : _business.Files.Where(x => x.Path.Contains(Path));
+                var listIds = Ids.Split(';').Where(x => !String.IsNullOrWhiteSpace(x) && x != "0").Distinct();
 
                 return new JsonResult(new { Result = 0, Files = Files.Where(x => listIds.Any(y => y == x.Id.ToString()) || listIds.Any() == false) }, jsonOptions);
             }
@@ -2147,7 +2147,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db))
+                if (String.IsNullOrWhiteSpace(db))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var Path = _business.Files.Select(x => x.Path.Replace("/"+x.Name, String.Empty)).Distinct().OrderBy(s => s);
@@ -2168,11 +2168,11 @@ namespace FactPortal.Api
         { 
             try
             {
-                if (String.IsNullOrEmpty(db) || uploadedFile == null)
+                if (String.IsNullOrWhiteSpace(db) || uploadedFile == null)
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 // путь к папке (/Files/Images/)
-                if (String.IsNullOrEmpty(Path))
+                if (String.IsNullOrWhiteSpace(Path))
                     Path = "/Files/";
                 if (Path.PadLeft(1) != "/")
                     Path = "/" + Path;
@@ -2251,7 +2251,7 @@ namespace FactPortal.Api
         {
             try
             {
-                if (String.IsNullOrEmpty(db) || String.IsNullOrEmpty(FileName))
+                if (String.IsNullOrWhiteSpace(db) || String.IsNullOrWhiteSpace(FileName))
                     return new JsonResult(jsonNOdata, jsonOptions);
 
                 var F = _business.Files.Where(x => x.Name == FileName);
@@ -2290,7 +2290,7 @@ namespace FactPortal.Api
         // Удалить группу файлов
         private async Task<bool> DeleteFiles(string Ids)
         {
-            if (!String.IsNullOrEmpty(Ids))
+            if (!String.IsNullOrWhiteSpace(Ids))
             {
                 foreach (var item in Ids.Split(";"))
                 {
@@ -2344,7 +2344,7 @@ namespace FactPortal.Api
         [HttpGet("info/{login}")]
         public async Task<JsonResult> UserInfo(string login = "", [FromHeader] string password = "")
         {
-            if (!String.IsNullOrEmpty(login) && !String.IsNullOrEmpty(password))
+            if (!String.IsNullOrWhiteSpace(login) && !String.IsNullOrWhiteSpace(password))
             {
                 ApplicationUser user = await getUser_fromPassword(login, password).ConfigureAwait(false);
                 if (user != null)
@@ -2372,7 +2372,7 @@ namespace FactPortal.Api
         [HttpGet("setdb")]
         public JsonResult SetDB([FromHeader] string NameConnectionString = "")
         {
-            //if (!String.IsNullOrEmpty(NameConnectionString))
+            //if (!String.IsNullOrWhiteSpace(NameConnectionString))
             //{
             //    string ConnectionString = _context.GetConnectionByName(NameConnectionString);
             //    if (!string.IsNullOrEmpty(ConnectionString))

@@ -7,7 +7,7 @@
 
     <div class="card">
         <div class="card-body m-3">
-            @if (!String.IsNullOrEmpty(title))
+            @if (!String.IsNullOrWhiteSpace(title))
             {
                 <h5 class="text-center">@title</h5>
             }

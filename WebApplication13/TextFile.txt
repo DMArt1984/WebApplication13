@@ -5,7 +5,7 @@
             emptyTable:  "Нет данных для отображения в таблице",
             zeroRecords: "Записи не найдены",
             lengthMenu:  "Показывать _MENU_ записей",
-            search:      "Поиск:",
+            search:      "Поиск: ",
             info:        "Показаны записи с _START_ по _END_. Всего записей _TOTAL_",
             infoEmpty:   "Нет записей",
             infoFiltered:"(отфильтровано из _MAX_ записей)",

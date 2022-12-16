@@ -30,15 +30,15 @@ namespace FactPortal.Data
                 //    var ConnectionName_Header = _httpContext.Request.Headers["db"].ToString();
                 //    var ConnectionName_Cookie = _httpContext.Request.Cookies["connname"];
 
-                //    if (String.IsNullOrEmpty(ConnectionName_Header))
+                //    if (String.IsNullOrWhiteSpace(ConnectionName_Header))
                 //    {
                 //        ConnectionName_Header = ConnectionName_Cookie;
-                //        if (String.IsNullOrEmpty(ConnectionName_Cookie))
+                //        if (String.IsNullOrWhiteSpace(ConnectionName_Cookie))
                 //            ConnectionName_Header = "default";
                 //    }
 
                 //    var ConnectionString = Configuration.GetConnectionString(ConnectionName_Header);
-                //    if (String.IsNullOrEmpty(ConnectionString))
+                //    if (String.IsNullOrWhiteSpace(ConnectionString))
                 //        ConnectionString = Configuration.GetConnectionString("default");
 
                 //    optionsBuilder.UseNpgsql(ConnectionString);

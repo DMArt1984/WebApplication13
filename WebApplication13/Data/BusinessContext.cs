@@ -48,7 +48,7 @@ namespace FactPortal.Data
                     var ConnectionName_Header = _httpContext.Request.Headers["db"].ToString(); // имя в запросе
                     var ConnectionName_Cookie = _httpContext.Request.Cookies["company"]; // имя в браузере
 
-                    if (String.IsNullOrEmpty(ConnectionName_Header)) // если в запросе нет
+                    if (String.IsNullOrWhiteSpace(ConnectionName_Header)) // если в запросе нет
                         ConnectionName_Header = ConnectionName_Cookie; // берем из браузера
 
                     if (ConnectionName_Header == null) // если имени все еще нет, то

@@ -334,7 +334,7 @@
                             <hr />
                         </div>
                         <!-- полное имя (ФИО) -->
-                        @if (!String.IsNullOrEmpty(Model.User.FullName))
+                        @if (!String.IsNullOrWhiteSpace(Model.User.FullName))
                         {
                             <small>ФИО: </small>
                             <h5 id="fullname">@Model.User.FullName</h5>
@@ -344,7 +344,7 @@
                     <!-- 3 col -->
                     <div class="col-md-4 mx-2">
                         <!-- телефон -->
-                        @if (!String.IsNullOrEmpty(Model.User.PhoneNumber))
+                        @if (!String.IsNullOrWhiteSpace(Model.User.PhoneNumber))
                         {
                             <small>Номер телефона: </small>
                             <h5 id="phone" class="card-title">

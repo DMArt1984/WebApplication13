@@ -4,10 +4,10 @@
 {
     <a asp-controller="Business" asp-action="SOInfo" asp-route-id="@Model.Id">
 
-        @if (!String.IsNullOrEmpty(Model.ObjectTitle))
+        @if (!String.IsNullOrWhiteSpace(Model.ObjectTitle))
         {
             @Model.ObjectTitle
-            @if (!String.IsNullOrEmpty(Model.ObjectCode))
+            @if (!String.IsNullOrWhiteSpace(Model.ObjectCode))
             {
                 <small>(Код: @Model.ObjectCode)</small>
             }
