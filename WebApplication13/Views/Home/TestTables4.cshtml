@@ -1,21 +1,45 @@
 ﻿
 @{
-    ViewData["Title"] = "TestTables4";
+    ViewData["Title"] = "TestTables2";
 }
 
 @section CSS_first {
+    <!-- DataTables -->
+    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    <!-- Responsive datatable examples -->
+    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Filter in table -->
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.3/css/buttons.dataTables.css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/2.1.0/css/searchPanes.dataTables.css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.5.0/css/select.dataTables.css" />*@
+
+    @*<link href="~/assets/libs/datatables.net-site/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />*@
+    <link href="~/assets/libs/datatables.net-site/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-site/css/searchPanes.dataTables.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/libs/datatables.net-site/css/select.dataTables.css" rel="stylesheet" type="text/css" />
 
 }
 
-<h1>TestTables4</h1>
+<h1>TestTables2</h1>
 
-<!-- Table 4 -->
+<!-- Table 2 -->
 <div class="card">
+    <div class="card-header">
+        <div id="filterbut"></div>
+        <div id="exportbut"></div>
+        <div id="upp" class="d-flex justify-content-between"></div>
+    </div>
     <div class="card-body">
-        <table id="example4" class="table table-striped table-bordered" style="width:100%">
+        <div id="top_lr" class="d-flex justify-content-between">
+            @*<div id="top_left" class="col-6"></div>
+                <div id="top_right"class="col-6"></div>*@
+        </div>
+
+        <table id="example" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead class="bg-primary text-white">
                 <tr>
                     <th>Name</th>
@@ -243,30 +267,400 @@
                     <td>2010-11-14</td>
                     <td>$357,650</td>
                 </tr>
+                <tr>
+                    <td>Brenden Wagner</td>
+                    <td>Software Engineer</td>
+                    <td>San Francisco</td>
+                    <td>28</td>
+                    <td>2011-06-07</td>
+                    <td>$206,850</td>
+                </tr>
+                <tr>
+                    <td>Fiona Green</td>
+                    <td>Chief Operating Officer (COO)</td>
+                    <td>San Francisco</td>
+                    <td>48</td>
+                    <td>2010-03-11</td>
+                    <td>$850,000</td>
+                </tr>
+                <tr>
+                    <td>Shou Itou</td>
+                    <td>Regional Marketing</td>
+                    <td>Tokyo</td>
+                    <td>20</td>
+                    <td>2011-08-14</td>
+                    <td>$163,000</td>
+                </tr>
+                <tr>
+                    <td>Michelle House</td>
+                    <td>Integration Specialist</td>
+                    <td>Sydney</td>
+                    <td>37</td>
+                    <td>2011-06-02</td>
+                    <td>$95,400</td>
+                </tr>
+                <tr>
+                    <td>Suki Burks</td>
+                    <td>Developer</td>
+                    <td>London</td>
+                    <td>53</td>
+                    <td>2009-10-22</td>
+                    <td>$114,500</td>
+                </tr>
+                <tr>
+                    <td>Prescott Bartlett</td>
+                    <td>Technical Author</td>
+                    <td>London</td>
+                    <td>27</td>
+                    <td>2011-05-07</td>
+                    <td>$145,000</td>
+                </tr>
+                <tr>
+                    <td>Gavin Cortez</td>
+                    <td>Team Leader</td>
+                    <td>San Francisco</td>
+                    <td>22</td>
+                    <td>2008-10-26</td>
+                    <td>$235,500</td>
+                </tr>
+                <tr>
+                    <td>Martena Mccray</td>
+                    <td>Post-Sales support</td>
+                    <td>Edinburgh</td>
+                    <td>46</td>
+                    <td>2011-03-09</td>
+                    <td>$324,050</td>
+                </tr>
+                <tr>
+                    <td>Unity Butler</td>
+                    <td>Marketing Designer</td>
+                    <td>San Francisco</td>
+                    <td>47</td>
+                    <td>2009-12-09</td>
+                    <td>$85,675</td>
+                </tr>
+                <tr>
+                    <td>Howard Hatfield</td>
+                    <td>Office Manager</td>
+                    <td>San Francisco</td>
+                    <td>51</td>
+                    <td>2008-12-16</td>
+                    <td>$164,500</td>
+                </tr>
+                <tr>
+                    <td>Hope Fuentes</td>
+                    <td>Secretary</td>
+                    <td>San Francisco</td>
+                    <td>41</td>
+                    <td>2010-02-12</td>
+                    <td>$109,850</td>
+                </tr>
+                <tr>
+                    <td>Vivian Harrell</td>
+                    <td>Financial Controller</td>
+                    <td>San Francisco</td>
+                    <td>62</td>
+                    <td>2009-02-14</td>
+                    <td>$452,500</td>
+                </tr>
+                <tr>
+                    <td>Timothy Mooney</td>
+                    <td>Office Manager</td>
+                    <td>London</td>
+                    <td>37</td>
+                    <td>2008-12-11</td>
+                    <td>$136,200</td>
+                </tr>
+                <tr>
+                    <td>Jackson Bradshaw</td>
+                    <td>Director</td>
+                    <td>New York</td>
+                    <td>65</td>
+                    <td>2008-09-26</td>
+                    <td>$645,750</td>
+                </tr>
+                <tr>
+                    <td>Olivia Liang</td>
+                    <td>Support Engineer</td>
+                    <td>Singapore</td>
+                    <td>64</td>
+                    <td>2011-02-03</td>
+                    <td>$234,500</td>
+                </tr>
+                <tr>
+                    <td>Bruno Nash</td>
+                    <td>Software Engineer</td>
+                    <td>London</td>
+                    <td>38</td>
+                    <td>2011-05-03</td>
+                    <td>$163,500</td>
+                </tr>
+                <tr>
+                    <td>Sakura Yamamoto</td>
+                    <td>Support Engineer</td>
+                    <td>Tokyo</td>
+                    <td>37</td>
+                    <td>2009-08-19</td>
+                    <td>$139,575</td>
+                </tr>
+                <tr>
+                    <td>Thor Walton</td>
+                    <td>Developer</td>
+                    <td>New York</td>
+                    <td>61</td>
+                    <td>2013-08-11</td>
+                    <td>$98,540</td>
+                </tr>
+                <tr>
+                    <td>Finn Camacho</td>
+                    <td>Support Engineer</td>
+                    <td>San Francisco</td>
+                    <td>47</td>
+                    <td>2009-07-07</td>
+                    <td>$87,500</td>
+                </tr>
+                <tr>
+                    <td>Serge Baldwin</td>
+                    <td>Data Coordinator</td>
+                    <td>Singapore</td>
+                    <td>64</td>
+                    <td>2012-04-09</td>
+                    <td>$138,575</td>
+                </tr>
+                <tr>
+                    <td>Zenaida Frank</td>
+                    <td>Software Engineer</td>
+                    <td>New York</td>
+                    <td>63</td>
+                    <td>2010-01-04</td>
+                    <td>$125,250</td>
+                </tr>
+                <tr>
+                    <td>Zorita Serrano</td>
+                    <td>Software Engineer</td>
+                    <td>San Francisco</td>
+                    <td>56</td>
+                    <td>2012-06-01</td>
+                    <td>$115,000</td>
+                </tr>
+                <tr>
+                    <td>Jennifer Acosta</td>
+                    <td>Junior Javascript Developer</td>
+                    <td>Edinburgh</td>
+                    <td>43</td>
+                    <td>2013-02-01</td>
+                    <td>$75,650</td>
+                </tr>
+                <tr>
+                    <td>Cara Stevens</td>
+                    <td>Sales Assistant</td>
+                    <td>New York</td>
+                    <td>46</td>
+                    <td>2011-12-06</td>
+                    <td>$145,600</td>
+                </tr>
+                <tr>
+                    <td>Hermione Butler</td>
+                    <td>Regional Director</td>
+                    <td>London</td>
+                    <td>47</td>
+                    <td>2011-03-21</td>
+                    <td>$356,250</td>
+                </tr>
+                <tr>
+                    <td>Lael Greer</td>
+                    <td>Systems Administrator</td>
+                    <td>London</td>
+                    <td>21</td>
+                    <td>2009-02-27</td>
+                    <td>$103,500</td>
+                </tr>
+                <tr>
+                    <td>Jonas Alexander</td>
+                    <td>Developer</td>
+                    <td>San Francisco</td>
+                    <td>30</td>
+                    <td>2010-07-14</td>
+                    <td>$86,500</td>
+                </tr>
+                <tr>
+                    <td>Shad Decker</td>
+                    <td>Regional Director</td>
+                    <td>Edinburgh</td>
+                    <td>51</td>
+                    <td>2008-11-13</td>
+                    <td>$183,000</td>
+                </tr>
+                <tr>
+                    <td>Michael Bruce</td>
+                    <td>Javascript Developer</td>
+                    <td>Singapore</td>
+                    <td>29</td>
+                    <td>2011-06-27</td>
+                    <td>$183,000</td>
+                </tr>
+                <tr>
+                    <td>Donna Snider</td>
+                    <td>Customer Support</td>
+                    <td>New York</td>
+                    <td>27</td>
+                    <td>2011-01-25</td>
+                    <td>$112,000</td>
+                </tr>
             </tbody>
             <tfoot>
-
             </tfoot>
         </table>
+        <div id="down_lr" class="d-flex justify-content-between">
+        </div>
     </div>
 </div>
 
-@section Scripts {
 
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap4.min.js"></script>
-    
+
+@section Scripts {
+    <!-- Required datatable js -->
+    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
+
+    <!-- TEST -->
+    <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+    <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/2.1.0/js/dataTables.searchPanes.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.5.0/js/dataTables.select.js"></script>
+
+    <!-- проверка -->
+    <script src="~/assets/libs/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/assets/libs/jszip/jszip.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/pdfmake.min.js"></script>
+    <script src="~/assets/libs/pdfmake/build/vfs_fonts.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script src="~/assets/libs/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+
+
 
     <script>
-
         $(document).ready(function () {
-            $('#example4').DataTable({
-                dom: 'PQlfrtip',
+            var table = $('#example').DataTable({
+                language: {
+                    emptyTable: "Нет данных для отображения в таблице",
+                    zeroRecords: "Записи не найдены",
+                    lengthMenu: "Показывать _MENU_ записей",
+                    search: "Поиск: ",
+                    info: "Показаны записи с _START_ по _END_. Всего записей _TOTAL_",
+                    infoEmpty: "Нет записей",
+                    infoFiltered: "(отфильтровано из _MAX_ записей)",
+                    //подписи кнопок навигации по страницам
+                    paginate: {
+                        previous: "<i class='mdi mdi-chevron-left'>",
+                        next: "<i class='mdi mdi-chevron-right'>"
+                    },
+                    //подписи в окне выбора фильтра
+                    searchPanes: {
+                        title: {
+                            _: 'Выбрано фильтров: %d шт.',
+                            0: 'Фильтры не выбраны'
+                        },
+                        collapseMessage: 'Свернуть панели',
+                        showMessage: 'Развернуть панели',
+                        clearMessage: 'Сбросить фильтры',
+                        collapse: { 0: 'Фильтр', _: 'Фильтр (%d)' },
+                        emptyPanes: "Нет панелей для отображения. :/",
+                        emptyMessage: "(пусто)"
+                    }
+                },
+                drawCallback: function () {
+                    $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+                },
+                dom: 'Blfrtip',
+                //вкл/откл разбиения на страницы
+                paging: true,
+                //вкл/откл поля поиска
+                searching: true,
+                //вкл/откл строки информации внизу таблицы
+                info: true,
+                //вкл/откл сортировки столбцов
+                ordering: true,
+                //сохранения состояния таблицы при возврате на нее
+                stateSave: true,
+
+                retrieve: true,
+
+                // выбор элементов на странице
+                "lengthMenu": [5, 10, 25, 50, 100],
+
+                columnDefs: [
+                    { "orderable": false, targets: -1 }, //отключение сортировки последнего столбца
+                    //{
+                    //     searchPanes: {
+                    //         show: false
+                    //     },
+                    //     targets: [1, 2, 3, 4]
+                    //}
+                ],
+
+
             });
+
+            //Отдельная группа кнопок
+            new $.fn.dataTable.Buttons(table, {
+                buttons: [
+                    {//Кнопка "Фильтр"
+                        extend: 'searchPanes',
+                        text: '<i class="fas fa-file-pdf"></i> Фильтрация',
+                        className: "btn-sm btn-secondary",
+                        titleAttr: 'Фильтр',
+                        config: {
+                            cascadePanes: false,
+                            //columns: [0, 1, 4]
+                            //clear: false
+                        },
+                        init: function (api, node, config) {
+                            $(node).removeClass('btn-default')
+                        }
+                    },
+                ]
+            });
+
+            table.buttons(0, null).container().appendTo($('#upp'));
+            table.buttons(1, null).container().appendTo($('#upp'));
+            
+            $('#top_lr').append($('#example_length'));
+            $('#top_lr').append($('#example_filter'));
+            //////$('#example_filter').remove();
+
+            //$('#example_length').removeClass('dataTables_filter');
+            //$('#example_filter').removeClass('dataTables_filter');
+            $('#example_length>label').css("font-weight", "normal").css("white-space", "nowrap");
+            $('#example_length>label>select').css("display", "inline-block").css("width", "auto");
+
+            $('#example_filter>label').css("font-weight", "normal").css("white-space", "nowrap");
+            $('#example_filter>label>input').css("display", "inline-block").css("width", "auto");
+
+            //$('#example_filter>input').addClass('d-inline-flex');
+
+            // ---------------------
+
+            $('#down_lr').append($('#example_info'));
+            $('#down_lr').append($('#example_paginate'));
+
+
+
+
         });
-
+                    //alert("OK");
     </script>
-
 }
+
+
+
 
