@@ -32,11 +32,12 @@
         <div id="filterbut"></div>
         <div id="exportbut"></div>
         <div id="upp" class="d-flex justify-content-between"></div>
+        <div id="fpopup"></div>
     </div>
     <div class="card-body">
         <div id="top_lr" class="d-flex justify-content-between">
             @*<div id="top_left" class="col-6"></div>
-            <div id="top_right"class="col-6"></div>*@
+        <div id="top_right"class="col-6"></div>*@
         </div>
 
         <table id="example" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
@@ -645,6 +646,7 @@
                     drawCallback: function () {
                         $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
                     },
+                    
                     dom: 'Blfrtip',
                     //вкл/откл разбиения на страницы
                     paging: true,
@@ -705,7 +707,7 @@
                             className: "buttons-html5 btn btn-sm btn-secondary",
                             titleAttr: 'Фильтр',
                             config: {
-                                cascadePanes: false,
+                                cascadePanes: true,
                                 //columns: [0, 1, 4]
                                 //clear: false
                             },
@@ -723,6 +725,11 @@
                 
                 $('#top_lr').append($('#example_filter'));
                 //////$('#example_filter').remove();
+
+                //table.buttons(1, null).container().css('float', 'right').addClass('px-2'); // right
+                //$('#example_filter>').append(table.buttons(1, null).container());
+
+                //$('#fpopup').append(table.buttons(1, null).container().find('div'));
 
                 //$('#example_length').removeClass('dataTables_filter');
                 //$('#example_filter').removeClass('dataTables_filter');
