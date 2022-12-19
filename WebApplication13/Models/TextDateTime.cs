@@ -21,7 +21,7 @@ namespace FactPortal.Models
         int minute;
         int second;
 
-        [Display(Name = "Получить название месяца")]
+        // Получить название месяца
         public static string GetNameMonth(int month)
         {
             string[] Names = new string[] { "январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь" };
@@ -31,7 +31,7 @@ namespace FactPortal.Models
             return "";
         }
         
-        [Display(Name = "Получить DateTime из строки <YYYY.MM.DD HH:MM:SS>")]
+        // Получить DateTime из строки <YYYY.MM.DD HH:MM:SS>
         public static DateTime TextToDateTime(string YMDHMS, int OffsetMinutes = 0, bool EnableTime = true)
         {
             if (String.IsNullOrWhiteSpace(YMDHMS))
@@ -50,27 +50,15 @@ namespace FactPortal.Models
 
                 if (DateAndTime.Length >= 1)
                 {
-                    string[] forDate = DateAndTime[0].Split('.'); // 2020.10.11
-                    if (forDate.Length == 3)
+                    (year, month, day) = StringTo3(DateAndTime[0], '.'); // 2020.10.11
+                    if (day > 31 || year < 1000)
                     {
-                        month = Convert.ToInt32(forDate[1]);
-                        day = Convert.ToInt32(forDate[2]);
-                        year = Convert.ToInt32(forDate[0]);
-                        if (day > 31 || year < 2000)
-                        {
-                            (year, day) = (day, year);
-                        }
+                        (year, day) = (day, year);
                     }
 
                     if (EnableTime && DateAndTime.Length >= 2)
                     {
-                        string[] forTime = DateAndTime[1].Split(':'); // 15:16:17
-                        hour = Convert.ToInt32(forTime[0]);
-                        minute = Convert.ToInt32(forTime[1]);
-                        if (forTime.Length >= 3)
-                        {
-                            second = Convert.ToInt32(forTime[2]);
-                        }
+                        (hour, minute, second) = StringTo3(DateAndTime[1], ':'); // 15:16:17
                     }
 
                 }
@@ -86,7 +74,7 @@ namespace FactPortal.Models
             }
 }
 
-        [Display(Name = "Получить DateTime из строки <2022-01-07T08:09>")]
+        // Получить DateTime из строки <2022-01-07T08:09>
         public static DateTime CalendarToDateTime (string Calendar, int OffsetMinutes = 0, bool EnableTime = true)
         {
             if (String.IsNullOrWhiteSpace(Calendar))
@@ -94,20 +82,29 @@ namespace FactPortal.Models
 
             if (Calendar.Length != 16)
                 return DateTime.UtcNow;
+            
             try
             {
-                var year = Convert.ToInt32(Calendar.Substring(0, 4));
-                var month = Convert.ToInt32(Calendar.Substring(5, 2));
-                var day = Convert.ToInt32(Calendar.Substring(8, 2));
+                //var year = Convert.ToInt32(Calendar.Substring(0, 4));
+                //var month = Convert.ToInt32(Calendar.Substring(5, 2));
+                //var day = Convert.ToInt32(Calendar.Substring(8, 2));
 
+                int year = 0;
+                int month = 0;
+                int day = 0;
                 var hour = 0;
                 var minute = 0;
                 var second = 0;
 
+                string[] DateAndTime = Calendar.Split('T'); // 2022-01-07T08:09
+
+                (year, month, day) = StringTo3(DateAndTime[0], '-');
+
                 if (EnableTime)
                 {
-                    hour = Convert.ToInt32(Calendar.Substring(11, 2));
-                    minute = Convert.ToInt32(Calendar.Substring(14, 2));
+                    //hour = Convert.ToInt32(Calendar.Substring(11, 2));
+                    //minute = Convert.ToInt32(Calendar.Substring(14, 2));
+                    (hour, minute, second) = StringTo3(DateAndTime[1], ':'); // 08:09
                 }
                 
                 DateTime DT = new DateTime(year, month, day, hour, minute, second);
@@ -138,7 +135,6 @@ namespace FactPortal.Models
         public override bool Equals(object obj)
         {
             return this.ToString().Equals(obj?.ToString());
-            //return base.Equals(obj);
         }
 
         private void SetValues(DateTime dt)
@@ -146,19 +142,41 @@ namespace FactPortal.Models
             (year, month, day, hour, minute, second) = (dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
         }
 
+        private static (int, int, int) StringTo3(string Value, char Delim = ' ')
+        {
+            if (String.IsNullOrWhiteSpace(Value))
+                return (0, 0, 0);
+
+            int a = 0;
+            int b = 0;
+            int c = 0;
+
+            string[] arr = Value.Split(Delim);
+
+            if (arr.Length >= 1)
+                int.TryParse(arr[0], out a);
+
+            if (arr.Length >= 2)
+                int.TryParse(arr[1], out b);
+
+            if (arr.Length >= 3)
+                int.TryParse(arr[2], out c);
+
+            return (a, b, c);
+        }
 
 
-        [Display(Name = "Совпадает ли в дате месяц и год")]
+        // Совпадает ли в дате месяц и год
         public bool DTinValues(int year, int month) => this.year == year && this.month == month;
 
-        [Display(Name = "Получить строку <YYYY.MM.DD HH:MM:SS>")]
+        // Получить строку <YYYY.MM.DD HH:MM:SS>
         public override string ToString() => $"{year}.{month.ToString("D2")}.{day.ToString("D2")} {hour.ToString("D2")}:{minute.ToString("D2")}:{second.ToString("D2")}";
 
-        [Display(Name = "Получить строку <май 2021>")]
+        // Получить строку <май 2021>
         public string ToMonthYYYY() => $"{GetNameMonth(month)} {year}";
 
 
-        [Display(Name = "Проверить дату вида <YYYY.MM.DD> на вхождение в диапазон")]
+        // Проверить дату вида <YYYY.MM.DD> на вхождение в диапазон
         public bool DateInRange(string DateFrom = "", string DateTo = "")
         {
             if (String.IsNullOrWhiteSpace(DateFrom) && String.IsNullOrWhiteSpace(DateTo))

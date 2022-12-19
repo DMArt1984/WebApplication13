@@ -11,12 +11,6 @@
     <!-- Responsive datatable examples -->
     <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Filter in table -->
-    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css" />
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.3/css/buttons.dataTables.css" />
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/2.1.0/css/searchPanes.dataTables.css" />
-        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.5.0/css/select.dataTables.css" />*@
-
     @*<link href="~/assets/libs/datatables.net-site/css/jquery.dataTables.css" rel="stylesheet" type="text/css" />*@
     <link href="~/assets/libs/datatables.net-site/css/buttons.dataTables.css" rel="stylesheet" type="text/css" />
     <link href="~/assets/libs/datatables.net-site/css/searchPanes.dataTables.css" rel="stylesheet" type="text/css" />
@@ -40,7 +34,7 @@
         <div id="top_right"class="col-6"></div>*@
         </div>
 
-        <table id="example" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        <table id="dtable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead class="bg-primary text-white">
                 <tr>
                     <th>Name</th>
@@ -524,98 +518,23 @@
     <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
     <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
 
+    <!-- dataTable -->
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/dataTables.fixedHeader.min.js"></script>
 
-    <!-- TEST -->
-    <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/buttons.html5.min.js"></script>
 
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/jszip.min.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/pdfmake.min.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/vfs_fonts.js"></script>
 
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/dataTables.searchPanes.js"></script>
+    <script type="text/javascript" src="~/assets/libs/datatables.net-site/js/dataTables.select.js"></script>
 
-    <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/2.1.0/js/dataTables.searchPanes.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/select/1.5.0/js/dataTables.select.js"></script>
-
-
-    @*<script>
-
-            $(document).ready(function () {
-
-                // table 2
-                var table = $("#example").DataTable({
-                    
-                    buttons: [
-                        {//Кнопка "Фильтр"
-                            extend: 'searchPanes',
-                            text: '<i class="fas fa-file-pdf"></i> Фильтр',
-                            className: "btn-sm btn-success",
-                            titleAttr: 'Фильтр',
-                            config: {
-                                cascadePanes: false,
-                                //columns: [0, 1, 4]
-                                //clear: false
-                            },
-                            //init: function (api, node, config) {
-                            //    $(node).removeClass('btn-default')
-                            //}
-                        },
-                    ],
-
-                    dom: 'lBfrtip',
-                    // dom: 'PlBfrtip',
-                    columnDefs: [
-                        { "orderable": false, targets: -1 }, //отключение сортировки последнего столбца
-                        //{
-                        //     searchPanes: {
-                        //         show: false
-                        //     },
-                        //     targets: [1, 2, 3, 4]
-                        //}
-                    ]
-                });
-
-                // Фильтры вместо dom: P
-                //new $.fn.dataTable.SearchPanes(table, {});
-                //table2.searchPanes.container().prependTo(table.table().container());
-                //table2.searchPanes.resizePanes();
-                //table2.searchPanes.container().appendTo($('#search'));
-
-                //Отдельная группа кнопок
-                new $.fn.dataTable.Buttons(table, {
-                    buttons: [
-                        {//Кнопка PDF
-                            extend: 'pdfHtml5',
-                            text: '<i class="fas fa-file-pdf"></i> PDF',
-                            titleAttr: 'Экспорт в PDF',
-                            orientation: 'landscape',
-                            download: 'open',
-                            exportOptions: {
-                                columns: [':visible:not(:last-child)'],
-                            }
-                        },
-                        {//Кнопка CSV
-                            extend: 'csvHtml5',
-                            text: '<i class="fas fa-file-csv"></i> CSV',
-                            titleAttr: 'Экспорт в CSV',
-                            exportOptions: {
-                                columns: [':visible:not(:last-child)'],
-                            }
-                        },
-                    ]
-                });
-
-                //Размещение кнопок в контейнере на странице
-                table.buttons(0, null).container().appendTo($('#filterbut'));
-                table.buttons(1, null).container().appendTo($('#exportbut'));
-            });
-
-        </script>*@
 
     <script>
             $(document).ready(function () {
-                var table = $('#example').DataTable({
+                var table = $('#dtable').DataTable({
                     language: {
                         emptyTable: "Нет данных для отображения в таблице",
                         zeroRecords: "Записи не найдены",
@@ -718,39 +637,37 @@
                     ]
                 });
 
+                // Перемещаем кнопки в div
                 table.buttons(0, null).container().appendTo($('#upp'));
                 table.buttons(1, null).container().appendTo($('#upp'));
 
-                $('#top_lr').append($('#example_length'));
-                
-                $('#top_lr').append($('#example_filter'));
-                //////$('#example_filter').remove();
+                // Перемещаем элементы таблицы в div
+                //  верх таблицы
+                $('#top_lr').append($('#dtable_length')); // кол-во строк на странице (length)
+                $('#top_lr').append($('#dtable_filter')); // фильтр (filter)
+                //  низ таблицы
+                $('#down_lr').append($('#dtable_info')); // инфо (info)
+                $('#down_lr').append($('#dtable_paginate')); // страницы (paginate)
 
+                // Стили элемента length
+                $('#dtable_length>label').css("font-weight", "normal").css("white-space", "nowrap");
+                $('#dtable_length>label>select').css("display", "inline-block").css("width", "auto");
+                // Стили элемента filter
+                $('#dtable_filter>label').css("font-weight", "normal").css("white-space", "nowrap");
+                $('#dtable_filter>label>input').css("display", "inline-block").css("width", "auto");
+
+                // Кнопка к элементу filter
                 //table.buttons(1, null).container().css('float', 'right').addClass('px-2'); // right
-                //$('#example_filter>').append(table.buttons(1, null).container());
+                //$('#dtable_filter>').append(table.buttons(1, null).container());
 
+                // еще пример для div
                 //$('#fpopup').append(table.buttons(1, null).container().find('div'));
 
-                //$('#example_length').removeClass('dataTables_filter');
-                //$('#example_filter').removeClass('dataTables_filter');
-                $('#example_length>label').css("font-weight", "normal").css("white-space", "nowrap");
-                $('#example_length>label>select').css("display", "inline-block").css("width", "auto");
-
-                $('#example_filter>label').css("font-weight", "normal").css("white-space", "nowrap");
-                $('#example_filter>label>input').css("display", "inline-block").css("width", "auto");
-
-                //$('#example_filter>input').addClass('d-inline-flex');
-
-                // ---------------------
-
-                $('#down_lr').append($('#example_info'));
-                $('#down_lr').append($('#example_paginate'));
-
-
-
+                // Пример стиля
+                //$('#dtable_filter>input').addClass('d-inline-flex');
 
             });
-            //alert("OK");
+            
         </script>
 }
 
