@@ -27,16 +27,22 @@
                         dynamic Value = item.Values[i];
                         switch (Model.ColsType[i])
                         {
-                            case RepColType.Email:
-                                <td>mailto: @Value</td>
+                            case RepColType.ServiceObject:
+                                ServiceObjectCell there = Value;
+                                <td>
+                                    @Html.Partial("_cellSObject", new ServiceObjectCell { Id = there.Id, ObjectTitle = there.ObjectTitle, ObjectCode = there.ObjectCode })
+                                </td>
                                 break;
+                            case RepColType.Email:
+                                    <td>mailto: @Value</td>
+                                    break;
 
                             default:
                                 <td>@Value</td>
                                 break;
-                        }
+                            }
 
-                    }
+                        }
                 </tr>
                 }
             </tbody>

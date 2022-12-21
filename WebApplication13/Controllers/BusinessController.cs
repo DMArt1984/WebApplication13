@@ -2644,18 +2644,20 @@ namespace FactPortal.Controllers
                 RepColType.User,
                 RepColType.Email,
                 RepColType.Phone,
-                RepColType.Text
+                RepColType.Text,
+                RepColType.ServiceObject
             }, new List<string> {
                 "ID", 
                 "Пользователь",
                 "Почта",
                 "Телефон",
-                "Текст"
+                "Текст",
+                "Объект"
             });
 
-            RT.Rows.Add(new RepRow(new List<dynamic> { 1, "user1", "mail1@mail.ru", "+1012345", "text1" }));
-            RT.Rows.Add(new RepRow(new List<dynamic> { 2, "user2", "mail2@mail.ru", "+2012345", "text2" }));
-            RT.Rows.Add(new RepRow(new List<dynamic> { 3, "user3", "mail3@mail.ru", "+3012345", "text3" }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 1, "user1", "mail1@mail.ru", "+1012345", "text1", new ServiceObjectCell { Id = 1, ObjectCode = "9991", ObjectTitle = "OTitle1" } }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 2, "user2", "mail2@mail.ru", "+2012345", "text2", new ServiceObjectCell { Id = 2, ObjectCode = "9992", ObjectTitle = "OTitle2" } }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 3, "user3", "mail3@mail.ru", "+3012345", "text3", new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" } }));
 
             return View(RT.GetArrays());
         }

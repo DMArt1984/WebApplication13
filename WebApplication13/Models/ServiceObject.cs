@@ -50,6 +50,14 @@ namespace FactPortal.Models
         public int CountAlerts { get; set; } // Количество сообщений
         public Work LastWork { get; set; } // Последнее обслуживание
     }
+
+    public class ServiceObjectCell
+    {
+        public int Id { get; set; } // ID объекта обслуживания
+        public string ObjectTitle { get; set; } // Название
+        public string ObjectCode { get; set; } // Штрих код
+    }
+
     // Объекты обслуживания: редактирование
     public class ServiceObjectEdit
     {

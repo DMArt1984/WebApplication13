@@ -72,7 +72,7 @@
                             @if (FilterSO == 0)
                             {
                                 <td>
-                                    @Html.Partial("_cellSObject", new ServiceObject { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                                    @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
                                 </td>
                             }
                             <td>
