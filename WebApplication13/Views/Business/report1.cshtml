@@ -1,0 +1,48 @@
+﻿@model RepTableArrays
+
+@{
+    ViewData["Title"] = "report1";
+}
+
+<!-- Table 2 -->
+<div class="card">
+    <div class="card-header">
+    </div>
+    <div class="card-body">
+        <table id="dtable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+            <thead class="bg-primary text-white">
+                <tr>
+                    @for (var i = 0; i < Model.ColsName.Length; i++)
+                    {
+                        <th>@Model.ColsName[i] [@Model.ColsType[i]]</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Rows)
+                {
+                <tr>
+                    @for (var i = 0; i < item.Values.Length; i++)
+                    {
+                        dynamic Value = item.Values[i];
+                        switch (Model.ColsType[i])
+                        {
+                            case RepColType.Email:
+                                <td>mailto: @Value</td>
+                                break;
+
+                            default:
+                                <td>@Value</td>
+                                break;
+                        }
+
+                    }
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+            </tfoot>
+        </table>
+    </div>
+</div>
+

@@ -2633,6 +2633,33 @@ namespace FactPortal.Controllers
             return View();
         }
 
+        // ================== Отчеты ======================================================================
+
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult report1()
+        {
+            RepTable RT = new RepTable( new List<RepColType> { 
+                RepColType.Id,
+                RepColType.User,
+                RepColType.Email,
+                RepColType.Phone,
+                RepColType.Text
+            }, new List<string> {
+                "ID", 
+                "Пользователь",
+                "Почта",
+                "Телефон",
+                "Текст"
+            });
+
+            RT.Rows.Add(new RepRow(new List<dynamic> { 1, "user1", "mail1@mail.ru", "+1012345", "text1" }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 2, "user2", "mail2@mail.ru", "+2012345", "text2" }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 3, "user3", "mail3@mail.ru", "+3012345", "text3" }));
+
+            return View(RT.GetArrays());
+        }
+
         // ================================================================================================================================
         // Обработка ошибок
 
