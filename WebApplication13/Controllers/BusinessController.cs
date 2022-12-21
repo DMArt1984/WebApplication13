@@ -2644,7 +2644,7 @@ namespace FactPortal.Controllers
                 RepColType.User,
                 RepColType.Email,
                 RepColType.Phone,
-                RepColType.Text,
+                RepColType.FilesV,
                 RepColType.ServiceObject
             }, new List<string> {
                 "ID", 
@@ -2655,9 +2655,12 @@ namespace FactPortal.Controllers
                 "Объект"
             });
 
-            RT.Rows.Add(new RepRow(new List<dynamic> { 1, "user1", "mail1@mail.ru", "+1012345", "text1", new ServiceObjectCell { Id = 1, ObjectCode = "9991", ObjectTitle = "OTitle1" } }));
-            RT.Rows.Add(new RepRow(new List<dynamic> { 2, "user2", "mail2@mail.ru", "+2012345", "text2", new ServiceObjectCell { Id = 2, ObjectCode = "9992", ObjectTitle = "OTitle2" } }));
-            RT.Rows.Add(new RepRow(new List<dynamic> { 3, "user3", "mail3@mail.ru", "+3012345", "text3", new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" } }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 1, new UserCell {Id = "1", Email="user@mail.com", UserName="userName" }, "mail1@mail.ru", "+1012345", new List<myFiles>() { new myFiles { Id = 1, Name = "file1.bmp", Path = "http://1" } }, new ServiceObjectCell { Id = 1, ObjectCode = "9991", ObjectTitle = "OTitle1" } }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 2, "user2", "mail2@mail.ru", "+2012345", new List<myFiles>() { new myFiles { Id = 2, Name = "file2.bmp", Path = "http://2" } }, new ServiceObjectCell { Id = 2, ObjectCode = "9992", ObjectTitle = "OTitle2" } }));
+            RT.Rows.Add(new RepRow(new List<dynamic> { 3, "user3", "mail3@mail.ru", "+3012345", new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } }, new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" } }));
+
+            RT.Layer = 0;
+            RT.Title = "Главная таблица";
 
             return View(RT.GetArrays());
         }

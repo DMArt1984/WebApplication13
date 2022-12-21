@@ -26,10 +26,13 @@ namespace FactPortal.Models
         workStatus = 41,
 
         File = 50,
+        FilesV = 51,
 
         Id = 1,
         DataTime = 2,
-        Text = 3
+        Text = 3,
+
+        Table = 100
     }
     
     public class RepRow
@@ -52,6 +55,7 @@ namespace FactPortal.Models
     public struct RepTableArrays
     {
         public int Layer;
+        public string Title;
         public RepColType[] ColsType;
         public string[] ColsName;
         public RepRow[] Rows;
@@ -60,6 +64,7 @@ namespace FactPortal.Models
     public class RepTable
     {
         public int Layer { get; set; }
+        public string Title { get; set; }
         public List<RepColType> ColsType { get; set; }
         public List<string> ColsName { get; set; }
         public List<RepRow> Rows { get; set; }
@@ -97,6 +102,7 @@ namespace FactPortal.Models
         {
             return new RepTableArrays {
                 Layer = Layer,
+                Title = Title,
                 ColsName = ColsName.ToArray(), 
                 ColsType = ColsType.ToArray(),
                 Rows = Rows.ToArray()};

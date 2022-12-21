@@ -48,7 +48,7 @@
                                 <td><script>document.write(UTC_To_LocalTime('@item.DT_Stop'));</script></td>
                                 <td>@item.StatusRus()</td>
                                 <td>
-                                    @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                                    @Html.Partial("_cellUser", new UserCell { Id = "0", UserName = item.UserName, Email = item.UserEmail })
                                 </td>
                                 <td>@Html.Partial("_FilesV", item.FileLinks)</td>
 

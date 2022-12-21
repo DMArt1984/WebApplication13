@@ -80,7 +80,7 @@
 
                                                 if (st.Status > 0)
                                                 {
-                                                    <li> @st.StatusRus() @Html.Partial("_cellUser", new ApplicationUser { Id = "0", UserName = st.UserName, Email = st.UserEmail })
+                                                    <li> @st.StatusRus() @Html.Partial("_cellUser", new UserCell { Id = "0", UserName = st.UserName, Email = st.UserEmail })
                                                     <script>document.write(UTC_To_LocalTime('@st.DT_Start'));</script> /
                                                     <script>document.write(UTC_To_LocalTime('@st.DT_Stop'));</script></li>
                                                 }

@@ -36,4 +36,11 @@ namespace FactPortal.Models
         public IEnumerable<string> DataListJob { set; get; }
         public IEnumerable<string> DataListCompany { set; get; }
     }
+
+    public class UserCell
+    {
+        public string Id { set; get; }
+        public string UserName { set; get; }
+        public string Email { set; get; }
+    }
 }
