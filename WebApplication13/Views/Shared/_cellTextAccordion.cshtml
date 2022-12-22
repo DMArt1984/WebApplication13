@@ -1,0 +1,28 @@
+﻿@model cellTextAccordion
+
+@{ 
+    var x = Model.rows;
+}
+
+<div id="accordion">
+    @for (var i=0; i < Model.rows.Length; i++)
+     {       
+        <div class="card border mb-1">
+            <div class="card-header" id="heading@(i)">
+                <h5 class="m-0 font-size-14">
+                    <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapse@(i)" aria-expanded="false" aria-controls="collapse@(i)" class="text-dark collapsed">
+                        @Model.rows[i][0]
+                    </a>
+                </h5>
+            </div>
+
+            <div id="collapse@(i)" class="collapse" aria-labelledby="heading@(i)" data-parent="#accordion" style="">
+                <div class="card-body">
+                    @Model.rows[i][1]
+                </div>
+            </div>
+        </div>
+        
+    }
+
+</div>

@@ -1,4 +1,4 @@
-﻿@model RepTableArrays
+﻿@model RepAll
 @using System.Collections;
 
 @{
@@ -6,11 +6,11 @@
 
     int IndexTable = 0;
 
-    void CreateTable(RepTableArrays RTA)
+    void CreateTable(RepTable RTA)
     {
         IndexTable++;
         <!-- Table -->
-        <table id="dtable @IndexTable" class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        <table id="dtable @IndexTable" class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;">
             @if (String.IsNullOrWhiteSpace(RTA.Title))
             {
                 <thead class="bg-primary text-white">
@@ -29,73 +29,105 @@
             <tbody>
                 @foreach (var item in RTA.Rows)
                 {
-                <tr>
-                    @for (var i = 0; i < item.Values.Length; i++)
-                    {
-                        dynamic Value = item.Values[i];
-                        Type Selector = Value.GetType();
-
-                        if (Selector == typeof(RepTableArrays))
+                    <tr>
+                        @for (var i = 0; i < item.Values.Length; i++)
                         {
-                            // Рекурсивный вызов функции...
-                            RepTableArrays there = Value;
-                            <td>@{CreateTable(there);}</td>
-                        }
-                        else if (Selector == typeof(RepTableArrays))
-                        {
-                            UserCell there = Value;
-                            <td>
-                                @Html.Partial("_cellUser", there)
-                            </td>
-                        }
-                        else if (Value.GetType() == typeof(ServiceObjectCell))
-                        {
-                            ServiceObjectCell there = Value;
-                            <td>
-                                @Html.Partial("_cellSObject", there)
-                            </td>
-                        }
-                        else if (Value.GetType() == typeof(cellCircle))
-                        {
-                            cellCircle there = Value;
-                            <td>
-                                @Html.Partial("_cellCircle", there)
-                            </td>
-                        }
-                        else if (Value.GetType() == typeof(cellProgressBar))
-                        {
-                            cellProgressBar there = Value;
-                            <td>
-                                @Html.Partial("_cellProgressBar", there)
-                            </td>
-                        }
-                        else
-                        {
-                            switch (RTA.ColsType[i])
-                            {
-                                case RepColType.Email: // Почта
-                                    <td>mailto: @Value</td>
-                                    break;
-
-                                case RepColType.FilesV: // Список файлов
-                                    if (Value is IEnumerable)
-                                    {
-                                        List<myFiles> there = Value;
-                                        <td>@Html.Partial("_FilesV", there)</td>
-                                    }
-                                    break;
-
-                                default: // Текст
-                                    <td>@Value</td>
-                                    break;
+                        <td>
+                            @{
+                                CellContent(item.Values[i]);
                             }
-                        }
-
-                    }
-                </tr>
-                }
+                        </td>
+                         }
+                    </tr>
+                 }
             </tbody>
         </table>
+                                }
+
+    void CreateAccordion(RepAccordion RA)
+    {
+        IndexTable++;
+        <div id="accordion">
+            @for (var i = 0; i < RA.rows.Length; i++)
+            {
+                <div class="card border mb-1">
+                    <div class="card-header" id="heading@(IndexTable)_@(i)">
+                        <h5 class="m-0 font-size-14">
+                            <a data-bs-toggle="collapse" data-parent="#accordion" href="#collapse@(IndexTable)_@(i)" aria-expanded="false" aria-controls="collapse@(IndexTable)_@(i)" class="text-dark collapsed">
+                                @RA.rows[i].Title
+                            </a>
+                        </h5>
+                    </div>
+
+                    <div id="collapse@(IndexTable)_@(i)" class="collapse" aria-labelledby="heading@(IndexTable)_@(i)" data-parent="#accordion" style="">
+                        <div class="card-body p-1">
+                            @{
+                                CellContent(@RA.rows[i].Content);
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+                                }
+
+    void CellContent(dynamic Value)
+    {
+        //dynamic Value = item.Values[i];
+        Type Selector = Value.GetType();
+        if (Selector == typeof(RepTable))
+        {
+            // Рекурсивный вызов функции...
+            RepTable there = Value;
+            CreateTable(there);
+        }
+        else if (Selector == typeof(RepAccordion))
+        {
+            // Рекурсивный вызов функции...
+            RepAccordion there = Value;
+            CreateAccordion(there);
+        }
+        else if (Selector == typeof(UserCell))
+        {
+            UserCell there = Value;
+            @Html.Partial("_cellUser", there)
+        }
+        else if (Value.GetType() == typeof(ServiceObjectCell))
+        {
+            ServiceObjectCell there = Value;
+            @Html.Partial("_cellSObject", there)
+        }
+        else if (Value.GetType() == typeof(cellCircle))
+        {
+            cellCircle there = Value;
+            @Html.Partial("_cellCircle", there)
+        }
+        else if (Value.GetType() == typeof(cellProgressBar))
+        {
+            cellProgressBar there = Value;
+            @Html.Partial("_cellProgressBar", there)
+        }
+        else if (Value.GetType() == typeof(cellTextAccordion))
+        {
+            cellTextAccordion there = Value;
+            @Html.Partial("_cellTextAccordion", there)
+        }
+        else if (Value.GetType() != typeof(string) && Value is IEnumerable)
+        {
+            if (Value[0].GetType() == typeof(myFiles))
+            {
+                List<myFiles> mylist = Value;
+                @Html.Partial("_FilesV", mylist)                           
+            } else
+            {
+                //@Value
+            }
+        }
+        else
+        {
+            @Value
+        }
+
     }
 
 }
@@ -109,7 +141,8 @@
     </div>
     <div class="card-body">
         @{
-            CreateTable(Model);
+            //CreateTable(Model);
+            CellContent(Model.item);
         }
     </div>
 </div>

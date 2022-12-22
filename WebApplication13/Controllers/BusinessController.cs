@@ -2639,7 +2639,7 @@ namespace FactPortal.Controllers
         [Breadcrumb("ViewData.Title")]
         public IActionResult report1()
         {
-            RepTable RT = new RepTable( new List<RepColType> { 
+            RepTableList RT = new RepTableList( new List<RepColType> { 
                 RepColType.User,
                 RepColType.Email,
                 RepColType.FilesV,
@@ -2653,7 +2653,7 @@ namespace FactPortal.Controllers
                 "Разное"
             });
 
-            RepTable RT1 = new RepTable(new List<RepColType> { 
+            RepTableList RT1 = new RepTableList(new List<RepColType> { 
                 RepColType.User, 
                 RepColType.Email
             }, new List<string> {
@@ -2694,26 +2694,39 @@ namespace FactPortal.Controllers
             }));
 
             RT.Rows.Add(new RepRow(new List<dynamic> {
-                "user3",
-                "mail3@mail.ru",
-                new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } },
+                "user4",
+                "mail4@mail.ru",
+                new List<myFiles>() { new myFiles { Id = 3, Name = "file4.bmp", Path = "http://3" } },
                 new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" },
                 new cellProgressBar { color = "LightCoral", now = 85, min = 0, max = 100 }
             }));
 
             RT.Rows.Add(new RepRow(new List<dynamic> {
-                "user3",
-                "mail3@mail.ru",
-                new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } },
+                "user5",
+                "mail5@mail.ru",
+                new List<myFiles>() { new myFiles { Id = 3, Name = "file5.bmp", Path = "http://3" } },
                 new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" },
                 new cellProgressBar { color = "Gold", now = 15, min = 0, max = 100 }
             }));
 
+            RT.Rows.Add(new RepRow(new List<dynamic> {
+                "user6",
+                "mail6@mail.ru",
+                new List<myFiles>() { new myFiles { Id = 3, Name = "file6.bmp", Path = "http://3" } },
+                new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" },
+                new cellTextAccordion { rows = new string[][] { new string[]{"Текст 1", "Описание 1" }, new string[]{ "Текст 2", "Описание 2" }, new string[] { "Текст 3", "Описание 3" } } }
+            }));
 
-            RT.Layer = 0;
             RT.Title = "";
 
-            return View(RT.GetArrays());
+            return View(new RepAll { 
+                item = new RepAccordion { 
+                    rows = new RepAccordionItem[] {
+                        new RepAccordionItem { Title = "Основная вкладка", Content = RT.GetArrays() },
+                        new RepAccordionItem { Title = "Вторая вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia"}
+                     }
+                }
+            });
         }
 
         // ================================================================================================================================

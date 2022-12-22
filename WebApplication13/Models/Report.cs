@@ -53,56 +53,49 @@ namespace FactPortal.Models
 
     }
 
-    public struct RepTableArrays
+    public struct RepTable
     {
-        public int Layer;
         public string Title;
         public RepColType[] ColsType;
         public string[] ColsName;
         public RepRow[] Rows;
     }
 
-    public class RepTable
+    public class RepTableList
     {
-        public int Layer { get; set; }
         public string Title { get; set; }
         public List<RepColType> ColsType { get; set; }
         public List<string> ColsName { get; set; }
         public List<RepRow> Rows { get; set; }
 
-        public RepTable(int Layer = 0)
+        public RepTableList()
         {
-            this.Layer = Layer;
             ColsName = new List<string>();
             ColsType = new List<RepColType>();
             Rows = new List<RepRow>();
         }
-        public RepTable(List<RepColType> ColsType, List<string> ColsName, int Layer = 0)
+        public RepTableList(List<RepColType> ColsType, List<string> ColsName)
         {
-            this.Layer = Layer;
             this.ColsName = ColsName;
             this.ColsType = ColsType;
             Rows = new List<RepRow>();
         }
-        public RepTable(List<RepRow> Rows, int Layer = 0)
+        public RepTableList(List<RepRow> Rows)
         {
-            this.Layer = Layer;
             ColsName = new List<string>();
             ColsType = new List<RepColType>();
             this.Rows = Rows;
         }
-        public RepTable(List<RepColType> ColsType, List<string> ColsName, List<RepRow> Rows, int Layer = 0)
+        public RepTableList(List<RepColType> ColsType, List<string> ColsName, List<RepRow> Rows)
         {
-            this.Layer = Layer;
             this.ColsName = ColsName;
             this.ColsType = ColsType;
             this.Rows = Rows;
         }
 
-        public RepTableArrays GetArrays()
+        public RepTable GetArrays()
         {
-            return new RepTableArrays {
-                Layer = Layer,
+            return new RepTable {
                 Title = Title,
                 ColsName = ColsName.ToArray(), 
                 ColsType = ColsType.ToArray(),
@@ -134,6 +127,27 @@ namespace FactPortal.Models
         public float now { get; set; }
         public float min { get; set; }
         public float max { get; set; }
+    }
+
+    public class cellTextAccordion
+    {
+        public string[][] rows { get; set; }
+    }
+
+    public class RepAccordionItem
+    {
+        public string Title { get; set; }
+        public dynamic Content { get; set; }
+    }
+
+    public struct RepAccordion
+    {
+        public RepAccordionItem[] rows;
+    }
+
+    public struct RepAll
+    {
+        public dynamic item;
     }
 
 }
