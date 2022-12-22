@@ -28,6 +28,7 @@ namespace FactPortal.Models
         File = 50,
         FilesV = 51,
 
+        Dynamic = 0,
         Id = 1,
         DataTime = 2,
         Text = 3,
@@ -107,6 +108,32 @@ namespace FactPortal.Models
                 ColsType = ColsType.ToArray(),
                 Rows = Rows.ToArray()};
         }
+    }
+
+    public class CardCircle
+    {
+        public string icon { get; set; }
+        public string color { get; set; }
+        public string percent { get; set; }
+        public string alpha { get; set; }
+        public string description { get; set; }
+        public string title { get; set; }
+        public string titleNext { get; set; }
+        public string value { get; set; }
+    }
+
+    public class cellCircle
+    {
+        public string color { get; set; }
+        public string percent { get; set; }
+    }
+
+    public class cellProgressBar
+    {
+        public string color { get; set; }
+        public float now { get; set; }
+        public float min { get; set; }
+        public float max { get; set; }
     }
 
 }

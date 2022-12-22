@@ -2640,27 +2640,78 @@ namespace FactPortal.Controllers
         public IActionResult report1()
         {
             RepTable RT = new RepTable( new List<RepColType> { 
-                RepColType.Id,
                 RepColType.User,
                 RepColType.Email,
-                RepColType.Phone,
                 RepColType.FilesV,
-                RepColType.ServiceObject
+                RepColType.ServiceObject,
+                RepColType.Dynamic
             }, new List<string> {
-                "ID", 
                 "Пользователь",
                 "Почта",
-                "Телефон",
-                "Текст",
-                "Объект"
+                "Файлы",
+                "Объект",
+                "Разное"
             });
 
-            RT.Rows.Add(new RepRow(new List<dynamic> { 1, new UserCell {Id = "1", Email="user@mail.com", UserName="userName" }, "mail1@mail.ru", "+1012345", new List<myFiles>() { new myFiles { Id = 1, Name = "file1.bmp", Path = "http://1" } }, new ServiceObjectCell { Id = 1, ObjectCode = "9991", ObjectTitle = "OTitle1" } }));
-            RT.Rows.Add(new RepRow(new List<dynamic> { 2, "user2", "mail2@mail.ru", "+2012345", new List<myFiles>() { new myFiles { Id = 2, Name = "file2.bmp", Path = "http://2" } }, new ServiceObjectCell { Id = 2, ObjectCode = "9992", ObjectTitle = "OTitle2" } }));
-            RT.Rows.Add(new RepRow(new List<dynamic> { 3, "user3", "mail3@mail.ru", "+3012345", new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } }, new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" } }));
+            RepTable RT1 = new RepTable(new List<RepColType> { 
+                RepColType.User, 
+                RepColType.Email
+            }, new List<string> {
+                "Пользователь",
+                "Почта"
+            });
+
+            RT1.Rows.Add(new RepRow(new List<dynamic> { "userA", "userA@mail.com" }));
+            RT1.Rows.Add(new RepRow(new List<dynamic> { "userB", "userB@mail.com" }));
+            RT1.Title = "";
+
+            RT.Rows.Add(new RepRow(new List<dynamic> {
+                new UserCell {Id = "1", Email="user@mail.com", UserName="userName" },
+                "mail1@mail.ru",
+                new List<myFiles>() { 
+                    new myFiles { Id = 1, Name = "file1.bmp", Path = "http://1" },
+                    new myFiles { Id = 2, Name = "file2.doc", Path = "http://2" },
+                    new myFiles { Id = 3, Name = "file3.xls", Path = "http://3" }
+                },
+                new ServiceObjectCell { Id = 1, ObjectCode = "9991", ObjectTitle = "OTitle1" },
+                new cellCircle { color = "LightCoral", percent = string.Format("{0:##0.#}", 57)}
+            }));
+
+            RT.Rows.Add(new RepRow(new List<dynamic> { 
+                "user2", 
+                "mail2@mail.ru", 
+                new List<myFiles>() { new myFiles { Id = 2, Name = "file2.bmp", Path = "http://2" } }, 
+                new ServiceObjectCell { Id = 2, ObjectCode = "9992", ObjectTitle = "OTitle2" },
+                RT1.GetArrays()
+            }));
+
+            RT.Rows.Add(new RepRow(new List<dynamic> { 
+                "user3", 
+                "mail3@mail.ru", 
+                new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } }, 
+                new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" },
+                new cellProgressBar { color = "SteelBlue", now = 45, min = 0, max = 100 }
+            }));
+
+            RT.Rows.Add(new RepRow(new List<dynamic> {
+                "user3",
+                "mail3@mail.ru",
+                new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } },
+                new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" },
+                new cellProgressBar { color = "LightCoral", now = 85, min = 0, max = 100 }
+            }));
+
+            RT.Rows.Add(new RepRow(new List<dynamic> {
+                "user3",
+                "mail3@mail.ru",
+                new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } },
+                new ServiceObjectCell { Id = 3, ObjectCode = "9993", ObjectTitle = "OTitle3" },
+                new cellProgressBar { color = "Gold", now = 15, min = 0, max = 100 }
+            }));
+
 
             RT.Layer = 0;
-            RT.Title = "Главная таблица";
+            RT.Title = "";
 
             return View(RT.GetArrays());
         }

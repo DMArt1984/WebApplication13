@@ -1,0 +1,5 @@
+﻿@model cellProgressBar
+
+<div class="progress progress" style="height: 20px" >
+    <div class="progress-bar" role="progressbar" style="width: @(Model.now)%; background-color: @(Model.color)" aria-valuenow="@(Model.now)" aria-valuemin="@(Model.min)" aria-valuemax="@(Model.max)">@(Model.now)</div>
+</div>

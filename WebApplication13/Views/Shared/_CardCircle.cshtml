@@ -1,15 +1,15 @@
-﻿@model Object
+﻿@model CardCircle
 
 @{ 
-    string icon = (@Model.GetType().GetProperty("icon") != null) ? @Model.GetType().GetProperty("icon").GetValue(@Model, null).ToString() : null;
-    string color = (@Model.GetType().GetProperty("color") != null) ? @Model.GetType().GetProperty("color").GetValue(@Model, null).ToString() : null;
-    string percent = (@Model.GetType().GetProperty("percent") != null) ? @Model.GetType().GetProperty("percent").GetValue(@Model, null).ToString()+"%" : null;
-    string alpha = (@Model.GetType().GetProperty("alpha") != null) ? @Model.GetType().GetProperty("alpha").GetValue(@Model, null).ToString() : null;
-    string description = (@Model.GetType().GetProperty("description") != null) ? @Model.GetType().GetProperty("description").GetValue(@Model, null).ToString() : null;
+//string icon = (@Model.GetType().GetProperty("icon") != null) ? @Model.GetType().GetProperty("icon").GetValue(@Model, null).ToString() : null;
+//string color = (@Model.GetType().GetProperty("color") != null) ? @Model.GetType().GetProperty("color").GetValue(@Model, null).ToString() : null;
+//string percent = (@Model.GetType().GetProperty("percent") != null) ? @Model.GetType().GetProperty("percent").GetValue(@Model, null).ToString()+"%" : null;
+//string alpha = (@Model.GetType().GetProperty("alpha") != null) ? @Model.GetType().GetProperty("alpha").GetValue(@Model, null).ToString() : null;
+//string description = (@Model.GetType().GetProperty("description") != null) ? @Model.GetType().GetProperty("description").GetValue(@Model, null).ToString() : null;
 
-    string title = (@Model.GetType().GetProperty("title") != null) ? @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString() : null;
-    string titleNext = (@Model.GetType().GetProperty("titlenext") != null) ? @Model.GetType().GetProperty("titlenext").GetValue(@Model, null).ToString() : null;
-    string value = @Model.GetType().GetProperty("value").GetValue(@Model, null).ToString();
+//string title = (@Model.GetType().GetProperty("title") != null) ? @Model.GetType().GetProperty("title").GetValue(@Model, null).ToString() : null;
+//string titleNext = (@Model.GetType().GetProperty("titlenext") != null) ? @Model.GetType().GetProperty("titlenext").GetValue(@Model, null).ToString() : null;
+//string value = @Model.GetType().GetProperty("value").GetValue(@Model, null).ToString();
 
 
 }
@@ -18,10 +18,10 @@
         <div class="card-body">
             <div class="d-flex align-items-center">
                 <!-- left -->
-                @if (String.IsNullOrWhiteSpace(icon))
+                @if (String.IsNullOrWhiteSpace(Model.icon))
                 {
                     <div class="flex-shrink-0 me-3 align-self-center" style="position: relative;">
-                        <div size="220" color="@color" widthback="5" widthfront="7" class="circle">@percent</div>
+                        <div size="220" color="@Model.color" widthback="5" widthfront="7" class="circle">@Model.percent</div>
                     </div>
                 }
                 else
@@ -29,31 +29,31 @@
                     <div class="flex-shrink-0  me-3 align-self-center">
                         <div class="avatar-sm">
                             <div class="avatar-title bg-light rounded-circle text-primary font-size-20">
-                                <i class="@icon"></i>
+                                <i class="@Model.icon"></i>
                             </div>
                         </div>
                     </div>
                 }
                 <!-- right -->
                 <div class="flex-grow-1 overflow-hidden">
-                    @if (!String.IsNullOrWhiteSpace(title))
+                    @if (!String.IsNullOrWhiteSpace(Model.title))
                     {
-                        <p class="mb-1">@title</p>
+                        <p class="mb-1">@Model.title</p>
                     }
-                    @if (!String.IsNullOrWhiteSpace(titleNext))
+                    @if (!String.IsNullOrWhiteSpace(Model.titleNext))
                     {
-                        <p class="mb-1">@titleNext</p>
+                        <p class="mb-1">@Model.titleNext</p>
                     }
-                    <h5 class="mb-3">@value</h5>
-                    @if (!String.IsNullOrWhiteSpace(alpha))
+                    <h5 class="mb-3">@Model.value</h5>
+                    @if (!String.IsNullOrWhiteSpace(Model.alpha))
                     {
-                        @if (alpha[0] == '-')
+                        @if (Model.alpha[0] == '-')
                         {
-                            <p class="text-truncate mb-0"><span class="text-danger me-2"> @alpha <i class="ri-arrow-right-down-line align-bottom ms-1"></i></span> @description</p>
+                            <p class="text-truncate mb-0"><span class="text-danger me-2"> @Model.alpha <i class="ri-arrow-right-down-line align-bottom ms-1"></i></span> @Model.description</p>
                         }
                         else
                         {
-                            <p class="text-truncate mb-0"><span class="text-success me-2"> @alpha <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> @description</p>
+                            <p class="text-truncate mb-0"><span class="text-success me-2"> @Model.alpha <i class="ri-arrow-right-up-line align-bottom ms-1"></i></span> @Model.description</p>
                         }
                     }
                 </div>
