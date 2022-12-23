@@ -42,8 +42,9 @@
                 <tr>
                     <!--<th>ID</th>-->
                     <th>Название</th>
-                    <th>Описание</th>
+                    @*<th>Описание</th>*@
                     <th>Код</th>
+                    <th>Уведомления</th>
                     <th>Позиция</th>
                     <th>Последнее обслуживание</th>
                     @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
@@ -55,81 +56,84 @@
             <tbody>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            <a title="Обзор" asp-action="SOInfo" asp-route-id="@item.Id">
-                                @item.ObjectTitle
-                            </a>
-                            @if (@item.CountAlerts > 0)
+                <tr>
+                    <td>
+                        @*<a title="Обзор" asp-action="SOInfo" asp-route-id="@item.Id">
+                @item.ObjectTitle
+            </a>*@
+                        @item.ObjectTitle
+                    </td>
+                    @*<td style="max-width:300px; word-break: break-all">
+            @if (item.Description != null && item.Description.Length > 50)
+            {
+                <small>
+                    @if (item.Description.Length > 200)
+                    {
+                        @item.Description.Substring(0, 197)
+                        <span>...</span>
+                    }
+                    else
+                    {
+                        @item.Description
+                    }
+
+                </small>
+            }
+            else
+            {
+                @item.Description
+            }
+        </td>*@
+                    <td>@item.ObjectCode</td>
+                    <td>
+                        @if (@item.CountAlerts > 0)
+                        {
+                            <span class="badge bg-danger">@item.CountAlerts</span>
+                        }
+                    </td>
+                    <td>
+                        @{
+                            if (item.Position != null)
                             {
-                                <h3 class="badge bg-danger">@item.CountAlerts</h3>
-                            }
-                        </td>
-                        <td style="max-width:300px; word-break: break-all">
-                            @if (item.Description != null && item.Description.Length > 50)
-                            {
-                                <small>
-                                    @if (item.Description.Length > 200)
+                                foreach (var pos in item.Position.Split(">"))
+                                {
+                                    if (pos == item.Position.Split(">").Last())
                                     {
-                                        @item.Description.Substring(0, 197)
-                                        <span>...</span>
+                                        <span class="badge bg-primary">@pos</span>
                                     }
                                     else
                                     {
-                                        @item.Description
-                                    }
-
-                                </small>
-                            }
-                            else
-                            {
-                                @item.Description
-                            }
-                        </td>
-                        <td>@item.ObjectCode</td>
-                        <td>
-                            @{
-                                if (item.Position != null)
-                                {
-                                    foreach (var pos in item.Position.Split(">"))
-                                    {
-                                        if (pos == item.Position.Split(">").Last())
-                                        {
-                                            <span class="badge bg-primary">@pos</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-light">@pos</span>
-                                        }
+                                        <span class="badge bg-light">@pos</span>
                                     }
                                 }
                             }
-                        </td>
-                        <td>
-                            @if (item.LastWork != null)
-                            {
-                                @Html.Partial("_cellWork", new WorkInfo { Id = item.LastWork.Id, ServiceObjectId = item.Id, ServiceObjectTitle = item.ObjectTitle })
-                            }
-                        </td>
-                        @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
-                        {
-                            <td>
-                                <div class="row px-1">
-                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
-                                        <i class="far fa-eye"></i>
-                                    </a>
-                                    <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
-                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
-                                        <i class="fas fa-pencil-alt"></i>
-                                    </a>
-
-                                    <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
-                                        <i class="fas fa-trash-alt px-1"></i>
-                                    </a>
-                                </div>
-                            </td>
                         }
-                    </tr>
+                    </td>
+                    <td>
+                        @if (item.LastWork != null)
+                        {
+                            @Html.Partial("_cellWork", new WorkInfo { Id = item.LastWork.Id, ServiceObjectId = item.Id, ServiceObjectTitle = item.ObjectTitle })
+                        }
+                    </td>
+                    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
+                    {
+                        <td>
+                            <div class="row px-1">
+                                <a class="col btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
+                                    <i class="far fa-eye"></i>
+                                </a>
+                                <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
+                                <a class="col btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+
+                                <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
+                                    <i class="fas fa-trash-alt px-1"></i>
+                                </a>
+                            </div>
+                        </td>
+                    }
+                </tr>
                 }
             </tbody>
         </table>

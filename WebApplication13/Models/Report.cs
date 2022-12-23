@@ -145,6 +145,17 @@ namespace FactPortal.Models
         public RepAccordionItem[] rows;
     }
 
+    public class RepCollapsItem
+    {
+        public dynamic TitleContent { get; set; }
+        public dynamic OpenContent { get; set; }
+    }
+
+    public struct RepCollaps
+    {
+        public RepCollapsItem[] rows;
+    }
+
     public struct RepAll
     {
         public dynamic item;

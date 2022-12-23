@@ -2665,6 +2665,18 @@ namespace FactPortal.Controllers
             RT1.Rows.Add(new RepRow(new List<dynamic> { "userB", "userB@mail.com" }));
             RT1.Title = "";
 
+            RepTableList RT2 = new RepTableList(new List<RepColType> {
+                RepColType.User,
+                RepColType.Email
+            }, new List<string> {
+                "Пользователь",
+                "Почта"
+            });
+
+            RT2.Rows.Add(new RepRow(new List<dynamic> { "userC", "userC@mail.com" }));
+            RT2.Rows.Add(new RepRow(new List<dynamic> { "userD", "userD@mail.com" }));
+            RT2.Title = "Еще таблица";
+
             RT.Rows.Add(new RepRow(new List<dynamic> {
                 new UserCell {Id = "1", Email="user@mail.com", UserName="userName" },
                 "mail1@mail.ru",
@@ -2723,7 +2735,14 @@ namespace FactPortal.Controllers
                 item = new RepAccordion { 
                     rows = new RepAccordionItem[] {
                         new RepAccordionItem { Title = "Основная вкладка", Content = RT.GetArrays() },
-                        new RepAccordionItem { Title = "Вторая вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia"}
+                        new RepAccordionItem { Title = "Вторая вкладка",
+                            Content = new RepCollaps {
+                                rows = new RepCollapsItem[] { 
+                                    new RepCollapsItem { TitleContent = RT1.GetArrays(), OpenContent = RT2.GetArrays()},
+                                    new RepCollapsItem { TitleContent = "Нажмите на меня", OpenContent = "Ну и зачем было нажимать"}
+                                }
+                            }},
+                        new RepAccordionItem { Title = "Третья вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia"}
                      }
                 }
             });

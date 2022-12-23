@@ -142,7 +142,7 @@ namespace FactPortal
             });
 
             //env.EnvironmentName = "Production"; // test
-            if (env.IsDevelopment())
+            if (env.IsDevelopment() || true)
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
