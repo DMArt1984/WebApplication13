@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SmartBreadcrumbs.Attributes;
 
+using Microsoft.AspNetCore.StaticFiles;
+
 namespace FactPortal.Controllers
 {
     [Authorize]
@@ -342,12 +344,26 @@ namespace FactPortal.Controllers
         [Breadcrumb("ViewData.Title")]
         public IActionResult TestLoadDelFiles(string LoadFileId = null, string DelFileId = null)
         {
-
-            
-
             return View();
         }
 
+        // https://localhost:44369/Files/DownloadFile?fileName=info.txt
+        // https://localhost:44369/Files/DownloadFile?fileName=appdebug.apk
+        public PhysicalFileResult DownloadFile(string fileName)
+        {
+            //Determine the Content Type of the File.
+            string contentType = "";
+            new FileExtensionContentTypeProvider().TryGetContentType(fileName, out contentType);
+
+            //Build the File Path.
+            string path = Path.Combine(_appEnvironment.WebRootPath, "Files/") + fileName;
+
+            //if (contentType == null)
+            //    contentType = "application/octet-stream";
+
+            //Send the File to Download.
+            return new PhysicalFileResult(path, contentType);
+        }
 
     }
 }

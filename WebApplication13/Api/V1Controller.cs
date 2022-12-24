@@ -21,6 +21,8 @@ using System.Drawing;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
+using Microsoft.AspNetCore.StaticFiles;
+
 
 namespace FactPortal.Api
 {
@@ -2394,10 +2396,28 @@ namespace FactPortal.Api
             return id;
         }
 
-        
+
         #endregion
 
 
+        // https://localhost:44369/api/v1/file/download?fileName=appdebug.apk
+        [HttpGet("file/download")]
+        public PhysicalFileResult DownloadFile(string fileName)
+        {
+            //Determine the Content Type of the File.
+            string contentType = "";
+            new FileExtensionContentTypeProvider().TryGetContentType(fileName, out contentType);
+            var X = new FileExtensionContentTypeProvider().Mappings;
+
+            //Build the File Path.
+            string path = Path.Combine(_appEnvironment.WebRootPath, "Files/") + fileName;
+
+            //if (contentType == null)
+            //    contentType = "application/octet-stream";
+
+            //Send the File to Download.
+            return new PhysicalFileResult(path, contentType);
+        }
 
     }
 }

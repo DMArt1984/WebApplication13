@@ -5,7 +5,8 @@ $(document).ready(function () {
             paginate: {
                 previous: "<i class='mdi mdi-chevron-left'>", next: "<i class='mdi mdi-chevron-right'>"
             }
-        }, drawCallback: function () {
+        },
+        drawCallback: function () {
             $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
         },
         //вкл/откл разбиения на страницы

@@ -23,6 +23,7 @@ using SmartBreadcrumbs.Extensions;
 using System.Reflection;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace FactPortal
 {
@@ -160,6 +161,7 @@ namespace FactPortal
             app.UseStatusCodePagesWithRedirects("/Home/Error?code={0}");
 
             //---
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -171,7 +173,7 @@ namespace FactPortal
             app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = fileProvider,
-                RequestPath = requestPath
+                RequestPath = requestPath,
             });
 
             app.UseDirectoryBrowser(new DirectoryBrowserOptions
@@ -179,6 +181,18 @@ namespace FactPortal
                 FileProvider = fileProvider,
                 RequestPath = requestPath
             });
+
+            FileExtensionContentTypeProvider contentTypes = new FileExtensionContentTypeProvider();
+            contentTypes.Mappings[".apk"] = "application/vnd.android.package-archive"; // "application/octet-stream"; // 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider = contentTypes
+                //ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string>
+                //    {
+                //    { ".apk","application/vnd.android.package-archive"}
+                //    })
+            }); // new
+
             // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
             app.UseRouting();
