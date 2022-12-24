@@ -4,6 +4,7 @@
 
     var uid = 0;
     var maxUID = 0;
+    //int FontLevel = 0;
 
     List<SelectListItem> TextLinkID = new List<SelectListItem>();
     TextLinkID.Add(new SelectListItem { Value = "0", Text = "Структура" });
@@ -48,7 +49,7 @@
 
         <div id="level_root">
             Структура [<a href="javascript:ShowAll();">развернуть</a>] [<a href="javascript:HideAll();">свернуть</a>]
-            @{ExpPos(IdName, 0);
+            @{ExpPos(IdName, 0, 0);
                 maxUID = uid;}
         </div>
         <!-- Позиции с ошибками -->
@@ -69,38 +70,39 @@
     }
 
     // Рекурсивное получение позиций для дерева
-    void ExpPos(Dictionary<int, string> IdName, int Link)
+    void ExpPos(Dictionary<int, string> IdName, int Link, int FontLevel)
     {
+        FontLevel++;
+        string ThisFontLevel = (FontLevel <= 5) ? $"h{FontLevel}" : "";
         var MyList = IdName.Where(x => GetLinkID(x.Value) == Link && x.Key != Link);
         if (MyList.Count() == 0)
             return;
 
         <ul id="@uid">
             @foreach (var item in MyList.OrderBy(y => GetName(y.Value)))
-            {
-                uid++;
-                <li>
-                    @{ // Свернуть и развернуть
-                        var Next = IdName.Where(x => GetLinkID(x.Value) == item.Key && x.Key != item.Key);
-                        if (Next.Count() > 0) // Позиция содержит дочерние объекты
-                        {
-                            <small class="badge bg-light d-none"><a id="m @uid" href="javascript:flipflop('@uid');">свернуть</a></small>
-                            <a href="javascript:flipflopClass('@uid');"><i id="s @uid" class="fas fa-angle-up"></i></a>
-                        }
-                        else
-                        {
-                            <i class="fas fa-angle-right"></i>
-                        }
-
+        {
+            uid++;
+            <li class="@ThisFontLevel">
+                @{ // Свернуть и развернуть
+                    var Next = IdName.Where(x => GetLinkID(x.Value) == item.Key && x.Key != item.Key);
+                    if (Next.Count() > 0) // Позиция содержит дочерние объекты
+                    {
+                        <small class="badge bg-light d-none"><a id="m @uid" href="javascript:flipflop('@uid');">свернуть</a></small>
+                        <a href="javascript:flipflopClass('@uid');"><i id="s @uid" class="fas fa-angle-up"></i></a>
+                    }
+                    else
+                    {
+                        <i class="fas fa-angle-right"></i>
                     }
 
-                    <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Key, '@GetName(item.Value)', @GetLinkID(item.Value))">@GetName(item.Value)</a>
+                }
+                <a href="#title" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="Edit(@item.Key, '@GetName(item.Value)', @GetLinkID(item.Value))">@GetName(item.Value)</a>
 
-                    @{ // дочерние объекты...
-                        ExpPos(IdName, item.Key);
-                    }
-                </li>
-            }
+                @{ // дочерние объекты...
+                    ExpPos(IdName, item.Key, FontLevel);
+                }
+            </li>
+        }
         </ul>
     }
 
@@ -282,8 +284,6 @@
 
 <!-- Nav tabs -->
 <div class="d-flex justify-content-between">
-
-    
 
     <ul class="nav nav-pills" role="tablist">
 

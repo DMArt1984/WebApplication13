@@ -18,18 +18,14 @@
 
 
 @section CSS_first {
-    <!-- DataTables -->
-    <link href="~/assets/libs/datatables.net-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-    <link href="~/assets/libs/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- Responsive datatable examples -->
-    <link href="~/assets/libs/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+    @Html.Partial("_DTable_CSS_first")
 }
 
 <!-- Table -->
 <div class="card">
     <div class="card-body">
-        <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+        <div id="upp" class="d-flex justify-content-between"></div>
+        <table id="dtable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-primary text-white">
                 <tr>
                     <th>ID</th>
@@ -50,7 +46,7 @@
                             <a class="" target="_blank" href=@Html.Partial("_requestPathBase", item.Path.Replace(" ", "%20"))>
                                 @item.Name
                             </a>
-                            
+
                         </td>
                         <td>
                             <i class='@Html.Partial("_FileIcon", item.Path) text-secondary px-2'></i> @item.Path.Split(".").Last().ToLower()
@@ -74,10 +70,11 @@
                 }
             </tbody>
         </table>
+        <div id="down_lr" class="d-flex justify-content-between"></div>
     </div>
     <!--<div class="card-footer">-->
-        <!-- КНОПКА: Добавить новый файл -->
-        <!--<button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="">
+    <!-- КНОПКА: Добавить новый файл -->
+    <!--<button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="">
             <i class="fas fa-plus"></i> Добавить новый файл
         </button>
     </div>-->
@@ -221,11 +218,149 @@
 </script>
 
 @section Scripts {
-    <!-- Required datatable js -->
-    <script src="~/assets/libs/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="~/assets/libs/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    @Html.Partial("_DTable_Scripts")
 
-    <!-- Datatable init js -->
-    <script src="~/assets/js/pages/datatables.init.js"></script>
+<script>
+    $(document).ready(function () {
+        var table = $('#dtable').DataTable({
+            language: {
+                emptyTable: "Нет данных для отображения в таблице",
+                zeroRecords: "Записи не найдены",
+                lengthMenu: "Показывать _MENU_ записей",
+                search: "Поиск: ",
+                info: "Показаны записи с _START_ по _END_. Всего записей _TOTAL_",
+                infoEmpty: "Нет записей",
+                infoFiltered: "(отфильтровано из _MAX_ записей)",
+                //подписи кнопок навигации по страницам
+                paginate: {
+                    previous: "<i class='mdi mdi-chevron-left'>",
+                    next: "<i class='mdi mdi-chevron-right'>"
+                },
+                //подписи в окне выбора фильтра
+                searchPanes: {
+                    title: {
+                        _: 'Выбрано фильтров: %d шт.',
+                        0: 'Фильтры не выбраны'
+                    },
+                    collapseMessage: 'Свернуть панели',
+                    showMessage: 'Развернуть панели',
+                    clearMessage: 'Сбросить фильтры',
+                    collapse: { 0: '<i class="mdi mdi-filter-off"></i> Фильтр', _: '<i class="mdi mdi-filter"></i> Фильтр (%d)' },
+                    emptyPanes: "Нет панелей для отображения. :/",
+                    emptyMessage: "(пусто)"
+                }
+            },
+            drawCallback: function () {
+                $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+            },
+
+            dom: 'Blfrtip',
+            //вкл/откл разбиения на страницы
+            paging: true,
+            //вкл/откл поля поиска
+            searching: true,
+            //вкл/откл строки информации внизу таблицы
+            info: true,
+            //вкл/откл сортировки столбцов
+            ordering: true,
+            //сохранения состояния таблицы при возврате на нее
+            stateSave: true,
+
+            retrieve: true,
+
+            //"order": [[0, 'desc']],
+
+            // выбор элементов на странице
+            "lengthMenu": [10, 25, 50, 100],
+
+            columnDefs: [
+                { "orderable": false, targets: -1 }, //отключение сортировки последнего столбца
+                {
+                    searchPanes: {
+                        show: true
+                    },
+                    targets: [1, 2, 3, 4]
+                }
+            ],
+
+            buttons: {
+                dom: {
+                    button: {
+                        tag: 'button',
+                        className: ''
+                    }
+                },
+                buttons: [{
+                    extend: 'excel',
+                    className: 'btn btn-sm btn-outline-secondary',
+                    titleAttr: 'Excel export.',
+                    text: '<i class="far fa-file-excel"></i> Excel',
+                    filename: 'excel-export',
+                    extension: '.xlsx'
+                }, {
+                    extend: 'copy',
+                    className: 'btn btn-sm btn-outline-secondary',
+                    titleAttr: 'Copy table data.',
+                    text: '<i class="far fa-copy"></i> Копировать'
+                }]
+            }
+        });
+
+        //Отдельная группа кнопок
+        new $.fn.dataTable.Buttons(table, {
+            buttons: [
+                { //Кнопка "Фильтр"
+                    extend: 'searchPanes',
+                    text: '<i class="mdi mdi-filter-off"></i> Фильтр',
+                    className: "buttons-html5 btn btn-sm btn-outline-secondary",
+                    titleAttr: 'Фильтр',
+                    config: {
+                        cascadePanes: true, // true or false!
+                        columns: [1,2,3,4],
+                        //clear: false
+                    },
+                    init: function (api, node, config) {
+                        $(node).removeClass('btn-default').removeClass('dt-button')
+                    }
+                },
+            ]
+        });
+
+
+
+
+        // Перемещаем элементы таблицы в div
+        //  верх таблицы
+        $('#upp').append($('#dtable_length')); // кол-во строк на странице (length)
+        $('#upp').append($('#dtable_filter')); // фильтр (filter)
+
+        table.buttons(1, null).container().appendTo($('#upp'));
+        // Перемещаем кнопки в div
+        table.buttons(0, null).container().appendTo($('#upp'));
+
+        //  низ таблицы
+        $('#down_lr').append($('#dtable_info')); // инфо (info)
+        $('#down_lr').append($('#dtable_paginate')); // страницы (paginate)
+
+        // Стили элемента length
+        $('#dtable_length>label').css("font-weight", "normal").css("white-space", "nowrap");
+        $('#dtable_length>label>select').css("display", "inline-block").css("width", "auto");
+        // Стили элемента filter
+        $('#dtable_filter>label').css("font-weight", "normal").css("white-space", "nowrap");
+        $('#dtable_filter>label>input').css("display", "inline-block").css("width", "auto");
+
+        // Кнопка к элементу filter
+        //table.buttons(1, null).container().css('float', 'right').addClass('px-2'); // right
+        //$('#dtable_filter>').append(table.buttons(1, null).container());
+
+        // еще пример для div
+        //$('#fpopup').append(table.buttons(1, null).container().find('div'));
+
+        // Пример стиля
+        //$('#dtable_filter>input').addClass('d-inline-flex');
+
+    });
+
+</script>
+
 }
-
