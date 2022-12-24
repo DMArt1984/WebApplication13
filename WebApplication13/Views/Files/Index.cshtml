@@ -29,7 +29,7 @@
 <!-- Table -->
 <div class="card">
     <div class="card-body">
-        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+        <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
             <thead class="bg-primary text-white">
                 <tr>
                     <th>ID</th>
@@ -37,7 +37,7 @@
                     <th>Тип</th>
                     <th>Путь</th>
                     <th>Описание</th>
-                    <th>Редактор</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -66,8 +66,8 @@
                         </td>
                         <td>@item.Description</td>
                         <td>
-                            <button class="btn btn-outline-secondary btn-sm edit" title="Редактировать" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="javascript:Edit(@item.Id, '@item.Name', '@item.Description', '@item.Path');">
-                                <i class="fas fa-pencil-alt"></i>
+                            <button class="btn btn-outline-light btn-sm edit" title="Редактировать" data-bs-toggle="modal" data-bs-target="#myModal_Edit" onclick="javascript:Edit(@item.Id, '@item.Name', '@item.Description', '@item.Path');">
+                                <i class="fas fa-pencil-alt px-1"></i> Редактировать
                             </button>
                         </td>
                     </tr>
@@ -75,12 +75,12 @@
             </tbody>
         </table>
     </div>
-    <div class="card-footer">
+    <!--<div class="card-footer">-->
         <!-- КНОПКА: Добавить новый файл -->
-        <button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="">
+        <!--<button type="button" class="btn btn-primary btn btn-block" data-bs-toggle="modal" data-bs-target="#myModal_Add" onclick="">
             <i class="fas fa-plus"></i> Добавить новый файл
         </button>
-    </div>
+    </div>-->
 </div>
 
 

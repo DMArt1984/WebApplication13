@@ -36,14 +36,13 @@
         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
             @*<h4 class="text-white"><i class="mdi mdi-alert"></i> Список уведомлений</h4>*@
             @*<div class="">*@
-                    <a class="btn btn-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up"></i> Перейти в объект</a>
+                    <a class="btn btn-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up fa-lg"></i> Перейти в объект</a>
                     @if (IsAdmin)
                     {
                         <!-- Добавить -->
                         <a class="btn btn-light btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
                     }
             @*</div>*@
-
         </div>
     }
         <!-- Таблица -->

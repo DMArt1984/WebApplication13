@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<UserInfo>
 @{
     ViewData["Title"] = "Пользователи";
+    bool IsAdmin = ViewContext.HttpContext.User.IsInRole("Admin") || ViewContext.HttpContext.User.IsInRole("SuperAdmin");
 }
 
 @section CSS_first {
@@ -14,10 +15,18 @@
 
 
 <div class="card">
+    <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
+        <a class="btn btn-secondary btn btn-block" title="Объекты" asp-controller="Business" asp-action="Index"><i class="mdi mdi-engine fa-lg"></i> Перейти в объекты</a>
+        @if (IsAdmin)
+        {
+            <!-- Добавить -->
+            <a class="btn btn-light btn btn-block" title="Добавить" asp-controller="Admin" asp-action="Register"><i class="mdi mdi-account-plus"></i> Регистрация нового пользователя</a>
+        }
+    </div>
     <div class="card-body">
         <h3 class="d-none card-title text-center text-secondary">Список пользователей</h3>
         <div class="">
-            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+            <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                 <thead class="bg-primary text-white">
                     <tr>
                         <th class="d-none">ID</th>
@@ -88,12 +97,12 @@
                                 }
                             </td>
                             <td valign="middle">
-                                
-                                    @if (item.User.PhoneNumberConfirmed)
-                                    {
-                                        <i class="ri-checkbox-fill align-middle"></i>
-                                    }
-                                    @item.User.PhoneNumber
+
+                                @if (item.User.PhoneNumberConfirmed)
+                                {
+                                    <i class="ri-checkbox-fill align-middle"></i>
+                                }
+                                @item.User.PhoneNumber
 
                             </td>
                             <td valign="middle">@String.Join(", ", @item.Claims.Where(x => x.Type.ToLower() == "job").Select(y => y.Value))</td>
@@ -133,12 +142,6 @@
     </div>
 </div>
 
-
-<div class="pb-3">
-    <form method="get">
-        <button class="btn btn-primary waves-effect waves-light" asp-controller="Admin" asp-action="Register"><i class="mdi mdi-account-plus"></i> Регистрация нового пользователя</button>
-    </form>
-</div>
 
 
 

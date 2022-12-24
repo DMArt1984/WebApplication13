@@ -31,7 +31,7 @@
     @if (IsAdmin)
     {
         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
-            <h4 class="text-white">Список объектов</h4>
+            <a class="btn btn-secondary btn btn-block" title="Структура" asp-action="Levels_Tree"><i class="mdi mdi-graph-outline fa-lg"></i> Перейти в структуру</a>
             <a class="btn btn-light btn btn-block" title="Добавить" asp-action="SOEdit" asp-route-id="0"><i class="fas fa-plus"></i> Добавить новый объект</a>
         </div>
     }
@@ -47,10 +47,7 @@
                     <th>Уведомления</th>
                     <th>Позиция</th>
                     <th>Последнее обслуживание</th>
-                    @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
-                    {
-                        <th></th>
-                    }
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -122,14 +119,17 @@
                                 <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
                                     <i class="far fa-eye"></i>
                                 </a>
-                                <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
-                                <a class="btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
+                                @if (IsAdmin)
+                                {
+                                    <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
+                                    <a class="btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
 
-                                <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
-                                    <i class="fas fa-trash-alt px-1"></i>
-                                </a>
+                                    <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
+                                        <i class="fas fa-trash-alt px-1"></i>
+                                    </a>
+                                }
                             </div>
                         </td>
                     }

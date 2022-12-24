@@ -87,21 +87,21 @@
                         </div>
                     </div>
                 }
-                <hr />
-                <div>
-                    <!-- редактировать -->
-                    @if (IsAdmin)
-                    {
+                @if (IsAdmin)
+                {
+                    <hr />
+                    <div>
+                        <!-- редактировать -->
                         <a asp-action="SOEdit" asp-route-id="@Model.Id" asp-route-pageInfo="true" type="button" class="btn btn-primary">
                             <i class="fas fa-pencil-alt px-1"></i> Редактировать
                         </a>
-                    }
+                    </div>
+                }
                 </div>
-            </div>
             <!-- QR код -->
             @if (!String.IsNullOrWhiteSpace(@Model.ObjectCode))
             {
-                <div class="col card border border-primary">
+                <div class="col card border border-primary border-3">
                     <div class="d-flex justify-content-center">
                         <small>Код объекта:</small>
                         <h5 class="px-3 mb-sm-0 text-primary"> @Model.ObjectCode</h5>
@@ -110,8 +110,8 @@
                         <img class="card-img-top img-fluid" src="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" style=" min-width:150px; min-height:150px; text-align: center;" />
                     </div>
                     <div class="d-flex justify-content-center pb-2">
-                        <a href="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" class="btn btn-outline-secondary btn-sm mx-3 edit" download="@Model.ObjectCode"> Скачать </a>
-                        <a href="javascript:PrintElem('QR','@Model.ObjectCode')" class="btn btn-outline-secondary btn-sm mx-3 edit"> Печать </a>
+                        <a href="@String.Format("data:image/png;base64,{0}", Convert.ToBase64String((byte[])QRCode(@Model.ObjectCode)))" class="btn btn-outline-secondary btn-sm mx-3 edit" download="@Model.ObjectCode"><i class="fas fa-file-download px-1"></i> Скачать </a>
+                        <a href="javascript:PrintElem('QR','@Model.ObjectCode')" class="btn btn-outline-secondary btn-sm mx-3 edit"><i class="fas fa-print px-1"></i> Печать </a>
                     </div>
                 </div>
             }
