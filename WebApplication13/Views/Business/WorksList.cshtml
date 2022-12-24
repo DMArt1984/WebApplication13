@@ -30,21 +30,20 @@
 <!-- Карточка-->
 <div class="card">
 
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h4 class="text-secondary">Список обслуживаний</h4>
-        <div class="">
-            @if (FilterSO > 0)
-            {
-                <a class="btn btn-outline-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up"></i> Перейти в объект</a>
+    @if (FilterSO > 0)
+    {
+        <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
+            @*<h4 class="text-secondary">Список обслуживаний</h4>
+                <div class="">*@
+                <a class="btn btn-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up"></i> Перейти в объект</a>
                 @if (IsAdmin && ViewBag.EnableAdd)
                 {
                     <!-- Добавить -->
-                    <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
+                    <a class="btn btn-light btn btn-block" title="Добавить" asp-action="WorkEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое обслуживание</a>
                 }
-            }
+            @*</div>*@
         </div>
-    </div>
-    
+    }
         <!-- Таблица -->
         <div class="card-body">
             <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
@@ -108,8 +107,8 @@
                                         <i class="far fa-eye"></i>
                                     </a>
                                     @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="false">
-                                        <i class="fas fa-align-justify"></i>
-                                    </a>*@
+                                            <i class="fas fa-align-justify"></i>
+                                        </a>*@
                                     @if (IsAdmin)
                                     {
                                         <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">

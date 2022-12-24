@@ -27,22 +27,20 @@
 
 <!-- Карточка-->
 <div class="card">
-    
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <h4 class="text-secondary">Список шагов</h4>
-        <div class="">
-            @if (FilterSO > 0)
+    @if (FilterSO > 0)
+    {
+        <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
+            @*<h4 class="text-secondary">Список шагов</h4>
+                <div class="">*@
+            <a class="btn btn-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up"></i> Перейти в объект</a>
+            @if (IsAdmin && ViewBag.EnableAdd)
             {
-                <a class="btn btn-outline-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up"></i> Перейти в объект</a>
-                @if (IsAdmin && ViewBag.EnableAdd)
-                {
-                    <!-- Добавить -->
-                    <a class="btn btn-primary btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новый шаг</a>
-                }
+                <!-- Добавить -->
+                <a class="btn btn-light btn btn-block" title="Добавить" asp-action="StepEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новый шаг</a>
             }
+            @*</div>*@
         </div>
-    </div>
-    
+    }
         <!-- Шаги -->
         @if (Model != null && Model.Count() > 0)
         {
@@ -57,63 +55,63 @@
         <!---->
         <!-- Таблица -->
         @*<div class="card-body">
-            <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-                <thead class="bg-primary text-white">
-                    <tr>
-                        @if (FilterSO == 0)
-                        {
-                            <th>ID</th>
-                            <th>Объект</th>
-                        }
-                        <th>Шаг</th>
-                        <th>Название</th>
-                        <th>Мероприятия</th>
-                        <th>Файлы</th>
-                        <th>Подробнее</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.OrderBy(x => x.Index))
-                    {
+                <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                    <thead class="bg-primary text-white">
                         <tr>
-
                             @if (FilterSO == 0)
                             {
-                                <th scope="row">@item.Id</th>
-                                <td>
-                                    @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
-                                </td>
+                                <th>ID</th>
+                                <th>Объект</th>
                             }
-                            <td>@item.Index</td>
-                            <td>@item.Title</td>
-                            <td style="max-width:300px; word-break: break-all">
-                                @item.Description
-                            </td>
-                            <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                            <td>
-                                <div class="row px-1">
-                                    <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
-                                        <i class="far fa-eye"></i>
-                                    </a>
-                                    @if (IsAdmin)
-                                    {
-                                        <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </a>
-                                        if (item.EnableDel)
-                                        {
-                                            <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle', @item.Index)">
-                                                <i class="fas fa-trash-alt px-1"></i>
-                                            </a>
-                                        }
-                                    }
-                                </div>
-                            </td>
+                            <th>Шаг</th>
+                            <th>Название</th>
+                            <th>Мероприятия</th>
+                            <th>Файлы</th>
+                            <th>Подробнее</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>*@
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderBy(x => x.Index))
+                        {
+                            <tr>
+
+                                @if (FilterSO == 0)
+                                {
+                                    <th scope="row">@item.Id</th>
+                                    <td>
+                                        @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                                    </td>
+                                }
+                                <td>@item.Index</td>
+                                <td>@item.Title</td>
+                                <td style="max-width:300px; word-break: break-all">
+                                    @item.Description
+                                </td>
+                                <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                                <td>
+                                    <div class="row px-1">
+                                        <a class="col btn btn-outline-secondary btn-sm edit" title="Просмотр" asp-action="StepInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                            <i class="far fa-eye"></i>
+                                        </a>
+                                        @if (IsAdmin)
+                                        {
+                                            <a class="col btn btn-outline-secondary btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a>
+                                            if (item.EnableDel)
+                                            {
+                                                <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle', @item.Index)">
+                                                    <i class="fas fa-trash-alt px-1"></i>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>*@
     </div>
 
 <!-- sample modal [ myModalDel ] content -->
