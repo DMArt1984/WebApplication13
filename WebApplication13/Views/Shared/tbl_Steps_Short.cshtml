@@ -47,7 +47,7 @@
         <div class="">
             @if (ItemsCount > 0)
             {
-                <table id="datatable" class="table table-sm table-small-font mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                     <thead class="bg-secondary text-white">
                         <tr>
                             <th>№ шага</th>
@@ -56,7 +56,7 @@
                             <th>Файлы</th>
                             @if (IsAdmin)
                             {
-                                <th>Подробнее</th>
+                                <th></th>
                             }
                             </tr>
                     </thead>
@@ -75,9 +75,9 @@
                                 @if (IsAdmin)
                                 {
                                 <td>
-                                    <div class="d-flex justify-content-start">
+                                    <div class="d-flex justify-content-end">
                                         <a class="btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="StepEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="true">
-                                            <i class="fas fa-pencil-alt"></i>
+                                            <i class="fas fa-pencil-alt px-1"></i> Редактировать
                                         </a>
                                     </div>
                                 </td>

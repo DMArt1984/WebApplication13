@@ -37,7 +37,7 @@
     }
     <!-- Таблица -->
     <div class="card-body">
-        <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead class="bg-primary text-white">
                 <tr>
                     <!--<th>ID</th>-->
@@ -49,7 +49,7 @@
                     <th>Последнее обслуживание</th>
                     @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
                     {
-                        <th>Подробнее</th>
+                        <th></th>
                     }
                 </tr>
             </thead>
@@ -118,16 +118,16 @@
                     @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
                     {
                         <td>
-                            <div class="row px-1">
-                                <a class="col btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
+                            <div class="px-1">
+                                <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
                                     <i class="far fa-eye"></i>
                                 </a>
                                 <!--Html.ActionLink("Редактировать", "SOEdit", "Business", new { id = item.Id })-->
-                                <a class="col btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
+                                <a class="btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="SOEdit" asp-route-id="@item.Id">
                                     <i class="fas fa-pencil-alt"></i>
                                 </a>
 
-                                <a class="col btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
+                                <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
                                     <i class="fas fa-trash-alt px-1"></i>
                                 </a>
                             </div>

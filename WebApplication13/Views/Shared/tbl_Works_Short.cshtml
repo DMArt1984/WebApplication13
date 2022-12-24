@@ -51,14 +51,14 @@
             <!--card-body-->
             @if (ItemsCount > 0)
             {
-                <table id="datatable" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+                <table id="datatable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
                     <thead class="bg-primary text-white">
                         <tr>
                             <th>Начало</th>
                             <th>Выполнено</th>
                             <th>Статус</th>
                             <th>Шаги</th>
-                            <th>Подробнее</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,9 +89,9 @@
                                      </small>
                                 </td>
                                 <td>
-                                    <div class="d-flex justify-content-start">
+                                    <div class="d-flex justify-content-end">
                                         <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="WorkInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="true">
-                                            <i class="far fa-eye"></i>
+                                            <i class="far fa-eye px-1"></i> Просмотр
                                         </a>
                                         @*<a class="col btn btn-outline-secondary btn-sm edit" title="Выполненные шаги" asp-action="WorkStepsList" asp-route-WorkId="@item.Id" asp-route-ServiceObjectId="@item.ServiceObjectId" asp-route-pageInfo="true">
                                         <i class="fas fa-align-justify"></i>
