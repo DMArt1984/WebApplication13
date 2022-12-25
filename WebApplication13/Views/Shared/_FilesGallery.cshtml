@@ -8,6 +8,7 @@
     switch (item.Path.Split(".").Last().ToLower())
     {
         case "jpg":
+        case "jpeg":
         case "png":
         case "gif":
         case "wmf":
@@ -28,12 +29,13 @@
                     switch (item.Path.Split(".").Last().ToLower())
                     {
                         case "jpg":
+                        case "jpeg":
                         case "png":
                         case "gif":
                         case "wmf":
                             <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="Project 1">
                                 <div class="img-fluid">
-                                    <img src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" height="120">
+                                    <img class="rounded" src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" height="120">
                                 </div>
                             </a>
                             break;

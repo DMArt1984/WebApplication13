@@ -86,7 +86,7 @@
                             </td>
                             <td>@Html.Partial("_FilesV", item.FileLinks)</td>
                             <td>
-                                <div class="px-1">
+                                <div class="d-flex flex-row px-1">
                                     <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
                                         <i class="far fa-eye"></i>
                                     </a>

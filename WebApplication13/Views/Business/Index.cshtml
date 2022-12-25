@@ -116,7 +116,7 @@
                     @if (@ViewContext.HttpContext.User.IsInRole("Admin") || @ViewContext.HttpContext.User.IsInRole("SuperAdmin"))
                     {
                         <td>
-                            <div class="px-1">
+                            <div class="d-flex flex-row px-1">
                                 <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
                                     <i class="far fa-eye"></i>
                                 </a>
