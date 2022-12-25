@@ -86,6 +86,7 @@
                             <!--{ViewFiles(Model.FileLinks); }-->
                         </div>
                     </div>
+                    @Html.Partial("_FilesGallery", @Model.FileLinks)
                 }
                 @if (IsAdmin)
                 {
@@ -97,7 +98,7 @@
                         </a>
                     </div>
                 }
-                </div>
+            </div>
             <!-- QR код -->
             @if (!String.IsNullOrWhiteSpace(@Model.ObjectCode))
             {

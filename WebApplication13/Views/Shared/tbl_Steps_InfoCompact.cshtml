@@ -29,7 +29,7 @@
                 </div>
             }
             <hr />
-            <div class="col-12 col-md-3 pb-2">
+            <div class="col-12 pb-2">
                 <small>Описание мероприятий: </small>
                 <br />
                 @Model.Description
@@ -49,6 +49,7 @@
                     @Html.Partial("_FilesH", @Model.FileLinks)
                 </div>
             </div>
+            @Html.Partial("_FilesGallery", @Model.FileLinks)
         }
         <!---->
     </div>

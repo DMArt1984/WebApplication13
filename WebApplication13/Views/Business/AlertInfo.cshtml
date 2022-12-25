@@ -46,7 +46,7 @@
                         @Model.StatusRus()
                     </div>
                 </div>
-                
+
                 <hr />
 
                 <!--Файлы-->
@@ -61,6 +61,29 @@
                     }
                 </div>
                 <!---->
+                @Html.Partial("_FilesGallery", @Model.FileLinks)
+                @*<div class="card border border-secondary">
+            <div class="card-body">
+                <div class="popup-gallery">
+                    @foreach (var item in Model.FileLinks)
+                    {
+                        switch (item.Path.Split(".").Last().ToLower())
+                        {
+                            case "jpg":
+                            case "png":
+                            case "gif":
+                            case "wmf":
+                                <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="Project 1">
+                                    <div class="img-fluid">
+                                        <img src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" width="120">
+                                    </div>
+                                </a>
+                                break;
+                        }
+                    }
+                </div>
+            </div>
+        </div>*@
             </div>
             <div class="card-footer">
                 <div class="row g-0 d-flex justify-content-start">
@@ -86,12 +109,13 @@
 </div>
 
 
-@section Scripts {
-    <script src="~/assets/dm/base.js"></script>
 
-    <script type="text/javascript">
-    </script>
-}
+    @section Scripts {
+        <script src="~/assets/dm/base.js"></script>
+
+        <script type="text/javascript">
+        </script>
+    }
 
 
 

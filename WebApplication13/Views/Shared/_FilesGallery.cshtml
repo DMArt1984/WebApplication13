@@ -1,0 +1,56 @@
+﻿@model List<myFiles>
+
+@{ 
+    bool Draw = false;
+}
+@foreach (var item in Model)
+{
+    switch (item.Path.Split(".").Last().ToLower())
+    {
+        case "jpg":
+        case "png":
+        case "gif":
+        case "wmf":
+            Draw = true;
+            break;
+    }
+}
+
+@if (Draw)
+{
+    <small class="mb-2">Галерея файлов:</small>
+    <br />
+    <div class="card bg-light">
+        <div class="card-body">
+            <div class="popup-gallery">
+                @foreach (var item in Model)
+                {
+                    switch (item.Path.Split(".").Last().ToLower())
+                    {
+                        case "jpg":
+                        case "png":
+                        case "gif":
+                        case "wmf":
+                            <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="Project 1">
+                                <div class="img-fluid">
+                                    <img src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" height="120">
+                                </div>
+                            </a>
+                            break;
+                        @*case "avi":
+                        case "mov":
+                        case "mpg":
+                        case "mp4":
+                            <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="Project 1">
+                                <div class="img-fluid">
+                                    <video src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" height="120">
+                                        </video>
+                                </div>
+                            </a>
+                            break;*@
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}
