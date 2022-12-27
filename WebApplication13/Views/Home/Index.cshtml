@@ -150,11 +150,11 @@
     {
         <!-- объекты с активными уведомлениями IndianRed -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new CardCircle { color = "LightCoral", percent = string.Format(FormatValue, alertActiveSOCount * 100 / SOCount), title = "Объекты с активными уведомлениями", value = $"{alertActiveSOCount} из {SOCount}", alpha = "", description = "" })
+            @Html.Partial("_CardCircle", new CardCircle { color = "LightCoral", percent = string.Format(FormatValue, alertActiveSOCount * 100 / SOCount)+"%", title = "Объекты с активными уведомлениями", value = $"{alertActiveSOCount} из {SOCount}", alpha = "", description = "" })
         </div>
         <!-- объекты в работе -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new CardCircle { color = "lightseagreen", percent = string.Format(FormatValue, nowSOinWorkCount * 100 / SOCount), title = "Объекты в обслуживании", value = $"{nowSOinWorkCount} из {SOCount}", alpha = (nowSOinWorkCount - prevSOinWorkCount).ToString(), description = NowDT })
+            @Html.Partial("_CardCircle", new CardCircle { color = "lightseagreen", percent = string.Format(FormatValue, nowSOinWorkCount * 100 / SOCount)+"%", title = "Объекты в обслуживании", value = $"{nowSOinWorkCount} из {SOCount}", alpha = (nowSOinWorkCount - prevSOinWorkCount).ToString(), description = NowDT })
         </div>
     }
 
@@ -162,7 +162,7 @@
     {
         <!-- Выполненные обслуживания -->
         <div class="col-xl-3 col-sm-6">
-            @Html.Partial("_CardCircle", new CardCircle { color = "lightseagreen", percent = string.Format(FormatValue, nowWorksReady * 100 / nowWorksCount), title = "Выполненные обслуживания", value = $"{nowWorksReady} из {nowWorksCount}", alpha = (nowWorksReady - prevWorksReady).ToString(), description = NowDT })
+            @Html.Partial("_CardCircle", new CardCircle { color = "lightseagreen", percent = string.Format(FormatValue, nowWorksReady * 100 / nowWorksCount)+"%", title = "Выполненные обслуживания", value = $"{nowWorksReady} из {nowWorksCount}", alpha = (nowWorksReady - prevWorksReady).ToString(), description = NowDT })
         </div>
     }
     else

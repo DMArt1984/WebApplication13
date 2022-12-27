@@ -11,26 +11,26 @@
         IndexTable++;
         <!-- Table -->
         <table id="dtable @IndexTable" class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;">
-            @if (String.IsNullOrWhiteSpace(RT.Title))
+            @if (String.IsNullOrWhiteSpace(RT.title))
             {
                 <thead class="bg-primary text-white">
                     <tr>
-                        @for (var i = 0; i < RT.ColsName.Length; i++)
+                        @for (var i = 0; i < RT.colsName.Count; i++)
                         {
-                            <th>@RT.ColsName[i] [@RT.ColsType[i]]</th>
+                            <th>@RT.colsName[i]</th>
                         }
                     </tr>
                 </thead>
             }
             else
             {
-                <caption style="caption-side:top">@RT.Title</caption>
+                <caption style="caption-side:top">@RT.title</caption>
             }
             <tbody>
-                @foreach (var item in RT.Rows)
+                @foreach (var item in RT.rows)
                 {
                     <tr>
-                        @for (var i = 0; i < item.Values.Length; i++)
+                        @for (var i = 0; i < item.Values.Count; i++)
                         {
                             <td>
                                 @{
@@ -48,7 +48,7 @@
     {
         IndexTable++;
         <div class="">
-            @for (var i = 0; i < RA.rows.Length; i++)
+            @for (var i = 0; i < RA.rows.Count; i++)
             {
                 <div class="card border mb-1">
                     <div class="card-header" id="heading@(IndexTable)_@(i)">
@@ -76,56 +76,56 @@
     {
         IndexTable++;
         <div class="">
-            @for (var i = 0; i < RC.rows.Length; i++)
+            @for (var i = 0; i < RC.rows.Count; i++)
             {
                 int index = IndexTable;
-            <div class="px-1">
-                <p class="mb-0">
-                    <a class="mt-1 me-1" data-bs-toggle="collapse" href="#collapseExample@(index)_@(i)" aria-expanded="true" aria-controls="collapseExample@(index)_@(i)">
-                        <i class="fas fa-plus-square px-2"></i>
-                    </a>
-                    @{
-                        CellContent(@RC.rows[i].TitleContent);
-                    }
-                </p>
-
-                <div class="collapse hide px-3" id="collapseExample@(index)_@(i)" style="">
-                    <div class="mt-2 mb-2">
+                <div class="px-1">
+                    <p class="mb-0">
+                        <a class="mt-1 me-1" data-bs-toggle="collapse" href="#collapseExample@(index)_@(i)" aria-expanded="true" aria-controls="collapseExample@(index)_@(i)">
+                            <i class="fas fa-plus-square px-2"></i>
+                        </a>
                         @{
-                            CellContent(@RC.rows[i].OpenContent);
+                            CellContent(@RC.rows[i].TitleContent);
                         }
+                    </p>
+
+                    <div class="collapse hide px-3" id="collapseExample@(index)_@(i)" style="">
+                        <div class="mt-2 mb-2">
+                            @{
+                                CellContent(@RC.rows[i].OpenContent);
+                            }
+                        </div>
                     </div>
-                </div> 
-            </div>
+                </div>
             }
         </div>
-                            }
+    }
 
     void CellContent(dynamic Value)
-                            {
-                                //dynamic Value = item.Values[i];
-                                Type Selector = Value.GetType();
-                                if (Selector == typeof(RepTable))
-                                {
-                                    // Рекурсивный вызов функции...
-                                    RepTable there = Value;
-                                    CreateTable(there);
-                                }
-                                else if (Selector == typeof(RepAccordion))
-                                {
-                                    // Рекурсивный вызов функции...
-                                    RepAccordion there = Value;
-                                    CreateAccordion(there);
-                                }
-                                else if (Selector == typeof(RepCollaps))
-                                {
-                                    // Рекурсивный вызов функции...
-                                    RepCollaps there = Value;
-                                    CreateCollaps(there);
-                                }
-                                else if (Selector == typeof(UserCell))
-                                {
-                                    UserCell there = Value;
+    {
+        //dynamic Value = item.Values[i];
+        Type Selector = Value.GetType();
+        if (Selector == typeof(RepTable))
+        {
+            // Рекурсивный вызов функции...
+            RepTable there = Value;
+            CreateTable(there);
+        }
+        else if (Selector == typeof(RepAccordion))
+        {
+            // Рекурсивный вызов функции...
+            RepAccordion there = Value;
+            CreateAccordion(there);
+        }
+        else if (Selector == typeof(RepCollaps))
+        {
+            // Рекурсивный вызов функции...
+            RepCollaps there = Value;
+            CreateCollaps(there);
+        }
+        else if (Selector == typeof(UserCell))
+        {
+            UserCell there = Value;
             @Html.Partial("_cellUser", there)
         }
         else if (Value.GetType() == typeof(ServiceObjectCell))
@@ -173,33 +173,17 @@
 
 }
 
-<div class="card">
-    <div class="card-header">
-    </div>
-    <div class="card-body">
-        @{
-            //CreateTable(Model);
-            CellContent(Model.item);
-        }
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-body">
-        <p class="mb-0">
-            <a class="btn btn-primary mt-1 me-1" data-bs-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                Link with href
-            </a>
-            <button class="btn btn-primary mt-1 me-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-                Button with data-bs-target
-            </button>
-        </p>
-        <div class="collapse show" id="collapseExample" style="">
-            <div class="card card-body mt-3 mb-0">
-                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.
-            </div>
+@foreach (var item in Model.blocks)
+{
+    <div class="card">
+        <div class="card-body">
+            @{
+                CellContent(item);
+            }
         </div>
     </div>
-</div>
+}
 
-@Html.Partial("_DiagramCircle")
+
+
+@Html.Partial("_DiagramCircle") <!-- поддержка круговых диаграмм -->

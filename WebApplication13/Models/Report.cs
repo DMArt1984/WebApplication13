@@ -35,73 +35,106 @@ namespace FactPortal.Models
 
         Table = 100
     }
-    
-    public class RepRow
+
+    // ==================================================================================
+
+    public struct RepAll // Универсальный отчет
     {
+        public List<dynamic> blocks;
+    }
 
-        public RepRow(List<dynamic> Values)
+    // ----------------------------------------------------------------------------------
+
+    public struct RepTable // Блок: Таблица
+    {
+        public string title;
+        public List<string> colsName;
+        public List<RepTableRow> rows;
+
+        public RepTable(string title)
         {
-            this.Values = Values.ToArray();
+            this.title = title;
+            this.colsName = new List<string>();
+            this.rows = new List<RepTableRow>();
         }
 
-        public RepRow(dynamic[] Values)
+        public RepTable(string title, IEnumerable<string> colsName)
         {
-            this.Values = Values;
+            this.title = title;
+            this.colsName = colsName.ToList();
+            this.rows = new List<RepTableRow>();
         }
 
-        public dynamic[] Values { get; set; }
+        public RepTable(string title, IEnumerable<string> colsName, IEnumerable<RepTableRow> rows)
+        {
+            this.title = title;
+            this.colsName = colsName.ToList();
+            this.rows = rows.ToList();
+        }
+    }
+
+    public struct RepAccordion // Блок: Раскрывающийся список 1
+    {
+        public string title;
+        public List<RepAccordionItem> rows;
+
+        public RepAccordion(string title)
+        {
+            this.title = title;
+            this.rows = new List<RepAccordionItem>();
+        }
+
+        public RepAccordion(string title, IEnumerable<RepAccordionItem> rows)
+        {
+            this.title = title;
+            this.rows = rows.ToList();
+        }
 
     }
 
-    public struct RepTable
+    public struct RepCollaps // Блок: Раскрывающийся список 2
     {
-        public string Title;
-        public RepColType[] ColsType;
-        public string[] ColsName;
-        public RepRow[] Rows;
+        public string title;
+        public List<RepCollapsItem> rows;
+
+        public RepCollaps(string title)
+        {
+            this.title = title;
+            this.rows = new List<RepCollapsItem>();
+        }
+
+        public RepCollaps(string title, IEnumerable<RepCollapsItem> rows)
+        {
+            this.title = title;
+            this.rows = rows.ToList();
+        }
     }
 
-    public class RepTableList
+    // ----------------------------------------------------------------------------------
+
+    public class RepTableRow
+    {
+        public List<dynamic> Values { get; set; }
+
+        public RepTableRow(IEnumerable<dynamic> Values)
+        {
+            this.Values = Values.ToList();
+        }
+    }
+
+    public class RepAccordionItem
     {
         public string Title { get; set; }
-        public List<RepColType> ColsType { get; set; }
-        public List<string> ColsName { get; set; }
-        public List<RepRow> Rows { get; set; }
-
-        public RepTableList()
-        {
-            ColsName = new List<string>();
-            ColsType = new List<RepColType>();
-            Rows = new List<RepRow>();
-        }
-        public RepTableList(List<RepColType> ColsType, List<string> ColsName)
-        {
-            this.ColsName = ColsName;
-            this.ColsType = ColsType;
-            Rows = new List<RepRow>();
-        }
-        public RepTableList(List<RepRow> Rows)
-        {
-            ColsName = new List<string>();
-            ColsType = new List<RepColType>();
-            this.Rows = Rows;
-        }
-        public RepTableList(List<RepColType> ColsType, List<string> ColsName, List<RepRow> Rows)
-        {
-            this.ColsName = ColsName;
-            this.ColsType = ColsType;
-            this.Rows = Rows;
-        }
-
-        public RepTable GetArrays()
-        {
-            return new RepTable {
-                Title = Title,
-                ColsName = ColsName.ToArray(), 
-                ColsType = ColsType.ToArray(),
-                Rows = Rows.ToArray()};
-        }
+        public dynamic Content { get; set; }
     }
+
+    public class RepCollapsItem
+    {
+        public dynamic TitleContent { get; set; }
+        public dynamic OpenContent { get; set; }
+    }
+
+    // ---------------------------------------------------------------------------------
 
     public class CardCircle
     {
@@ -134,31 +167,6 @@ namespace FactPortal.Models
         public string[][] rows { get; set; }
     }
 
-    public class RepAccordionItem
-    {
-        public string Title { get; set; }
-        public dynamic Content { get; set; }
-    }
 
-    public struct RepAccordion
-    {
-        public RepAccordionItem[] rows;
-    }
-
-    public class RepCollapsItem
-    {
-        public dynamic TitleContent { get; set; }
-        public dynamic OpenContent { get; set; }
-    }
-
-    public struct RepCollaps
-    {
-        public RepCollapsItem[] rows;
-    }
-
-    public struct RepAll
-    {
-        public dynamic item;
-    }
 
 }

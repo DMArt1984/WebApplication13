@@ -2639,13 +2639,9 @@ namespace FactPortal.Controllers
         [Breadcrumb("ViewData.Title")]
         public IActionResult report1()
         {
-            RepTableList RT = new RepTableList( new List<RepColType> { 
-                RepColType.User,
-                RepColType.Email,
-                RepColType.FilesV,
-                RepColType.ServiceObject,
-                RepColType.Dynamic
-            }, new List<string> {
+            RepTable RTbig = new RepTable(
+                "", 
+                new string[] {
                 "Пользователь",
                 "Почта",
                 "Файлы",
@@ -2653,31 +2649,29 @@ namespace FactPortal.Controllers
                 "Разное"
             });
 
-            RepTableList RT1 = new RepTableList(new List<RepColType> { 
-                RepColType.User, 
-                RepColType.Email
-            }, new List<string> {
+            RepTable RTusers1 = new RepTable(
+                "", 
+                new List<string> {
                 "Пользователь",
                 "Почта"
             });
 
-            RT1.Rows.Add(new RepRow(new List<dynamic> { "userA", "userA@mail.com" }));
-            RT1.Rows.Add(new RepRow(new List<dynamic> { "userB", "userB@mail.com" }));
-            RT1.Title = "";
+            RTusers1.rows.Add(new RepTableRow(new List<dynamic> { "userA", "userA@mail.com" }));
+            RTusers1.rows.Add(new RepTableRow(new List<dynamic> { "userB", "userB@mail.com" }));
+            RTusers1.title = "";
 
-            RepTableList RT2 = new RepTableList(new List<RepColType> {
-                RepColType.User,
-                RepColType.Email
-            }, new List<string> {
+            RepTable RTusers2 = new RepTable(
+                "",
+                new List<string> {
                 "Пользователь",
                 "Почта"
             });
 
-            RT2.Rows.Add(new RepRow(new List<dynamic> { "userC", "userC@mail.com" }));
-            RT2.Rows.Add(new RepRow(new List<dynamic> { "userD", "userD@mail.com" }));
-            RT2.Title = "Еще таблица";
+            RTusers2.rows.Add(new RepTableRow(new List<dynamic> { "userC", "userC@mail.com" }));
+            RTusers2.rows.Add(new RepTableRow(new List<dynamic> { "userD", "userD@mail.com" }));
+            RTusers2.title = "Еще таблица";
 
-            RT.Rows.Add(new RepRow(new List<dynamic> {
+            RTbig.rows.Add(new RepTableRow(new List<dynamic> {
                 new UserCell {Id = "1", Email="user@mail.com", UserName="userName" },
                 "mail1@mail.ru",
                 new List<myFiles>() { 
@@ -2689,15 +2683,15 @@ namespace FactPortal.Controllers
                 new cellCircle { color = "LightCoral", percent = string.Format("{0:##0.#}", 57)}
             }));
 
-            RT.Rows.Add(new RepRow(new List<dynamic> { 
+            RTbig.rows.Add(new RepTableRow(new List<dynamic> { 
                 "user2", 
                 "mail2@mail.ru", 
                 new List<myFiles>() { new myFiles { Id = 2, Name = "file2.bmp", Path = "http://2" } }, 
                 new ServiceObjectCell { Id = 2, ObjectCode = "9992", ObjectTitle = "OTitle2" },
-                RT1.GetArrays()
+                RTusers1
             }));
 
-            RT.Rows.Add(new RepRow(new List<dynamic> { 
+            RTbig.rows.Add(new RepTableRow(new List<dynamic> { 
                 "user3", 
                 "mail3@mail.ru", 
                 new List<myFiles>() { new myFiles { Id = 3, Name = "file3.bmp", Path = "http://3" } }, 
@@ -2705,7 +2699,7 @@ namespace FactPortal.Controllers
                 new cellProgressBar { color = "SteelBlue", now = 45, min = 0, max = 100 }
             }));
 
-            RT.Rows.Add(new RepRow(new List<dynamic> {
+            RTbig.rows.Add(new RepTableRow(new List<dynamic> {
                 "user4",
                 "mail4@mail.ru",
                 new List<myFiles>() { new myFiles { Id = 3, Name = "file4.bmp", Path = "http://3" } },
@@ -2713,7 +2707,7 @@ namespace FactPortal.Controllers
                 new cellProgressBar { color = "LightCoral", now = 85, min = 0, max = 100 }
             }));
 
-            RT.Rows.Add(new RepRow(new List<dynamic> {
+            RTbig.rows.Add(new RepTableRow(new List<dynamic> {
                 "user5",
                 "mail5@mail.ru",
                 new List<myFiles>() { new myFiles { Id = 3, Name = "file5.bmp", Path = "http://3" } },
@@ -2721,7 +2715,7 @@ namespace FactPortal.Controllers
                 new cellProgressBar { color = "Gold", now = 15, min = 0, max = 100 }
             }));
 
-            RT.Rows.Add(new RepRow(new List<dynamic> {
+            RTbig.rows.Add(new RepTableRow(new List<dynamic> {
                 "user6",
                 "mail6@mail.ru",
                 new List<myFiles>() { new myFiles { Id = 3, Name = "file6.bmp", Path = "http://3" } },
@@ -2729,22 +2723,29 @@ namespace FactPortal.Controllers
                 new cellTextAccordion { rows = new string[][] { new string[]{"Текст 1", "Описание 1" }, new string[]{ "Текст 2", "Описание 2" }, new string[] { "Текст 3", "Описание 3" } } }
             }));
 
-            RT.Title = "";
+            RTbig.title = "";
+
+            // ----
+
+            var block1 = new RepAccordion
+            {
+                rows = new List<RepAccordionItem> {
+                    new RepAccordionItem { Title = "Основная вкладка", Content = RTbig },
+                    new RepAccordionItem {
+                        Title = "Вторая вкладка",
+                        Content = new RepCollaps (
+                            "",
+                            new RepCollapsItem[] {
+                                new RepCollapsItem { TitleContent = RTusers1, OpenContent = RTusers2 },
+                                new RepCollapsItem { TitleContent = "Нажмите на меня", OpenContent = "Ну и зачем было нажимать" }
+                            })
+                    },
+                    new RepAccordionItem { Title = "Третья вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia" }
+                }
+            };
 
             return View(new RepAll { 
-                item = new RepAccordion { 
-                    rows = new RepAccordionItem[] {
-                        new RepAccordionItem { Title = "Основная вкладка", Content = RT.GetArrays() },
-                        new RepAccordionItem { Title = "Вторая вкладка",
-                            Content = new RepCollaps {
-                                rows = new RepCollapsItem[] { 
-                                    new RepCollapsItem { TitleContent = RT1.GetArrays(), OpenContent = RT2.GetArrays()},
-                                    new RepCollapsItem { TitleContent = "Нажмите на меня", OpenContent = "Ну и зачем было нажимать"}
-                                }
-                            }},
-                        new RepAccordionItem { Title = "Третья вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia"}
-                     }
-                }
+                blocks = new List<dynamic>() { block1, "Текст 2", "Текст 3"}
             });
         }
 

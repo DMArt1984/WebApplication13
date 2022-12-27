@@ -33,7 +33,7 @@
                         case "png":
                         case "gif":
                         case "wmf":
-                            <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="Project 1">
+                            <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="@item.Name">
                                 <div class="img-fluid">
                                     <img class="rounded" src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" height="120">
                                 </div>
