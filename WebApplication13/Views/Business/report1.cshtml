@@ -175,6 +175,11 @@
 
 @foreach (var item in Model.blocks)
 {
+    
+    @*@if (item.GetType().GetProperty("title"))
+    {
+        string title = item.GetType().GetProperty("title").GetValue(item, null).ToString();
+    }*@
     <div class="card">
         <div class="card-body">
             @{
