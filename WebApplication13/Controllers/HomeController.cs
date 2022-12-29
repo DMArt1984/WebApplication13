@@ -52,6 +52,8 @@ namespace FactPortal.Controllers
 
                 TextDateTime temp1 = new TextDateTime("2020.11.12 15:16");
                 TextDateTime temp2 = new TextDateTime("2022-01-07T08:09", 0, DTFormat.Calendar);
+
+                var (year, month, day, hour, minute, second) = temp2;
                 //var X = TEMP1.Equals(new TextDateTime("2020.11.12 15:17"));
                 //var X1 = TEMP1.ToString();
 

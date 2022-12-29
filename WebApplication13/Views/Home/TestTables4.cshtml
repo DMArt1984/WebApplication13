@@ -35,11 +35,9 @@
     </div>
     <div class="card-body">
         <div id="top_lr" class="d-flex justify-content-between">
-            @*<div id="top_left" class="col-6"></div>
-                <div id="top_right"class="col-6"></div>*@
         </div>
 
-        <table id="example" class="table table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+        <table id="example" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead class="bg-primary text-white">
                 <tr>
                     <th>Name</th>
@@ -600,12 +598,12 @@
 
                 columnDefs: [
                     { "orderable": false, targets: -1 }, //отключение сортировки последнего столбца
-                    //{
-                    //     searchPanes: {
-                    //         show: false
-                    //     },
-                    //     targets: [1, 2, 3, 4]
-                    //}
+                    {
+                         searchPanes: {
+                             show: false
+                         },
+                         targets: [1, 2, 3, 4]
+                    }
                 ],
 
 
@@ -620,8 +618,8 @@
                         className: "btn-sm btn-secondary",
                         titleAttr: 'Фильтр',
                         config: {
-                            cascadePanes: false,
-                            //columns: [0, 1, 4]
+                            cascadePanes: true,
+                            columns: [1, 2, 3, 4]
                             //clear: false
                         },
                         init: function (api, node, config) {

@@ -126,6 +126,17 @@ namespace FactPortal.Models
             SetValues(dt);
         }
 
+        // Деконструктор
+        public void Deconstruct(out int year, out int month, out int day, out int hour, out int minute, out int second)
+        {
+            year = this.year;
+            month = this.month;
+            day = this.day;
+            hour = this.hour;
+            minute = this.minute;
+            second = this.second;
+        }
+
         public TextDateTime(string TextDT, int OffsetMinutes = 0, DTFormat format = DTFormat.YMDHMS)
         {
             _dt = (format == DTFormat.Calendar) ? CalendarToDateTime(TextDT, OffsetMinutes) : TextToDateTime(TextDT, OffsetMinutes);

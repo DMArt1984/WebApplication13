@@ -101,56 +101,54 @@
         </div>
     }
 
-    void CellContent(dynamic Value)
-    {
-        //dynamic Value = item.Values[i];
-        Type Selector = Value.GetType();
-        if (Selector == typeof(RepTable))
+   void CellContent(dynamic Value)
+    {                                      
+        if (Value is RepTable)
         {
             // Рекурсивный вызов функции...
             RepTable there = Value;
             CreateTable(there);
         }
-        else if (Selector == typeof(RepAccordion))
+        else if (Value is RepAccordion)
         {
             // Рекурсивный вызов функции...
             RepAccordion there = Value;
             CreateAccordion(there);
         }
-        else if (Selector == typeof(RepCollaps))
+        else if (Value is RepCollaps)
         {
             // Рекурсивный вызов функции...
             RepCollaps there = Value;
             CreateCollaps(there);
         }
-        else if (Selector == typeof(UserCell))
+        else if (Value is UserCell)
         {
             UserCell there = Value;
             @Html.Partial("_cellUser", there)
         }
-        else if (Value.GetType() == typeof(ServiceObjectCell))
+        else if (Value is ServiceObjectCell)
         {
             ServiceObjectCell there = Value;
             @Html.Partial("_cellSObject", there)
         }
-        else if (Value.GetType() == typeof(cellCircle))
+        else if (Value is cellCircle)
         {
             cellCircle there = Value;
             @Html.Partial("_cellCircle", there)
         }
-        else if (Value.GetType() == typeof(cellProgressBar))
+        else if (Value is cellProgressBar)
         {
             cellProgressBar there = Value;
             @Html.Partial("_cellProgressBar", there)
         }
-        else if (Value.GetType() == typeof(cellTextAccordion))
+        else if (Value is cellTextAccordion)
         {
             cellTextAccordion there = Value;
             @Html.Partial("_cellTextAccordion", there)
         }
-        else if (Value.GetType() != typeof(string) && Value is IEnumerable)
+        else if ((Value is string) == false && Value is IEnumerable)
         {
-            if (Value[0].GetType() == typeof(myFiles))
+            if (Value[0] is myFiles)
             {
                 List<myFiles> mylist = Value;
                 @Html.Partial("_FilesV", mylist)
@@ -166,7 +164,6 @@
         }
 
     }
-
 }
 
 @section CSS_first {
@@ -177,18 +174,18 @@
 {
     
     @*@if (item.GetType().GetProperty("title"))
-    {
-        string title = item.GetType().GetProperty("title").GetValue(item, null).ToString();
-    }*@
+                                            {
+                                                string title = item.GetType().GetProperty("title").GetValue(item, null).ToString();
+                                            }*@
     <div class="card">
         <div class="card-body">
             @{
                 CellContent(item);
-            }
+                                    }
         </div>
     </div>
 }
 
 
 
-@Html.Partial("_DiagramCircle") <!-- поддержка круговых диаграмм -->
+                                @Html.Partial("_DiagramCircle") <!-- поддержка круговых диаграмм -->

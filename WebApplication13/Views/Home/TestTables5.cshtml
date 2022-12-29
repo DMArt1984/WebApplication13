@@ -19,7 +19,7 @@
 
 <h1>TestTables5</h1>
 
-<!-- Table 4 -->
+<!-- Table 5 -->
 <div class="card">
     <div class="card-body">
         <table id="example4" class="table table-striped table-bordered" style="width:100%">
@@ -258,6 +258,25 @@
     </div>
 </div>
 
+<a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalFilter">
+    <i class="fas fa-trash-alt px-1"></i>
+</a>
+
+<!-- sample modal content -->
+<div id="myModalFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog mw-100 modal-dialog-centered">
+        <div class="modal-content">
+            <div class="card">
+                <div class="card-header">Фильтр</div>
+                <div id="DTSP" class="">
+
+                </div>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 @section Scripts {
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -304,6 +323,9 @@
                     }
                 ]
             });
+
+            $('#DTSP').append($('.dtsp-panesContainer')); // перенос панели фильтров
+
         });
 
     </script>
