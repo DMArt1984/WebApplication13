@@ -7,7 +7,6 @@
     @Html.Partial("_DTable_CSS_first")
 }
 
-<h1>TestTables7</h1>
 
 <!-- Table 7 -->
 <div class="card">
@@ -491,19 +490,24 @@
     </div>
 </div>
 
-<a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalFilter">
-    <i class="fas fa-trash-alt px-1"></i>
-</a>
+@*<div class="dt-buttons"><button class="buttons-html5 btn btn-sm btn-outline-secondary" tabindex="0" aria-controls="dtable" type="button" title="Фильтр"><span><i class="mdi mdi-filter-off"></i> Фильтр</span></button> </div>*@
+
+
+<button id="but_filter" class="btn btn-sm btn-secondary px-1 mx-1" type="button" title="Фильтр" data-bs-toggle="modal" data-bs-target="#myModalFilter"><span><i class="fas fa-filter"></i> Фильтр</span></button>
+
 
 <!-- sample modal content -->
 <div id="myModalFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog mw-100 modal-dialog-centered">
+    <div class="modal-dialog mw-100 w-75 modal-dialog-centered">
         <div class="modal-content">
             <div class="card">
                 <div class="card-header">Фильтр</div>
                 <div id="DTSP" class="card-body p-3">
 
                 </div>
+            </div>
+            <div class="card-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary waves-effect col-3" data-bs-dismiss="modal">Закрыть</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
@@ -539,13 +543,17 @@
                         collapseMessage: 'Свернуть панели',
                         showMessage: 'Развернуть панели',
                         clearMessage: 'Сбросить фильтры',
-                        collapse: { 0: 'Фильтр', _: 'Фильтр (%d)' },
+                        collapse: { 0: '<i class="mdi mdi-filter-off"></i> Фильтр', _: '<i class="mdi mdi-filter"></i> Фильтр (%d)' },
                         emptyPanes: "Нет панелей для отображения. :/",
                         emptyMessage: "(пусто)"
                     }
                 },
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
+                },
+
+                searchPanes: {
+                    cascadePanes: true
                 },
 
                 dom: 'PBlfrtip',
@@ -599,9 +607,9 @@
                     }]
 
                 }
+
+
             });
-
-
 
             // Перемещаем кнопки в div
             table.buttons(0, null).container().appendTo($('#upp'));
@@ -622,8 +630,13 @@
             $('#dtable_filter>label').css("font-weight", "normal").css("white-space", "nowrap");
             $('#dtable_filter>label>input').css("display", "inline-block").css("width", "auto");
 
-            $('#DTSP').append($('.dtsp-panesContainer')); // перенос панели фильтров
+            // Кнопка Фильтр к элементу filter
+            $('#dtable_filter').append($('#but_filter'));
 
+            $('#DTSP').append($('.dtsp-panesContainer')); // перенос панели фильтров на всплывающее окно
+
+            //====
+            
         });
 
     </script>
