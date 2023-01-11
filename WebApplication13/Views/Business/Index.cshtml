@@ -131,7 +131,7 @@
                     {
                         <td>
                             <div class="d-flex flex-row px-1">
-                                <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
+                                <a class="btn btn-outline-primary btn-sm edit" title="Просмотр" asp-action="SOInfo" asp-route-id="@item.Id">
                                     <i class="far fa-eye"></i>
                                 </a>
                                 @if (IsAdmin)
@@ -141,8 +141,8 @@
                                         <i class="fas fa-pencil-alt"></i>
                                     </a>
 
-                                    <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
-                                        <i class="fas fa-trash-alt px-1"></i>
+                                    <a class="btn btn-outline-light btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ObjectTitle')">
+                                        <i class="fas fa-times fa-lg px-1"></i>
                                     </a>
                                 }
                             </div>

@@ -36,81 +36,87 @@
         <div class="card-header bg-secondary d-flex justify-content-between align-items-center">
             @*<h4 class="text-white"><i class="mdi mdi-alert"></i> Список уведомлений</h4>*@
             @*<div class="">*@
-                    <a class="btn btn-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up fa-lg"></i> Перейти в объект</a>
-                    @if (IsAdmin)
-                    {
-                        <!-- Добавить -->
-                        <a class="btn btn-light btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
-                    }
+            <a class="btn btn-secondary btn btn-block" title="Объект" asp-action="SOInfo" asp-route-Id="@FilterSO"><i class="far fa-arrow-alt-circle-up fa-lg"></i> Перейти в объект</a>
+            @if (IsAdmin)
+            {
+                <!-- Добавить -->
+                <a class="btn btn-light btn btn-block" title="Добавить" asp-action="AlertEdit" asp-route-Id="0" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="false"><i class="fas fa-plus"></i> Добавить новое уведомление</a>
+            }
             @*</div>*@
         </div>
     }
-        <!-- Таблица -->
-        <div class="card-body">
-            <div id="upp" class="d-flex justify-content-between"></div>
-            @*<hr />
-                <div id="top_lr" class="d-flex justify-content-between pt-1"></div>*@
-            <table id="dtable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
-                <thead class="bg-danger text-white">
-                    <tr>
-                        @*<th>ID</th>*@
-                        <th>Дата и время</th>
-                        @if (FilterSO == 0)
-                        {
-                            <th>Объект</th>
-                        }
-                        <th>Статус</th>
-                        <th>Сотрудник</th>
-                        <th>Файлы</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.OrderByDescending(x => x.DT))
-                    {
-                        <tr class="">
-                            @*<td>@item.Id</td>*@
-                            <td>
-                                <script>document.write(UTC_To_LocalTime('@item.DT'));</script>
-                            </td>
+    <!-- Таблица -->
+    <div class="card-body">
+        <div id="top_lr" class="d-flex justify-content-between"></div>
+        <a id="butCollapse" class="d-none btn btn-sm btn-primary px-1 mx-1" data-bs-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne"></a>
+        <div id="collapseOne" class="collapse hide card border border-primary" aria-labelledby="headingOne" data-parent="#accordion" style=""></div>
 
-                            @if (FilterSO == 0)
+        <table id="dtable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0px; width: 100%;" role="grid" aria-describedby="datatable_info">
+            <thead class="bg-danger text-white">
+                <tr>
+                    @*<th>ID</th>*@
+                    <th>Дата и время</th>
+                    <th class="d-none">Дата</th>
+                    <th>Объект</th>
+                    <th class="d-none">Объект</th>
+                    <th>Статус</th>
+                    <th>Сотрудник</th>
+                    <th class="d-none">Сотрудник</th>
+                    <th>Файлы</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderByDescending(x => x.DT))
+                {
+                <tr class="">
+                    @*<td>@item.Id</td>*@
+                    <td>
+                        <script>document.write(UTC_To_LocalTime('@item.DT'));</script>
+                    </td>
+                    <td class="d-none">
+                        @item.DT.Split(" ").First().Replace('.', '-')
+                    </td>
+                    <td>
+                        @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                    </td>
+                    <td class="d-none">
+                        @item.ServiceObjectTitle
+                    </td>
+                    <td>@item.StatusRus()</td>
+                    <td>
+                        @Html.Partial("_cellUser", new UserCell { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                    </td>
+                    <td class="d-none">
+                        @item.UserEmail @item.UserName
+                    </td>
+                    <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                    <td>
+                        <div class="d-flex flex-row px-1">
+                            <a class="btn btn-outline-primary btn-sm edit" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                <i class="far fa-eye"></i>
+                            </a>
+                            @if (IsAdmin)
                             {
-                                <td>
-                                    @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
-                                </td>
+                                <a class="btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+
+                                <a class="btn btn-outline-light btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
+                                    <i class="fas fa-times fa-lg px-1"></i>
+                                </a>
                             }
-                            <td>@item.StatusRus()</td>
-                            <td>
-                                @Html.Partial("_cellUser", new UserCell { Id = "0", UserName = item.UserName, Email = item.UserEmail })
-                            </td>
-                            <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                            <td>
-                                <div class="d-flex flex-row px-1">
-                                    <a class="btn btn-outline-light btn-sm edit" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
-                                        <i class="far fa-eye"></i>
-                                    </a>
-                                    @if (IsAdmin)
-                                    {
-                                        <a class="btn btn-outline-light btn-sm edit" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </a>
-
-                                        <a class="btn btn-outline-danger btn-sm edit" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
-                                            <i class="fas fa-trash-alt px-1"></i>
-                                        </a>
-                                    }
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <div id="down_lr" class="d-flex justify-content-between"></div>
-        </div>
-
-
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        <div id="down_lr" class="d-flex justify-content-between"></div>
     </div>
+
+
+</div>
 
 <!-- sample modal [ myModalDel ] content -->
 @Html.Partial("popup_AlertDel")
@@ -143,8 +149,8 @@
                     //подписи в окне выбора фильтра
                     searchPanes: {
                         title: {
-                            _: 'Выбрано фильтров: %d шт.',
-                            0: 'Фильтры не выбраны'
+                            _: '<i class="mdi mdi-filter"></i> Выбрано фильтров: %d шт.',
+                            0: '<i class="mdi mdi-filter-off"></i> Фильтры не выбраны'
                         },
                         collapseMessage: 'Свернуть панели',
                         showMessage: 'Развернуть панели',
@@ -158,7 +164,13 @@
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
                 },
 
-                dom: 'Blfrtip',
+                searchPanes: {
+                    cascadePanes: true, // true or false!
+                    columns: [1, 3, 4, 6],
+                },
+
+                dom: 'PBlfrtip',
+
                 //вкл/откл разбиения на страницы
                 paging: true,
                 //вкл/откл поля поиска
@@ -172,7 +184,7 @@
 
                 retrieve: true,
 
-                "order": [[0, 'desc']],
+                "order": [[1, 'desc']],
 
                 // выбор элементов на странице
                 "lengthMenu": [5, 10, 25, 50, 100],
@@ -180,10 +192,10 @@
                 columnDefs: [
                     { "orderable": false, targets: -1 }, //отключение сортировки последнего столбца
                     {
-                         searchPanes: {
-                             show: true
-                         },
-                         /*targets: [0, 1, 2, 3, 4]*/
+                        searchPanes: {
+                            show: true
+                        },
+                        targets: [1, 3, 4, 6]
                     }
                 ],
 
@@ -191,19 +203,19 @@
                     dom: {
                         button: {
                             tag: 'button',
-                            className: ''
+                            className: 'd-none'
                         }
                     },
                     buttons: [{
                         extend: 'excel',
-                        className: 'btn btn-sm btn-outline-secondary',
+                        className: 'btn btn-sm btn-primary',
                         titleAttr: 'Excel export.',
                         text: '<i class="far fa-file-excel"></i> Excel',
                         filename: 'excel-export',
                         extension: '.xlsx'
                     }, {
                         extend: 'copy',
-                        className: 'btn btn-sm btn-outline-secondary',
+                        className: 'btn btn-sm btn-primary',
                         titleAttr: 'Copy table data.',
                         text: '<i class="far fa-copy"></i> Копировать'
                     }]
@@ -211,41 +223,21 @@
                 }
             });
 
-            //Отдельная группа кнопок
-            new $.fn.dataTable.Buttons(table, {
-                buttons: [
-                    { //Кнопка "Фильтр"
-                        extend: 'searchPanes',
-                        text: '<i class="mdi mdi-filter-off"></i> Фильтр',
-                        className: "buttons-html5 btn btn-sm btn-outline-secondary",
-                        titleAttr: 'Фильтр',
-                        config: {
-                            cascadePanes: true, // true or false!
-                            //columns: [1,2,3],
-                            //clear: false
-                        },
-                        init: function (api, node, config) {
-                            $(node).removeClass('btn-default').removeClass('dt-button')
-                        }
-                    },
-                ]
-            });
-
-            
-            
-
             // Перемещаем элементы таблицы в div
             //  верх таблицы
-            $('#upp').append($('#dtable_length')); // кол-во строк на странице (length)
-            $('#upp').append($('#dtable_filter')); // фильтр (filter)
-
-            table.buttons(1, null).container().appendTo($('#upp'));
-            // Перемещаем кнопки в div
-            table.buttons(0, null).container().appendTo($('#upp'));
+            $('#top_lr').append($('#dtable_length')); // кол-во строк на странице (length)
+            $('#butCollapse').removeClass('d-none');
+            $('#butCollapse').append($('.dtsp-title')); // фильтр по столбцам
+            $('#top_lr').append($('#dtable_filter')); // текстовый фильтр (filter)
+            // кнопки экспорта в div
+            table.buttons(0, null).container().appendTo($('#dtable_filter'));
 
             //  низ таблицы
             $('#down_lr').append($('#dtable_info')); // инфо (info)
             $('#down_lr').append($('#dtable_paginate')); // страницы (paginate)
+
+            // блок фильтрации
+            $('#collapseOne').append($('.dtsp-panesContainer')); // фильтр по столбцам
 
             // Стили элемента length
             $('#dtable_length>label').css("font-weight", "normal").css("white-space", "nowrap");
@@ -254,18 +246,9 @@
             $('#dtable_filter>label').css("font-weight", "normal").css("white-space", "nowrap");
             $('#dtable_filter>label>input').css("display", "inline-block").css("width", "auto");
 
-            // Кнопка к элементу filter
-            //table.buttons(1, null).container().css('float', 'right').addClass('px-2'); // right
-            //$('#dtable_filter>').append(table.buttons(1, null).container());
-
-            // еще пример для div
-            //$('#fpopup').append(table.buttons(1, null).container().find('div'));
-
-            // Пример стиля
-            //$('#dtable_filter>input').addClass('d-inline-flex');
-
+            // Кнопка Фильтр к элементу filter
+            $('#dtable_filter').append($('#butCollapse'));
         });
 
     </script>
-
 }
