@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewData["Title"] = "TestTables2";
+    ViewData["Title"] = "TestTables7";
 }
 
 @section CSS_first {
@@ -493,9 +493,7 @@
 @*<div class="dt-buttons"><button class="buttons-html5 btn btn-sm btn-outline-secondary" tabindex="0" aria-controls="dtable" type="button" title="Фильтр"><span><i class="mdi mdi-filter-off"></i> Фильтр</span></button> </div>*@
 
 
-<button id="but_filter" class="btn btn-sm btn-secondary px-1 mx-1" type="button" title="Фильтр" data-bs-toggle="modal" data-bs-target="#myModalFilter"><span><i class="fas fa-filter"></i> Фильтр</span></button>
-
-
+<button id="but_filter" class="btn btn-sm btn-secondary px-1 mx-1" type="button" title="Фильтр" data-bs-toggle="modal" data-bs-target="#myModalFilter"><span id="butCollapse"></span></button> <!--<i class="fas fa-filter"></i> Фильтр-->
 <!-- sample modal content -->
 <div id="myModalFilter" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog mw-100 w-75 modal-dialog-centered">
@@ -537,8 +535,8 @@
                     //подписи в окне выбора фильтра
                     searchPanes: {
                         title: {
-                            _: 'Выбрано фильтров: %d шт.',
-                            0: 'Фильтры не выбраны'
+                            _: '<i class="mdi mdi-filter"></i> Фильтров: %d шт.',
+                            0: '<i class="mdi mdi-filter-off"></i> Фильтры'
                         },
                         collapseMessage: 'Свернуть панели',
                         showMessage: 'Развернуть панели',
@@ -619,6 +617,7 @@
             //  верх таблицы
             $('#top_lr').append($('#dtable_length')); // кол-во строк на странице (length)
             $('#top_lr').append($('#dtable_filter')); // фильтр (filter)
+            $('#butCollapse').append($('.dtsp-title')); // фильтр по столбцам
             //  низ таблицы
             $('#down_lr').append($('#dtable_info')); // инфо (info)
             $('#down_lr').append($('#dtable_paginate')); // страницы (paginate)
@@ -636,7 +635,7 @@
             $('#DTSP').append($('.dtsp-panesContainer')); // перенос панели фильтров на всплывающее окно
 
             //====
-            
+
         });
 
     </script>
