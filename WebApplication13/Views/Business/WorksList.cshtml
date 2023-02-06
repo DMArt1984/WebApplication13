@@ -173,10 +173,10 @@
 
                 searchPanes: {
                     cascadePanes: true, // true or false!
-                    columns: [1,3,5,6],
+                    columns: [1, 3, 5, 6],
                 },
 
-                dom: 'PBlfrtip',
+                dom: 'Plfrtip',
 
                 //вкл/откл разбиения на страницы
                 paging: true,
@@ -191,7 +191,7 @@
 
                 retrieve: true,
 
-                //"order": [[1, 'desc']],
+                //"order": [[0, 'asc']],
 
                 // выбор элементов на странице
                 "lengthMenu": [5, 10, 25, 50, 100],
@@ -206,28 +206,7 @@
                     }
                 ],
 
-                buttons: {
-                    dom: {
-                        button: {
-                            tag: 'button',
-                            className: 'd-none'
-                        }
-                    },
-                    buttons: [{
-                        extend: 'excel',
-                        className: 'btn btn-sm btn-primary',
-                        titleAttr: 'Excel export.',
-                        text: '<i class="far fa-file-excel"></i> Excel',
-                        filename: 'excel-export',
-                        extension: '.xlsx'
-                    }, {
-                        extend: 'copy',
-                        className: 'btn btn-sm btn-primary',
-                        titleAttr: 'Copy table data.',
-                        text: '<i class="far fa-copy"></i> Копировать'
-                    }]
-
-                }
+                
             });
 
             // Перемещаем элементы таблицы в div
@@ -236,8 +215,6 @@
             $('#butCollapse').removeClass('d-none');
             $('#butCollapse').append($('.dtsp-title')); // фильтр по столбцам
             $('#top_lr').append($('#dtable_filter')); // текстовый фильтр (filter)
-            // кнопки экспорта в div
-            table.buttons(0, null).container().appendTo($('#dtable_filter'));
 
             //  низ таблицы
             $('#down_lr').append($('#dtable_info')); // инфо (info)

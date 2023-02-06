@@ -1,13 +1,13 @@
 ﻿
 @{
-    ViewData["Title"] = "TestTables8";
+    ViewData["Title"] = "TestTables9";
 }
 
 @section CSS_first {
     @Html.Partial("_DTable_CSS_first")
 }
 
-<!-- Table 8 -->
+<!-- Table 9 -->
 <div class="card">
     <div class="card-header">
         <div id="upp" class="d-flex justify-content-between"></div>
@@ -31,11 +31,11 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Tiger Nixon</td>
-                    <td>System Architect</td>
+                    <td><span class="bg-primary">Tiger Nixon</span></td>
+                    <td><h3>System Architect</h3></td>
                     <td>Edinburgh</td>
                     <td>61</td>
-                    <td>2011-04-25</td>
+                    <td><span class="bg-danger">2011-04-25</span></td>
                     <td>$320,800</td>
                 </tr>
                 <tr>
@@ -493,13 +493,13 @@
 </div>
 
 
-
 @section Scripts {
 
     @Html.Partial("_DTable_Scripts")
 
     <script>
-        $(document).ready(function () {
+
+        table = $(document).ready(function () {
             var table = $('#dtable').DataTable({
                 language: {
                     emptyTable: "Нет данных для отображения в таблице",
@@ -531,11 +531,6 @@
                 drawCallback: function () {
                     $(".dataTables_paginate > .pagination").addClass("pagination-rounded")
                 },
-
-                searchPanes: {
-                    cascadePanes: true
-                },
-
                 dom: 'Plfrtip',
 
                 //вкл/откл разбиения на страницы
@@ -551,8 +546,6 @@
                 //сохранения состояния таблицы при возврате на нее
                 stateSave: true,
 
-                
-
                 //"order": [[0, 'asc']],
 
                 // выбор элементов на странице
@@ -567,28 +560,6 @@
                         targets: [1, 2, 3, 4]
                     }
                 ],
-
-                //buttons: {
-                //    dom: {
-                //        button: {
-                //            tag: 'button',
-                //            className: 'd-none'
-                //        }
-                //    },
-                //    buttons: [{
-                //        extend: 'excel',
-                //        className: 'btn btn-sm btn-primary',
-                //        titleAttr: 'Excel export.',
-                //        text: '<i class="far fa-file-excel"></i> Excel',
-                //        filename: 'excel-export',
-                //        extension: '.xlsx'
-                //    }, {
-                //        extend: 'copy',
-                //        className: 'btn btn-sm btn-primary',
-                //        titleAttr: 'Copy table data.',
-                //        text: '<i class="far fa-copy"></i> Копировать'
-                //    }]
-                //}
             });
 
             // Перемещаем элементы таблицы в div
@@ -598,7 +569,7 @@
             $('#butCollapse').append($('.dtsp-title')); // фильтр по столбцам
             $('#top_lr').append($('#dtable_filter')); // текстовый фильтр (filter)
             // кнопки экспорта в div
-            table.buttons(0, null).container().appendTo($('#dtable_filter'));
+            //table.buttons(0, null).container().appendTo($('#dtable_filter'));
 
             //  низ таблицы
             $('#down_lr').append($('#dtable_info')); // инфо (info)
@@ -616,10 +587,9 @@
 
             // Кнопка Фильтр к элементу filter
             $('#dtable_filter').append($('#butCollapse'));
+
         });
 
     </script>
 
 }
-
-
