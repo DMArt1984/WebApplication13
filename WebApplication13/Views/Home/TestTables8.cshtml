@@ -533,7 +533,22 @@
                 },
 
                 searchPanes: {
-                    cascadePanes: true
+                    cascadePanes: true,
+                    panes: [{
+                        header: 'custom',
+                        options: [{
+                            label: 'Accountants in Tokyo',
+                            value: function (rowData, rowIdx) {
+                                return rowData[1] === 'Accountant' && rowData[2] === 'Tokyo';
+                            }
+                        },
+                            {
+                            label: 'Office Manager in London',
+                            value: function (rowData, rowIdx) {
+                                return rowData[1] === 'Office Manager' && rowData[2] === 'London';
+                            }
+                        }]
+                    }]
                 },
 
                 dom: 'Plfrtip',
@@ -551,8 +566,6 @@
                 //сохранения состояния таблицы при возврате на нее
                 stateSave: true,
 
-                
-
                 //"order": [[0, 'asc']],
 
                 // выбор элементов на странице
@@ -561,10 +574,40 @@
                 columnDefs: [
                     { "orderable": false, targets: -1 }, //отключение сортировки последнего столбца
                     {
+                        //searchPanes: {
+                        //    show: true,
+                        //},
+                        //targets: [1, 2, 3, 4]
                         searchPanes: {
-                            show: true
+                            options: [
+                                {
+                                    label: '> 60',
+                                    value: function (rowData, rowIdx) {
+                                        return rowData[3] > 60;
+                                    }
+                                },
+                                {
+                                    label: '<= 60',
+                                    value: function (rowData, rowIdx) {
+                                        return rowData[3] <= 60;
+                                    }
+                                },
+                                {
+                                    label: 'Prime Ages',
+                                    value: function (rowData, rowIdx) {
+                                        let primeNumber = true;
+                                        for (let i = 2; i < Math.sqrt(rowData[3]); i++) {
+                                            if (rowData[3] % i == 0) {
+                                                primeNumber = false;
+                                                break;
+                                            }
+                                        }
+                                        return primeNumber && rowData[3] > 1;
+                                    }
+                                }
+                            ]
                         },
-                        targets: [1, 2, 3, 4]
+                        targets: [3]
                     }
                 ],
 
