@@ -244,6 +244,16 @@ namespace FactPortal.Controllers
             return View();
         }
 
+        public IActionResult TestTables11()
+        {
+            return View();
+        }
+
+        public IActionResult TestTables12()
+        {
+            return View();
+        }
+
 
     }
 }
