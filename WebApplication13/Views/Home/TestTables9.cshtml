@@ -562,6 +562,23 @@
                 ],
             });
 
+            // внешнее изменение фильтра
+            var panes = document.querySelectorAll('.dtsp-searchPanes table#DataTables_Table_0.dataTable');
+            var pane1DataTable = $(panes[0]).DataTable();
+
+            console.trace(panes);
+            console.trace(pane1DataTable);
+            console.trace(pane1DataTable.rows());
+
+            pane1DataTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                console.trace(this.data().display);
+                if ('Systems Administrator' == this.data().display) {
+                    this.select();
+                }
+            });
+
+            console.trace('OK');
+
             // Перемещаем элементы таблицы в div
             //  верх таблицы
             $('#top_lr').append($('#dtable_length')); // кол-во строк на странице (length)
@@ -589,6 +606,9 @@
             $('#dtable_filter').append($('#butCollapse'));
 
         });
+
+        
+        
 
     </script>
 
