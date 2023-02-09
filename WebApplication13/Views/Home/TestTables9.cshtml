@@ -7,6 +7,9 @@
     @Html.Partial("_DTable_CSS_first")
 }
 
+<button onclick="myFunction(true)">Select</button>
+<button onclick="myFunction(false)">Deselect</button>
+
 <!-- Table 9 -->
 <div class="card">
     <div class="card-header">
@@ -533,6 +536,10 @@
                 },
                 dom: 'Plfrtip',
 
+                searchPanes: {
+                    cascadePanes: true,
+                },
+
                 //вкл/откл разбиения на страницы
                 paging: true,
                 //вкл/откл поля поиска
@@ -561,23 +568,6 @@
                     }
                 ],
             });
-
-            // внешнее изменение фильтра
-            var panes = document.querySelectorAll('.dtsp-searchPanes table#DataTables_Table_0.dataTable');
-            var pane1DataTable = $(panes[0]).DataTable();
-
-            console.trace(panes);
-            console.trace(pane1DataTable);
-            console.trace(pane1DataTable.rows());
-
-            pane1DataTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                console.trace(this.data().display);
-                if ('Systems Administrator' == this.data().display) {
-                    this.select();
-                }
-            });
-
-            console.trace('OK');
 
             // Перемещаем элементы таблицы в div
             //  верх таблицы
@@ -608,7 +598,43 @@
         });
 
         
-        
+        function myFunction(make) {
+            // внешнее изменение фильтра
+            //var panes = document.querySelectorAll('.dtsp-searchPanes table#DataTables_Table_0.dataTable');
+            var panes = document.querySelectorAll('.dtsp-searchPanes table[id^="DataTables_Table_"].dataTable');
+            var pane1DataTable = $(panes[0]).DataTable();
+
+            var titles = document.querySelectorAll('.dtsp-paneInputButton');
+
+            //console.log(panes);
+            console.log(titles);
+            //console.log(pane1DataTable);
+            //console.log(pane1DataTable.rows());
+
+            var arrNames = [];
+            //iterate through object keys
+            Object.keys(titles).forEach(function (key) {
+                //get the value of name
+                var val = titles[key]["placeholder"];
+                //push the name string in the array
+                arrNames.push(val);
+            });
+            console.log(arrNames);//prints ["someone1", "someone2"]
+
+
+            pane1DataTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                //console.trace(this.data().display);
+                if ('Systems Administrator' == this.data().display) {
+                    if (make) {
+                        this.select();
+                    } else {
+                        this.deselect();
+                    }
+                }
+            });
+
+            console.trace('OK');
+        }
 
     </script>
 
