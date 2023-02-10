@@ -12,6 +12,7 @@
 <button onclick="Test1()">Test #1 deselect </button>
 <button onclick="Test2()">Test #2 select</button>
 <button onclick="Test3()">Test #3 conditions</button>
+<button onclick="Test4()">Test #4 items of age</button>
 
 <!-- Table 9 -->
 <div class="card">
@@ -673,7 +674,24 @@
             console.log('notbetween', Conditions(400, 'notbetween', 300, 500), Conditions('2018.05', 'notbetween', '2018.04', '2018.07'));
         }
 
-        // Условия
+        function Test4() {
+            var items = GetItemsFilter('Age');
+            console.log(items);
+            console.log(ConditionsItems(items, 'between', 30, 40));
+        }
+
+        // Условия для набора
+        function ConditionsItems(items, ifname, value1 = null, value2 = null) {
+            var arrNames = [];
+            items.forEach(function (value, index, array) {
+                if (Conditions(value, ifname, value1, value2)) {
+                    arrNames.push(value);
+                }
+            });
+            return arrNames;
+        }
+
+        // Условия для значения
         function Conditions(value, ifname, value1 = null, value2 = null) {
             switch (ifname) {
                 case 'empty':
@@ -773,7 +791,7 @@
         // Снять весь выбор из фильтра
         function FilterDeselectAll(filter) {
             filter.rows().deselect();
-            console.log('FilterDeselect == OK');
+            //console.log('FilterDeselect == OK');
         }
 
         // Сделать выбор в фильтре
@@ -788,14 +806,14 @@
         // Получить набор (список элементов) фильтра по имени столбца
         function GetItemsFilter(nameCol) {
             var filters = FilterNames(); // имена фильтров (столбцов)
-            console.log(filters);
+            //console.log(filters);
             var indexPane = GetIndexArray(filters, nameCol); // индекс фильтра
-            console.log(indexPane);
-            console.log('next >');
+            //console.log(indexPane);
+            //console.log('next >');
             var filter = FilterQuery(indexPane); // фильтр
-            console.log('filter:');
-            console.log(filter);
-            console.log('items:');
+            //console.log('filter:');
+            //console.log(filter);
+            //console.log('items:');
             var items = ItemsFilter(filter);
             return items;
         }
@@ -819,12 +837,12 @@
                 return null;
             }
             var panes = document.querySelectorAll('.dtsp-searchPanes table[id^="DataTables_Table_"].dataTable');
-            console.log('FilterQuery >');
-            console.log(panes.length);
+            //console.log('FilterQuery >');
+            //console.log(panes.length);
             if (indexPane >= panes.length) {
                 return null;
             }
-            console.log('FilterQuery #r');
+            //console.log('FilterQuery #r');
             return $(panes[indexPane]).DataTable();
         }
 
