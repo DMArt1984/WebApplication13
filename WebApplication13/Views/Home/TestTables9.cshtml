@@ -9,8 +9,9 @@
 
 <button onclick="myFunction(true)">Select item</button>
 <button onclick="myFunction(false)">Deselect item</button>
-<button onclick="Test1()">Test #1</button>
-<button onclick="Test2()">Test #2</button>
+<button onclick="Test1()">Test #1 deselect </button>
+<button onclick="Test2()">Test #2 select</button>
+<button onclick="Test3()">Test #3 conditions</button>
 
 <!-- Table 9 -->
 <div class="card">
@@ -639,13 +640,13 @@
             // 1.1)
             var names = FilterNames();
             console.log(names);
-            var title = names[1];
+            var title = names[0];
             console.log(title);
             var items = GetItemsFilter(title);
             console.log(items);
 
             // 1.2)
-            var filter = FilterQuery(1);
+            var filter = FilterQuery(0);
             FilterDeselectAll(filter);
         }
 
@@ -657,6 +658,117 @@
             FilterSelect(filter, arraySelect);
         }
 
+        function Test3() {
+            console.log('empty', Conditions(500, 'empty'), Conditions('hello', 'empty'), Conditions(null, 'empty'));
+            console.log('notempty', Conditions(500, 'notempty'), Conditions('hello', 'notempty'), Conditions(null, 'notempty'));
+            console.log('equals', Conditions(450, 'equals', 450));
+            console.log('notequals', Conditions(450, 'notequals', 450));
+            console.log('gt', Conditions(100, 'gt', 99), Conditions('2018.01.08', 'gt', '2018.01.01'));
+            console.log('gte', Conditions(100, 'gte', 100), Conditions('2018.01.08', 'gte', '2018.01.01'));
+            console.log('lt', Conditions(97, 'lt', 99), Conditions('2018.01.08', 'lt', '2018.01.09'));
+            console.log('lte', Conditions(99, 'lte', 99), Conditions('2018.01.08', 'lte', '2018.01.09'));
+            console.log('contains', Conditions('2018.07.03', 'contains', '07'));
+            console.log('notcontains', Conditions('2018.07.03', 'notcontains', '07'));
+            console.log('between', Conditions(400, 'between', 300, 500), Conditions('2018.05', 'between', '2018.04', '2018.07'));
+            console.log('notbetween', Conditions(400, 'notbetween', 300, 500), Conditions('2018.05', 'notbetween', '2018.04', '2018.07'));
+        }
+
+        // Условия
+        function Conditions(value, ifname, value1 = null, value2 = null) {
+            switch (ifname) {
+                case 'empty':
+                    return Empty(value);
+                    break;
+
+                case 'notempty':
+                    return NotEmpty(value);
+                    break;
+
+                case 'equals':
+                    return Equals(value, value1);
+                    break;
+
+                case 'notequals':
+                    return NotEquals(value, value1);
+                    break;
+
+                case 'gt':
+                    return GT(value, value1);
+                    break;
+
+                case 'gte':
+                    return GTE(value, value1);
+                    break;
+
+                case 'lt':
+                    return LT(value, value1);
+                    break;
+
+                case 'lte':
+                    return LTE(value, value1);
+                    break;
+
+                case 'contains':
+                    return Contains(value, value1);
+                    break;
+
+                case 'notcontains':
+                    return NotContains(value, value1);
+                    break;
+
+                case 'between':
+                    return Between(value, value1, value2);
+                    break;
+
+                case 'notbetween':
+                    return NotBetween(value, value1, value2);
+                    break;
+
+                default:
+                    return false;
+                    break;
+            }
+        }
+
+        // Условия сравнения
+        function Empty(value) {
+            return value == null;
+        }
+        function NotEmpty(value) {
+            return value != null;
+        }
+        function Equals(left, right) {
+            return left == right;
+        }
+        function NotEquals(left, right) {
+            return left != right;
+        }
+        function GT(left, right) {
+            return left > right;
+        }
+        function GTE(left, right) {
+            return left >= right;
+        }
+        function LT(left, right) {
+            return left < right;
+        }
+        function LTE(left, right) {
+            return left <= right;
+        }
+        function Contains(value, subString) {
+            return value.includes(subString) == true;
+            //return value.indexOf(subString) !== -1;
+        }
+        function NotContains(value, subString) {
+            return value.includes(subString) == false;
+            //return value.indexOf(subString) == -1;
+        }
+        function Between(value, min, max) {
+            return value >= min && value <= max;
+        }
+        function NotBetween(value, min, max) {
+            return value < min || value > max;
+        }
 
         // Снять весь выбор из фильтра
         function FilterDeselectAll(filter) {
@@ -739,6 +851,8 @@
         function GetIndexArray(array, nameValue) {
             return array.indexOf(nameValue);
         }
+
+        
 
     </script>
 
