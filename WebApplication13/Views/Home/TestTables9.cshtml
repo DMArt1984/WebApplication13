@@ -7,9 +7,10 @@
     @Html.Partial("_DTable_CSS_first")
 }
 
-<button onclick="myFunction(true)">Select</button>
-<button onclick="myFunction(false)">Deselect</button>
+<button onclick="myFunction(true)">Select item</button>
+<button onclick="myFunction(false)">Deselect item</button>
 <button onclick="Test1()">Test #1</button>
+<button onclick="Test2()">Test #2</button>
 
 <!-- Table 9 -->
 <div class="card">
@@ -635,13 +636,41 @@
         }
 
         function Test1() {
+            // 1.1)
             var names = FilterNames();
             console.log(names);
             var title = names[1];
             console.log(title);
-            
             var items = GetItemsFilter(title);
             console.log(items);
+
+            // 1.2)
+            var filter = FilterQuery(1);
+            FilterDeselectAll(filter);
+        }
+
+        function Test2() {
+
+            // 2)
+            var filter = FilterQuery(0);
+            var arraySelect = ['Developer', 'Office Manager'];
+            FilterSelect(filter, arraySelect);
+        }
+
+
+        // Снять весь выбор из фильтра
+        function FilterDeselectAll(filter) {
+            filter.rows().deselect();
+            console.log('FilterDeselect == OK');
+        }
+
+        // Сделать выбор в фильтре
+        function FilterSelect(filter, arraySelect) {
+            filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
+                    this.select();
+                }
+            });
         }
 
         // Получить набор (список элементов) фильтра по имени столбца
