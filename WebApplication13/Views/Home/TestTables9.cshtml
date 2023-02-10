@@ -9,6 +9,7 @@
 
 <button onclick="myFunction(true)">Select</button>
 <button onclick="myFunction(false)">Deselect</button>
+<button onclick="Test1()">Test #1</button>
 
 <!-- Table 9 -->
 <div class="card">
@@ -611,20 +612,17 @@
             //console.log(pane1DataTable);
             //console.log(pane1DataTable.rows());
 
-            var arrNames = [];
-            //iterate through object keys
-            Object.keys(titles).forEach(function (key) {
-                //get the value of name
-                var val = titles[key]["placeholder"];
-                //push the name string in the array
-                arrNames.push(val);
-            });
-            console.log(arrNames);//prints ["someone1", "someone2"]
+            //var arrNames = [];
+            //Object.keys(titles).forEach(function (key) {
+            //    var val = titles[key]["placeholder"];
+            //    arrNames.push(val);
+            //});
+            console.log(QueryToArray(titles, 'placeholder'));
 
 
             pane1DataTable.rows().every(function (rowIdx, tableLoop, rowLoop) {
                 //console.trace(this.data().display);
-                if ('Systems Administrator' == this.data().display) {
+                if ('Developer' == this.data().display) {
                     if (make) {
                         this.select();
                     } else {
@@ -634,6 +632,83 @@
             });
 
             console.trace('OK');
+        }
+
+        function Test1() {
+            var names = FilterNames();
+            console.log(names);
+            var title = names[1];
+            console.log(title);
+            
+            var items = GetItemsFilter(title);
+            console.log(items);
+        }
+
+        // Получить набор (список элементов) фильтра по имени столбца
+        function GetItemsFilter(nameCol) {
+            var filters = FilterNames(); // имена фильтров (столбцов)
+            console.log(filters);
+            var indexPane = GetIndexArray(filters, nameCol); // индекс фильтра
+            console.log(indexPane);
+            console.log('next >');
+            var filter = FilterQuery(indexPane); // фильтр
+            console.log('filter:');
+            console.log(filter);
+            console.log('items:');
+            var items = ItemsFilter(filter);
+            return items;
+        }
+
+        // Получить имена столбцов для фильтров
+        function FilterNames() {
+            var titles = document.querySelectorAll('.dtsp-paneInputButton');
+            return QueryToArray(titles, 'placeholder');
+        }
+
+        // Получить индекс фильтра по имени столбца
+        function FilterIndex(nameCol) {
+            var titles = document.querySelectorAll('.dtsp-paneInputButton');
+            var array = QueryToArray(titles, 'placeholder');
+            return GetIndexArray(array, nameCol);
+        }
+
+        // Получить фильтр
+        function FilterQuery(indexPane) {
+            if (indexPane <= -1) {
+                return null;
+            }
+            var panes = document.querySelectorAll('.dtsp-searchPanes table[id^="DataTables_Table_"].dataTable');
+            console.log('FilterQuery >');
+            console.log(panes.length);
+            if (indexPane >= panes.length) {
+                return null;
+            }
+            console.log('FilterQuery #r');
+            return $(panes[indexPane]).DataTable();
+        }
+
+        // Получить набор фильтра
+        function ItemsFilter(filter) {
+            var arrNames = [];
+            filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                arrNames.push(this.data().display);
+            });
+            return arrNames;
+        }
+
+        // Конвертация запроса в массив
+        function QueryToArray(nodes, nameKey) {
+            var arrNames = [];
+            Object.keys(nodes).forEach(function (key) {
+                var val = nodes[key][nameKey];
+                arrNames.push(val);
+            });
+            return arrNames;
+        }
+
+        // Получить индекс массива по значению
+        function GetIndexArray(array, nameValue) {
+            return array.indexOf(nameValue);
         }
 
     </script>
