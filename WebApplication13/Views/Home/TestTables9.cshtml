@@ -7,12 +7,28 @@
     @Html.Partial("_DTable_CSS_first")
 }
 
-<button onclick="myFunction(true)">Select item</button>
-<button onclick="myFunction(false)">Deselect item</button>
-<button onclick="Test1()">Test #1 deselect </button>
-<button onclick="Test2()">Test #2 select</button>
-<button onclick="Test3()">Test #3 conditions</button>
-<button onclick="Test4()">Test #4 items of age</button>
+<div class="p-2">
+    <button onclick="myFunction(true)">Select item</button>
+    <button onclick="myFunction(false)">Deselect item</button>
+    <button onclick="Test1()">Test #1 deselect </button>
+    <button onclick="Test2()">Test #2 select</button>
+    <button onclick="Test3()">Test #3 conditions</button>
+    <button onclick="Test4()">Test #4 items of age</button>
+</div>
+<div class="p-2">
+    <button onclick="MyFilter()"> -> </button>
+    <select id="filter_cols" style="visibility:hidden">
+        <option value="" disabled selected>Выберите столбец</option>
+    </select>
+    <select id="filter_conditions" style="visibility:hidden">
+        <option value="" disabled selected>Выберите сравнение</option>
+    </select>
+    <input type="text" id="value1" name="value1" style="visibility:hidden" value="">
+    <input type="text" id="value2" name="value2" style="visibility:hidden" value="">
+    <button onclick="Use()" id="use" style="visibility:hidden">Применить</button>
+    <button onclick="Clear()" id="clear" style="visibility:hidden">Сбросить</button>
+
+</div>
 
 <!-- Table 9 -->
 <div class="card">
@@ -601,6 +617,9 @@
 
         });
 
+        // --------------------------------------------------------------------
+
+        // --------------------------------------------------------------------
         
         function myFunction(make) {
             // внешнее изменение фильтра
@@ -677,10 +696,74 @@
         function Test4() {
             var items = GetItemsFilter('Age');
             console.log(items);
-            console.log(ConditionsItems(items, 'between', 30, 40));
+            console.log(ConditionsItems(items, 'between', 30, 39));
         }
 
-        // Условия для набора
+        function MyFilter() {
+            CreateSelect('filter_cols', FilterNames());
+            CreateSelect('filter_conditions', ArrayConditions());
+            ShowVisibilityId('value1');
+            ShowVisibilityId('value2');
+            document.getElementById('value1').value = '';
+            document.getElementById('value2').value = '';
+            ShowVisibilityId('use');
+            ShowVisibilityId('clear');
+        }
+
+        // Установить фильтр
+        function Use() {
+            var nameCol = document.getElementById('filter_cols').value;
+            if (nameCol != null) {
+                var filter = FilterQueryByName(nameCol);
+                var items = ItemsFilter(filter);
+                var cond = document.getElementById('filter_conditions').value;
+                var value1 = document.getElementById('value1').value;
+                var value2 = document.getElementById('value2').value;
+                //console.log(value1, value2);
+                var arraySelect = ConditionsItems(items, cond, value1, value2);
+                FilterSelect(filter, arraySelect);
+            }
+        }
+
+        // Очистить фильтр
+        function Clear() {
+            var nameCol = document.getElementById('filter_cols').value;
+            if (nameCol != null) {
+                var filter = FilterQueryByName(nameCol);
+                FilterDeselectAll(filter);
+            }
+        }
+
+        // 
+        function ArrayConditions() {
+            return ['empty', 'notempty', 'equals', 'notequals', 'gt', 'gte', 'lt', 'lte', 'contains', 'notcontains', 'between', 'notbetween'];
+        }
+
+        //function ArrayConditionsDate() {
+        //    return 
+        //}
+
+        //function ArrayConditionsString() {
+        //    return
+        //}
+
+        // Создать SELECT
+        function CreateSelect(idElement, options) {
+            var select = document.getElementById(idElement);
+            select.style.visibility = 'visible';
+            select.length = 0;
+            if (select != null) {
+                for (var i = 0; i < options.length; i++) {
+                    var opt = options[i];
+                    var el = document.createElement("option");
+                    el.textContent = opt;
+                    el.value = opt;
+                    select.appendChild(el);
+                }
+            }
+        }
+
+        // Условия для набора (списка значений)
         function ConditionsItems(items, ifname, value1 = null, value2 = null) {
             var arrNames = [];
             items.forEach(function (value, index, array) {
@@ -790,32 +873,71 @@
 
         // Снять весь выбор из фильтра
         function FilterDeselectAll(filter) {
-            filter.rows().deselect();
-            //console.log('FilterDeselect == OK');
+            if (filter != null) {
+                filter.rows().deselect();
+            } else {
+                console.log('FilterDeselectAll == ERR');
+            }
+        }
+
+        // Снять выбор из фильтра
+        function FilterDeselect(filter) {
+            if (filter != null) {
+                filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
+                        this.deselect();
+                    }
+                });
+            } else {
+                console.log('FilterDeselect == ERR');
+            }
+        }
+
+        // Добавить выбор в фильтре
+        function FilterSelect(filter, arraySelect) {
+            if (filter != null) {
+                filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
+                        this.select();
+                    }
+                });
+            } else {
+                console.log('FilterSelect == ERR');
+            }
         }
 
         // Сделать выбор в фильтре
-        function FilterSelect(filter, arraySelect) {
-            filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
-                    this.select();
-                }
-            });
+        function FilterOnlySelect(filter, arraySelect) {
+            FilterDeselectAll(filter);
+            FilterSelect(filter, arraySelect);
         }
+
 
         // Получить набор (список элементов) фильтра по имени столбца
         function GetItemsFilter(nameCol) {
-            var filters = FilterNames(); // имена фильтров (столбцов)
+            //var filters = FilterNames(); // имена фильтров (столбцов)
             //console.log(filters);
-            var indexPane = GetIndexArray(filters, nameCol); // индекс фильтра
+            //var indexPane = GetIndexArray(filters, nameCol); // индекс фильтра
             //console.log(indexPane);
             //console.log('next >');
-            var filter = FilterQuery(indexPane); // фильтр
+            //var filter = FilterQuery(indexPane); // фильтр
             //console.log('filter:');
             //console.log(filter);
             //console.log('items:');
-            var items = ItemsFilter(filter);
+            var items = ItemsFilter(FilterQueryByName(nameCol));
             return items;
+        }
+
+        // Получить фильтр по имени
+        function FilterQueryByName(nameCol) {
+            var filters = FilterNames(); // имена фильтров (столбцов)
+            if (filters.length >= 1) {
+                var indexPane = GetIndexArray(filters, nameCol); // индекс фильтра
+                var filter = FilterQuery(indexPane); // фильтр
+                return filter;
+            } else {
+                return null;
+            }
         }
 
         // Получить имена столбцов для фильтров
@@ -846,6 +968,8 @@
             return $(panes[indexPane]).DataTable();
         }
 
+        
+
         // Получить набор фильтра
         function ItemsFilter(filter) {
             var arrNames = [];
@@ -870,7 +994,13 @@
             return array.indexOf(nameValue);
         }
 
-        
+        // Показать или скрыть элемент по ID
+        function HideVisibilityId(id) {
+            document.getElementById(id).style.visibility = 'hidden'; // скрыть
+        }
+        function ShowVisibilityId(id) {
+            document.getElementById(id).style.visibility = 'visible'; // показать
+        }
 
     </script>
 
