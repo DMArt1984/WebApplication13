@@ -14,6 +14,7 @@
     <button onclick="Test2()">Test #2 select</button>
     <button onclick="Test3()">Test #3 conditions</button>
     <button onclick="Test4()">Test #4 items of age</button>
+    <button onclick="Test5()">Test #5 cookie</button>
 </div>
 <div class="p-2">
     <button onclick="MyFilter()"> -> </button>
@@ -699,6 +700,12 @@
             console.log(ConditionsItems(items, 'between', 30, 39));
         }
 
+        function Test5() {
+            console.log('old',getCookie('testValyue1'));
+            setCookie('testValyue1', document.getElementById('value1').value, 1);
+            console.log('new', getCookie('testValyue1'));
+        }
+
         function MyFilter() {
             CreateSelect('filter_cols', FilterNames());
             CreateSelect('filter_conditions', ArrayConditions());
@@ -709,6 +716,8 @@
             ShowVisibilityId('use');
             ShowVisibilityId('clear');
         }
+
+        
 
         // Установить фильтр
         function Use() {
@@ -732,6 +741,34 @@
                 var filter = FilterQueryByName(nameCol);
                 FilterDeselectAll(filter);
             }
+        }
+
+        // Сохранить Cookie
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        // Загрузить Cookie
+        function getCookie(name) {
+            var nameEQ = name + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // Очистить Cookie
+        function eraseCookie(name) {
+            document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
 
         // 
