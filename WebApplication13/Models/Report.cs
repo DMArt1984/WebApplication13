@@ -47,9 +47,9 @@ namespace FactPortal.Models
 
     public struct RepTable // Блок: Таблица
     {
-        public string title;
-        public List<string> colsName;
-        public List<RepTableRow> rows;
+        public string title { set; get; } // Заголовок
+        public readonly List<string> colsName; // Названия столбцов
+        public readonly List<RepTableRow> rows; // Строки
 
         public RepTable(string title)
         {
@@ -75,16 +75,16 @@ namespace FactPortal.Models
 
     public struct RepAccordion // Блок: Раскрывающийся список 1
     {
-        public string title;
-        public List<RepAccordionItem> rows;
+        public string title; // Заголовок
+        public List<RepAccordionRow> rows; // Строки
 
         public RepAccordion(string title)
         {
             this.title = title;
-            this.rows = new List<RepAccordionItem>();
+            this.rows = new List<RepAccordionRow>();
         }
 
-        public RepAccordion(string title, IEnumerable<RepAccordionItem> rows)
+        public RepAccordion(string title, IEnumerable<RepAccordionRow> rows)
         {
             this.title = title;
             this.rows = rows.ToList();
@@ -94,16 +94,16 @@ namespace FactPortal.Models
 
     public struct RepCollaps // Блок: Раскрывающийся список 2
     {
-        public string title;
-        public List<RepCollapsItem> rows;
+        public string title; // Заголовок
+        public List<RepCollapsRow> rows; // Строки
 
         public RepCollaps(string title)
         {
             this.title = title;
-            this.rows = new List<RepCollapsItem>();
+            this.rows = new List<RepCollapsRow>();
         }
 
-        public RepCollaps(string title, IEnumerable<RepCollapsItem> rows)
+        public RepCollaps(string title, IEnumerable<RepCollapsRow> rows)
         {
             this.title = title;
             this.rows = rows.ToList();
@@ -112,7 +112,7 @@ namespace FactPortal.Models
 
     // ----------------------------------------------------------------------------------
 
-    public class RepTableRow
+    public class RepTableRow // Блок: Таблица - строка
     {
         public List<dynamic> Values { get; set; }
 
@@ -122,13 +122,13 @@ namespace FactPortal.Models
         }
     }
 
-    public class RepAccordionItem
+    public class RepAccordionRow // Блок: Раскрывающийся список 1 - строка
     {
         public string Title { get; set; }
         public dynamic Content { get; set; }
     }
 
-    public class RepCollapsItem
+    public class RepCollapsRow // Блок: Раскрывающийся список 2 - строка
     {
         public dynamic TitleContent { get; set; }
         public dynamic OpenContent { get; set; }

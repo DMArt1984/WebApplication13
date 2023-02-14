@@ -2729,18 +2729,18 @@ namespace FactPortal.Controllers
 
             var block1 = new RepAccordion
             {
-                rows = new List<RepAccordionItem> {
-                    new RepAccordionItem { Title = "Основная вкладка", Content = RTbig },
-                    new RepAccordionItem {
+                rows = new List<RepAccordionRow> {
+                    new RepAccordionRow { Title = "Основная вкладка", Content = RTbig },
+                    new RepAccordionRow {
                         Title = "Вторая вкладка",
                         Content = new RepCollaps (
                             "",
-                            new RepCollapsItem[] {
-                                new RepCollapsItem { TitleContent = RTusers1, OpenContent = RTusers2 },
-                                new RepCollapsItem { TitleContent = "Нажмите на меня", OpenContent = "Ну и зачем было нажимать" }
+                            new RepCollapsRow[] {
+                                new RepCollapsRow { TitleContent = RTusers1, OpenContent = RTusers2 },
+                                new RepCollapsRow { TitleContent = "Нажмите на меня", OpenContent = "Ну и зачем было нажимать" }
                             })
                     },
-                    new RepAccordionItem { Title = "Третья вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia" }
+                    new RepAccordionRow { Title = "Третья вкладка", Content = "Anim pariatur cliche reprehenderit, enim eiusmod high lifeaccusamus terry richardson ad squid. 3 wolf moon officia" }
                 }
             };
 

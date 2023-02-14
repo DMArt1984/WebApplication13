@@ -15,6 +15,7 @@
     <button onclick="Test3()">Test #3 conditions</button>
     <button onclick="Test4()">Test #4 items of age</button>
     <button onclick="Test5()">Test #5 cookie</button>
+    <button onclick="Test6()">Test #6 display</button>
 </div>
 <div class="p-2">
     <button onclick="MyFilter()"> -> </button>
@@ -706,6 +707,12 @@
             console.log('new', getCookie('testValyue1'));
         }
 
+        function Test6() {
+            var panes = document.querySelectorAll('.dtsp-columns-1');
+            console.log(panes);
+            $(panes[0]).style += "display: none";
+        }
+
         function MyFilter() {
             CreateSelect('filter_cols', FilterNames());
             CreateSelect('filter_conditions', ArrayConditions());
@@ -933,11 +940,35 @@
         // Добавить выбор в фильтре
         function FilterSelect(filter, arraySelect) {
             if (filter != null) {
-                filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
-                        this.select();
-                    }
-                });
+
+                //filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                //    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
+                //        this.select();
+                //    }
+                //});
+
+                //filter.rows().select();
+
+                //var myRows = [];
+                //filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                //    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
+                //        myRows.push(this);
+                //        //console.log(this);
+                //    }
+                //});
+                //filter.rows(myRows).select();
+                //console.log(myRows);
+
+                filter.rows(function (idx, data, node) {
+                    //console.log(idx);
+                    //console.log(data);
+                    //console.log(node);
+                    return (jQuery.inArray(data.display, arraySelect) !== -1) ?
+                        true : false;
+                }).select();
+
+                console.log("OK SELECT");
+
             } else {
                 console.log('FilterSelect == ERR');
             }
