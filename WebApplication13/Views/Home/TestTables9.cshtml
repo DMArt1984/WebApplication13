@@ -31,6 +31,20 @@
     <button onclick="Clear()" id="clear" style="visibility:hidden">Сбросить</button>
 
 </div>
+<div class="p-2">
+    
+    <form class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <input class="form-control" type="date" value="2019-08-19" id="date1">
+        </div>
+        <div class="col-12">
+            <input class="form-control" type="date" value="2019-08-19" id="date2">
+        </div>
+        <div class="col-12">
+            <button type="button" class="btn btn-primary" onclick="Test7()">Установить</button>
+        </div>
+    </form>
+</div>
 
 <!-- Table 9 -->
 <div class="card">
@@ -713,6 +727,21 @@
             $(panes[0]).style += "display: none";
         }
 
+        function Test7() {
+            var date1 = document.getElementById('date1').value;
+            var date2 = document.getElementById('date2').value;
+
+            console.log(date1, date2);
+
+            var filter = FilterQueryByName('Start date');
+            var items = ItemsFilter(filter);
+
+            var arraySelect = ConditionsItems(items, 'between', date1, date2);
+            FilterOnlySelect(filter, arraySelect);
+
+        }
+
+
         function MyFilter() {
             CreateSelect('filter_cols', FilterNames());
             CreateSelect('filter_conditions', ArrayConditions());
@@ -927,11 +956,16 @@
         // Снять выбор из фильтра
         function FilterDeselect(filter) {
             if (filter != null) {
-                filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
-                        this.deselect();
-                    }
-                });
+                //filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                //    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
+                //        this.deselect();
+                //    }
+                //});
+
+                filter.rows(function (idx, data, node) {
+                    return (jQuery.inArray(data.display, arraySelect) !== -1) ?
+                        true : false;
+                }).deselect();
             } else {
                 console.log('FilterDeselect == ERR');
             }
@@ -960,14 +994,11 @@
                 //console.log(myRows);
 
                 filter.rows(function (idx, data, node) {
-                    //console.log(idx);
-                    //console.log(data);
-                    //console.log(node);
                     return (jQuery.inArray(data.display, arraySelect) !== -1) ?
                         true : false;
                 }).select();
 
-                console.log("OK SELECT");
+                //console.log("OK SELECT");
 
             } else {
                 console.log('FilterSelect == ERR');

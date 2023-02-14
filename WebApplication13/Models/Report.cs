@@ -71,6 +71,7 @@ namespace FactPortal.Models
             this.colsName = colsName.ToList();
             this.rows = rows.ToList();
         }
+
     }
 
     public struct RepAccordion // Блок: Раскрывающийся список 1
