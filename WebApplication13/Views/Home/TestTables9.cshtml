@@ -31,20 +31,45 @@
     <button onclick="Clear()" id="clear" style="visibility:hidden">Сбросить</button>
 
 </div>
-<div class="p-2">
-    
-    <form class="row row-cols-lg-auto g-3 align-items-center">
-        <div class="col-12">
-            <input class="form-control" type="date" value="2019-08-19" id="date1">
-        </div>
-        <div class="col-12">
-            <input class="form-control" type="date" value="2019-08-19" id="date2">
-        </div>
-        <div class="col-12">
-            <button type="button" class="btn btn-primary" onclick="Test7()">Установить</button>
-        </div>
-    </form>
+<div id="dateform" class="p-2">
+    <hr />
+            <label style="font-weight: normal; white-space: nowrap;">
+                Start date :
+                <input type="date" id="date1" class="form-control p-1" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
+                 - 
+                <input type="date" id="date2" class="form-control p-1" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
+                <button type="button" class="btn btn-primary" style="display: inline-block; width: auto;" onclick="Test7()">Установить диапазон</button>
+            </label>
 </div>
+
+<form class="row row-cols-lg-auto g-3 align-items-center">
+    <div class="col-12">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="inlineFormCheck">
+            <label class="form-check-label" for="inlineFormCheck">
+                Remember me
+            </label>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <input type="date" class="form-control" placeholder="" value="2019-08-19">
+    </div>
+
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+
+<div class="col-4">
+    <div class="mb-3 row">
+        <label for="example-text-input" class="col-md-2 col-form-label">Text</label>
+        <div class="col-md-4">
+            <input class="form-control" type="date" value="Artisanal kale" id="example-text-input">
+        </div>
+    </div>
+</div>
+
 
 <!-- Table 9 -->
 <div class="card">
@@ -630,6 +655,9 @@
 
             // Кнопка Фильтр к элементу filter
             $('#dtable_filter').append($('#butCollapse'));
+
+            // Выбор даты
+            $('.dtsp-searchPanes').append($('#dateform'));
 
         });
 
