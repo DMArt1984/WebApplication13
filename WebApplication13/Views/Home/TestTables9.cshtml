@@ -7,7 +7,7 @@
     @Html.Partial("_DTable_CSS_first")
 }
 
-<div class="p-2">
+@*<div class="p-2">
     <button onclick="myFunction(true)">Select item</button>
     <button onclick="myFunction(false)">Deselect item</button>
     <button onclick="Test1()">Test #1 deselect </button>
@@ -16,59 +16,113 @@
     <button onclick="Test4()">Test #4 items of age</button>
     <button onclick="Test5()">Test #5 cookie</button>
     <button onclick="Test6()">Test #6 display</button>
-</div>
-<div class="p-2">
-    <button onclick="MyFilter()"> -> </button>
-    <select id="filter_cols" style="visibility:hidden">
-        <option value="" disabled selected>Выберите столбец</option>
-    </select>
-    <select id="filter_conditions" style="visibility:hidden">
-        <option value="" disabled selected>Выберите сравнение</option>
-    </select>
-    <input type="text" id="value1" name="value1" style="visibility:hidden" value="">
-    <input type="text" id="value2" name="value2" style="visibility:hidden" value="">
-    <button onclick="Use()" id="use" style="visibility:hidden">Применить</button>
-    <button onclick="Clear()" id="clear" style="visibility:hidden">Сбросить</button>
+</div>*@
 
+<!-- Универсальный -->
+<div id="uni" class="card card-body" style="display:none">
+    <div class="">
+
+        <div class="row row-cols-lg-auto g-3 align-items-center">
+            <div class="col-12">
+                <select id="filter_cols" class="form-select-sm">
+                    <option value="" disabled selected>Выберите столбец</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <select id="filter_conditions" class="form-select-sm">
+                    <option value="" disabled selected>Выберите сравнение</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <input type="text" id="value1" name="value1" class="form-control-sm" value="">
+            </div>
+
+            <div class="col-12">
+                <input type="text" id="value2" name="value2" class="form-control-sm" value="">
+            </div>
+
+            <div class="col-12">
+                <button onclick="Use()" id="use" class="btn btn-primary btn-sm">Применить</button>
+            </div>
+            <div class="col-12">
+                <button onclick="Clear()" id="clear" class="btn btn-danger btn-sm">Сбросить</button>
+            </div>
+        </div>
+
+
+        @*<select id="filter_cols" class="form-control" style="visibility:hidden">
+                <option value="" disabled selected>Выберите столбец</option>
+            </select>
+            <select id="filter_conditions" class="form-control" style="visibility:hidden">
+                <option value="" disabled selected>Выберите сравнение</option>
+            </select>
+            <input type="text" id="value1" name="value1" class="form-control" style="visibility:hidden" value="">
+            <input type="text" id="value2" name="value2" class="form-control" style="visibility:hidden" value="">
+            <button onclick="Use()" id="use" class="btn btn-primary" style="visibility:hidden">Применить</button>
+            <button onclick="Clear()" id="clear" class="btn btn-danger" style="visibility:hidden">Сбросить</button>*@
+
+    </div>
 </div>
-<div id="dateform" class="p-2">
+
+
+<!-- Дополнительно к фильтру -->
+<div id="dateform" style="display: none">
     <hr />
+    <div class="d-flex justify-content-between">
+
+        <div class="px-2">
             <label style="font-weight: normal; white-space: nowrap;">
-                Start date :
+                Возраст :
+                <input type="number" id="age1" class="form-control p-1" placeholder="" value="0" style="display: inline-block; width: auto;">
+                -
+                <input type="number" id="age2" class="form-control p-1" placeholder="" value="0" style="display: inline-block; width: auto;">
+                <button type="button" class="btn btn-secondary" style="display: inline-block; width: auto;" onclick="Test7('Возраст', 'age1', 'age2', 'between')">Выбрать</button>
+            </label>
+        </div>
+
+        <div class="px-2">
+            <label style="font-weight: normal; white-space: nowrap;">
+                Дата :
                 <input type="date" id="date1" class="form-control p-1" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
-                 - 
+                -
                 <input type="date" id="date2" class="form-control p-1" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
-                <button type="button" class="btn btn-primary" style="display: inline-block; width: auto;" onclick="Test7()">Установить диапазон</button>
-            </label>
-</div>
-
-<form class="row row-cols-lg-auto g-3 align-items-center">
-    <div class="col-12">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="inlineFormCheck">
-            <label class="form-check-label" for="inlineFormCheck">
-                Remember me
+                <button type="button" class="btn btn-secondary" style="display: inline-block; width: auto;" onclick="Test7('Дата', 'date1', 'date2', 'between')">Выбрать</button>
             </label>
         </div>
-    </div>
 
-    <div class="col-12">
-        <input type="date" class="form-control" placeholder="" value="2019-08-19">
-    </div>
-
-    <div class="col-12">
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </div>
-</form>
-
-<div class="col-4">
-    <div class="mb-3 row">
-        <label for="example-text-input" class="col-md-2 col-form-label">Text</label>
-        <div class="col-md-4">
-            <input class="form-control" type="date" value="Artisanal kale" id="example-text-input">
-        </div>
     </div>
 </div>
+
+
+@*<form class="row row-cols-lg-auto g-3 align-items-center">
+        <div class="col-12">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="inlineFormCheck">
+                <label class="form-check-label" for="inlineFormCheck">
+                    Remember me
+                </label>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <input type="date" class="form-control" placeholder="" value="2019-08-19">
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>*@
+
+@*<div class="col-4">
+        <div class="mb-3 row">
+            <label for="example-text-input" class="col-md-2 col-form-label">Text</label>
+            <div class="col-md-4">
+                <input class="form-control" type="date" value="Artisanal kale" id="example-text-input">
+            </div>
+        </div>
+    </div>*@
 
 
 <!-- Table 9 -->
@@ -85,12 +139,12 @@
         <table id="dtable" class="table table-striped mb-0" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead class="bg-primary text-white">
                 <tr>
-                    <th>Name</th>
-                    <th>Position</th>
-                    <th>Office</th>
-                    <th>Age</th>
-                    <th>Start date</th>
-                    <th>Salary</th>
+                    <th>Имя</th>
+                    <th>Должность</th>
+                    <th>Адрес</th>
+                    <th>Возраст</th>
+                    <th>Дата</th>
+                    <th>Зарплата</th>
                 </tr>
             </thead>
             <tbody>
@@ -582,7 +636,7 @@
                     searchPanes: {
                         title: {
                             _: '<i class="mdi mdi-filter"></i> Выбрано фильтров: %d шт.',
-                            0: '<i class="mdi mdi-filter-off"></i> Фильтры не выбраны'
+                            0: '<i class="mdi mdi-filter-off"></i> Выбрать фильтр'
                         },
                         collapseMessage: 'Свернуть панели',
                         showMessage: 'Развернуть панели',
@@ -599,6 +653,7 @@
 
                 searchPanes: {
                     cascadePanes: true,
+                    collapse: false
                 },
 
                 //вкл/откл разбиения на страницы
@@ -656,15 +711,36 @@
             // Кнопка Фильтр к элементу filter
             $('#dtable_filter').append($('#butCollapse'));
 
-            // Выбор даты
-            $('.dtsp-searchPanes').append($('#dateform'));
+            // ---------------------------
+
+            // Универсальный блок
+            MyFilter();
+
+            // Перемещение: Выбор даты
+            $('#collapseOne').append($('#dateform')); // .dtsp-searchPanes
+            $('#dateform').show();
+
+            //
+            //var items = GetItemsFilter('Дата');
+            //if (items.length > 0) {
+            //    var first = items[0];
+            //    var last = items[items.length - 1];
+            //    $('#date1').val(first);
+            //    $('#date2').val(last);
+            //    //console.log($('#date1').val(), $('#date2').val());
+            //}
+
+            // Установить значения на диапазон
+            FirstLastForColumn('Дата', 'date1', 'date2');
+            FirstLastForColumn('Возраст', 'age1', 'age2');
+
 
         });
 
         // --------------------------------------------------------------------
 
         // --------------------------------------------------------------------
-        
+
         function myFunction(make) {
             // внешнее изменение фильтра
             //var panes = document.querySelectorAll('.dtsp-searchPanes table#DataTables_Table_0.dataTable');
@@ -744,7 +820,7 @@
         }
 
         function Test5() {
-            console.log('old',getCookie('testValyue1'));
+            console.log('old', getCookie('testValyue1'));
             setCookie('testValyue1', document.getElementById('value1').value, 1);
             console.log('new', getCookie('testValyue1'));
         }
@@ -755,33 +831,30 @@
             $(panes[0]).style += "display: none";
         }
 
-        function Test7() {
-            var date1 = document.getElementById('date1').value;
-            var date2 = document.getElementById('date2').value;
+        function Test7(nameCol, id1, id2, condition) {
+            var date1 = document.getElementById(id1).value;
+            var date2 = document.getElementById(id2).value;
 
-            console.log(date1, date2);
+            //console.log(date1, date2);
 
-            var filter = FilterQueryByName('Start date');
+            var filter = FilterQueryByName(nameCol);
             var items = ItemsFilter(filter);
 
-            var arraySelect = ConditionsItems(items, 'between', date1, date2);
+            var arraySelect = ConditionsItems(items, condition, date1, date2);
             FilterOnlySelect(filter, arraySelect);
-
         }
 
-
+        // Универсальный блок
         function MyFilter() {
             CreateSelect('filter_cols', FilterNames());
             CreateSelect('filter_conditions', ArrayConditions());
-            ShowVisibilityId('value1');
-            ShowVisibilityId('value2');
             document.getElementById('value1').value = '';
             document.getElementById('value2').value = '';
-            ShowVisibilityId('use');
-            ShowVisibilityId('clear');
+            $('#uni').show();
+            //ShowVisibilityId('uni');
         }
 
-        
+
 
         // Установить фильтр
         function Use() {
@@ -794,7 +867,7 @@
                 var value2 = document.getElementById('value2').value;
                 //console.log(value1, value2);
                 var arraySelect = ConditionsItems(items, cond, value1, value2);
-                FilterSelect(filter, arraySelect);
+                FilterOnlySelect(filter, arraySelect);
             }
         }
 
@@ -835,18 +908,21 @@
             document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
         }
 
-        // 
+        // Установить первое и последнее значение для фильтра
+        function FirstLastForColumn(nameCol, idFirst, idLast) {
+            var items = GetItemsFilter(nameCol);
+            if (items.length > 0) {
+                var first = items[0];
+                var last = items[items.length - 1];
+                $('#' + idFirst).val(first);
+                $('#' + idLast).val(last);
+            }
+        }
+
+        //
         function ArrayConditions() {
             return ['empty', 'notempty', 'equals', 'notequals', 'gt', 'gte', 'lt', 'lte', 'contains', 'notcontains', 'between', 'notbetween'];
         }
-
-        //function ArrayConditionsDate() {
-        //    return 
-        //}
-
-        //function ArrayConditionsString() {
-        //    return
-        //}
 
         // Создать SELECT
         function CreateSelect(idElement, options) {
@@ -1095,7 +1171,7 @@
             return $(panes[indexPane]).DataTable();
         }
 
-        
+
 
         // Получить набор фильтра
         function ItemsFilter(filter) {
