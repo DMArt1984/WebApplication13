@@ -30,17 +30,17 @@
             </div>
 
             <div class="col-12">
-                <select id="filter_conditions" class="form-select-sm">
+                <select id="filter_conditions" class="form-select-sm" onchange="ChangeSelCond('filter_conditions', 'value1', 'value2')">
                     <option value="" disabled selected>Выберите сравнение</option>
                 </select>
             </div>
 
             <div class="col-12">
-                <input type="text" id="value1" name="value1" class="form-control-sm" value="">
+                <input type="text" id="value1" name="value1" class="form-control-sm" style="display:none" value="">
             </div>
 
             <div class="col-12">
-                <input type="text" id="value2" name="value2" class="form-control-sm" value="">
+                <input type="text" id="value2" name="value2" class="form-control-sm" style="display:none" value="">
             </div>
 
             <div class="col-12">
@@ -846,8 +846,8 @@
 
         // Универсальный блок
         function MyFilter() {
-            CreateSelect('filter_cols', FilterNames());
-            CreateSelect('filter_conditions', ArrayConditions());
+            CreateSelect('filter_cols', FilterNames(), null);
+            CreateSelect('filter_conditions', ArrayConditions(), ArrayTextConditions());
             document.getElementById('value1').value = '';
             document.getElementById('value2').value = '';
             $('#uni').show();
@@ -919,25 +919,70 @@
             }
         }
 
-        //
+        // Список условий
         function ArrayConditions() {
             return ['empty', 'notempty', 'equals', 'notequals', 'gt', 'gte', 'lt', 'lte', 'contains', 'notcontains', 'between', 'notbetween'];
         }
+        function ArrayTextConditions() {
+            return ['пусто', 'не пусто', 'равно', 'не равно', 'больше', 'больше или равно', 'меньше', 'меньше или равно', 'содержит', 'не содержит', 'диапазон', 'вне диапазона'];
+        }
 
         // Создать SELECT
-        function CreateSelect(idElement, options) {
+        function CreateSelect(idElement, values, contents = null) {
             var select = document.getElementById(idElement);
             select.style.visibility = 'visible';
             select.length = 0;
+            if (contents == null) {
+                contents = values;
+            }
             if (select != null) {
-                for (var i = 0; i < options.length; i++) {
-                    var opt = options[i];
+                for (var i = 0; i < values.length; i++) {
+                    var val = values[i];
+                    var cont = contents[i];
                     var el = document.createElement("option");
-                    el.textContent = opt;
-                    el.value = opt;
+                    el.value = val;
+                    el.textContent = cont;
                     select.appendChild(el);
                 }
             }
+        }
+
+        // Событие для SELECT
+        function ChangeSelCond(idSel, id1, id2) {
+            var ifname = $('#' + idSel).val();
+            //console.log(ifname);
+
+            switch (ifname) {
+                case 'empty':
+                case 'notempty':
+                    $('#' + id1).hide();
+                    $('#' + id2).hide();
+                    break;
+
+                case 'equals':
+                case 'notequals':
+                case 'gt':
+                case 'gte':
+                case 'lt':
+                case 'lte':
+                case 'contains':
+                case 'notcontains':
+                    $('#' + id1).show();
+                    $('#' + id2).hide();
+                    break;
+
+                case 'between':
+                case 'notbetween':
+                    $('#' + id1).show();
+                    $('#' + id2).show();
+                    break;
+
+                default:
+                    $('#' + id1).hide();
+                    $('#' + id2).hide();
+                    break;
+            }
+
         }
 
         // Условия для набора (списка значений)
@@ -951,7 +996,7 @@
             return arrNames;
         }
 
-        // Условия для значения
+        // Получение результата условий
         function Conditions(value, ifname, value1 = null, value2 = null) {
             switch (ifname) {
                 case 'empty':
@@ -1087,16 +1132,6 @@
 
                 //filter.rows().select();
 
-                //var myRows = [];
-                //filter.rows().every(function (rowIdx, tableLoop, rowLoop) {
-                //    if (jQuery.inArray(this.data().display, arraySelect) !== -1) {
-                //        myRows.push(this);
-                //        //console.log(this);
-                //    }
-                //});
-                //filter.rows(myRows).select();
-                //console.log(myRows);
-
                 filter.rows(function (idx, data, node) {
                     return (jQuery.inArray(data.display, arraySelect) !== -1) ?
                         true : false;
@@ -1170,8 +1205,6 @@
             //console.log('FilterQuery #r');
             return $(panes[indexPane]).DataTable();
         }
-
-
 
         // Получить набор фильтра
         function ItemsFilter(filter) {
