@@ -30,6 +30,10 @@
             </div>
 
             <div class="col-12">
+                <button onclick="Clear()" id="clear" class="btn btn-danger btn-sm">Сбросить</button>
+            </div>
+
+            <div class="col-12">
                 <select id="filter_conditions" class="form-select-sm" onchange="ChangeSelCond('filter_conditions', 'value1', 'value2')">
                     <option value="" disabled selected>Выберите сравнение</option>
                 </select>
@@ -46,9 +50,7 @@
             <div class="col-12">
                 <button onclick="Use()" id="use" class="btn btn-primary btn-sm">Применить</button>
             </div>
-            <div class="col-12">
-                <button onclick="Clear()" id="clear" class="btn btn-danger btn-sm">Сбросить</button>
-            </div>
+
         </div>
 
 
@@ -68,31 +70,34 @@
 
 
 <!-- Дополнительно к фильтру -->
-<div id="dateform" style="display: none">
-    <hr />
-    <div class="d-flex justify-content-between">
-
+<div id="dateform" class="card m-1" style="display: none">
+    <div class="card-header">
+        Выбор диапазона в фильтре
+    </div>
+    <div class="card-body d-flex justify-content-between pt-2">
+        
         <div class="px-2">
-            <label style="font-weight: normal; white-space: nowrap;">
+            <label id="myfilter1" style="font-weight: normal; white-space: nowrap;">
                 Возраст :
-                <input type="number" id="age1" class="form-control p-1" placeholder="" value="0" style="display: inline-block; width: auto;">
+                <input type="number" id="age1" class="form-control form-control-sm" placeholder="" value="0" style="display: inline-block; width: auto;">
                 -
-                <input type="number" id="age2" class="form-control p-1" placeholder="" value="0" style="display: inline-block; width: auto;">
-                <button type="button" class="btn btn-secondary" style="display: inline-block; width: auto;" onclick="Test7('Возраст', 'age1', 'age2', 'between')">Выбрать</button>
+                <input type="number" id="age2" class="form-control form-control-sm" placeholder="" value="0" style="display: inline-block; width: auto;">
+                <button type="button" class="btn btn-secondary btn-sm" style="display: inline-block; width: auto;" onclick="Test7('Возраст', 'age1', 'age2', 'between')">Выбрать</button>
             </label>
         </div>
 
         <div class="px-2">
-            <label style="font-weight: normal; white-space: nowrap;">
+            <label id="myfilter2" style="font-weight: normal; white-space: nowrap;">
                 Дата :
-                <input type="date" id="date1" class="form-control p-1" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
+                <input type="date" id="date1" class="form-control form-control-sm" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
                 -
-                <input type="date" id="date2" class="form-control p-1" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
-                <button type="button" class="btn btn-secondary" style="display: inline-block; width: auto;" onclick="Test7('Дата', 'date1', 'date2', 'between')">Выбрать</button>
+                <input type="date" id="date2" class="form-control form-control-sm" placeholder="" value="2019-08-19" style="display: inline-block; width: auto;">
+                <button type="button" class="btn btn-secondary btn-sm" style="display: inline-block; width: auto;" onclick="Test7('Дата', 'date1', 'date2', 'between')">Выбрать</button>
             </label>
         </div>
 
     </div>
+    @*<hr />*@
 </div>
 
 
@@ -685,6 +690,8 @@
                 ],
             });
 
+            
+
             // Перемещаем элементы таблицы в div
             //  верх таблицы
             $('#top_lr').append($('#dtable_length')); // кол-во строк на странице (length)
@@ -712,13 +719,18 @@
             $('#dtable_filter').append($('#butCollapse'));
 
             // ---------------------------
-
             // Универсальный блок
             MyFilter();
 
             // Перемещение: Выбор даты
-            $('#collapseOne').append($('#dateform')); // .dtsp-searchPanes
+            $('#collapseOne').prepend($('#dateform')); // .dtsp-searchPanes
             $('#dateform').show();
+
+            // dtsp-titleRow
+            // $('.dtsp-titleRow').prepend($('#myfilter2')); //
+
+            // ----------------------------
+            
 
             //
             //var items = GetItemsFilter('Дата');
