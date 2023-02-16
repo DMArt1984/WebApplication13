@@ -28,6 +28,11 @@
 <!-- получение локального времени -->
 <script src="~/assets/dm/localtime.js"></script>
 
+<!-- Дополнение к фильтру -->
+@Html.Partial("_forFilter", new List<ConditionFilter>() {
+    new ConditionFilter { title = "Дата", typeVal = "date", nameCol = "Дата", idVal = "date", condition = "between"} })
+
+
 <!-- Карточка-->
 <div class="card">
 
@@ -69,46 +74,46 @@
             <tbody>
                 @foreach (var item in Model.OrderByDescending(x => x.DT))
                 {
-                <tr class="">
-                    @*<td>@item.Id</td>*@
-                    <td>
-                        <script>document.write(UTC_To_LocalTime('@item.DT'));</script>
-                    </td>
-                    <td class="d-none">
-                        @item.DT.Split(" ").First().Replace('.', '-')
-                    </td>
-                    <td>
-                        @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
-                    </td>
-                    <td class="d-none">
-                        @item.ServiceObjectTitle
-                    </td>
-                    <td>@item.StatusRus()</td>
-                    <td>
-                        @Html.Partial("_cellUser", new UserCell { Id = "0", UserName = item.UserName, Email = item.UserEmail })
-                    </td>
-                    <td class="d-none">
-                        @item.UserEmail @item.UserName
-                    </td>
-                    <td>@Html.Partial("_FilesV", item.FileLinks)</td>
-                    <td>
-                        <div class="d-flex flex-row px-1">
-                            <a class="btn btn-outline-primary btn-sm edit mx-1" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
-                                <i class="far fa-eye"></i>
-                            </a>
-                            @if (IsAdmin)
-                            {
-                                <a class="btn btn-outline-primary btn-sm edit mx-1" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
-                                    <i class="fas fa-pencil-alt"></i>
+                    <tr class="">
+                        @*<td>@item.Id</td>*@
+                        <td>
+                            <script>document.write(UTC_To_LocalTime('@item.DT'));</script>
+                        </td>
+                        <td class="d-none">
+                            @item.DT.Split(" ").First().Replace('.', '-')
+                        </td>
+                        <td>
+                            @Html.Partial("_cellSObject", new ServiceObjectCell { Id = item.ServiceObjectId, ObjectTitle = item.ServiceObjectTitle, ObjectCode = null })
+                        </td>
+                        <td class="d-none">
+                            @item.ServiceObjectTitle
+                        </td>
+                        <td>@item.StatusRus()</td>
+                        <td>
+                            @Html.Partial("_cellUser", new UserCell { Id = "0", UserName = item.UserName, Email = item.UserEmail })
+                        </td>
+                        <td class="d-none">
+                            @item.UserEmail @item.UserName
+                        </td>
+                        <td>@Html.Partial("_FilesV", item.FileLinks)</td>
+                        <td>
+                            <div class="d-flex flex-row px-1">
+                                <a class="btn btn-outline-primary btn-sm edit mx-1" title="Просмотр" asp-action="AlertInfo" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                    <i class="far fa-eye"></i>
                                 </a>
+                                @if (IsAdmin)
+                                {
+                                    <a class="btn btn-outline-primary btn-sm edit mx-1" title="Редактировать" asp-action="AlertEdit" asp-route-Id="@item.Id" asp-route-ServiceObjectId="@FilterSO" asp-route-pageInfo="@ViewData["pageInfo"]">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </a>
 
-                                <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
-                                    <i class="fas fa-times fa-lg"></i>
-                                </a>
-                            }
-                        </div>
-                    </td>
-                </tr>
+                                    <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="SetWindow(@item.Id, '@item.ServiceObjectTitle')">
+                                        <i class="fas fa-times fa-lg"></i>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
                 }
             </tbody>
         </table>
@@ -129,6 +134,9 @@
     <!-- Datatable init js -->
     <!--<script src="~/assets/js/pages/datatables.init.js"></script>-->
     @Html.Partial("_DTable_Scripts")
+
+    <!-- myFilter js -->
+    <script src="~/assets/dm/filter.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -249,6 +257,13 @@
 
             // Кнопка Фильтр к элементу filter
             $('#dtable_filter').append($('#butCollapse'));
+
+            // Перемещение: Дополнение к фильтру
+            $('#collapseOne').prepend($('#dateform'));
+            $('#dateform').show();
+            // Установить значения на диапазон
+            FirstLastForColumn('Дата', 'datea', 'dateb');
+
         });
 
     </script>

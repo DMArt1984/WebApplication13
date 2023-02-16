@@ -1,4 +1,16 @@
-﻿// Установить первое и последнее значение для фильтра
+﻿// Установить фильтр 
+function UseFilter(nameCol, id1, id2, condition) {
+    var date1 = document.getElementById(id1).value;
+    var date2 = document.getElementById(id2).value;
+
+    var filter = FilterQueryByName(nameCol);
+    var items = ItemsFilter(filter);
+
+    var arraySelect = ConditionsItems(items, condition, date1, date2);
+    FilterOnlySelect(filter, arraySelect);
+}
+
+// Установить первое и последнее значение для фильтра
 function FirstLastForColumn(nameCol, idFirst, idLast) {
     var items = GetItemsFilter(nameCol);
     if (items.length > 0) {
