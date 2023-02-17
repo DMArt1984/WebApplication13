@@ -19,7 +19,7 @@
 
 @if (Draw)
 {
-    <small class="mb-2">Галерея файлов:</small>
+    <small class="mb-2">Галерея графических файлов:</small>
     <br />
     <div class="card bg-light">
         <div class="card-body">
@@ -34,8 +34,9 @@
                         case "gif":
                         case "wmf":
                             <a class="float-start m-1" href="@Html.Partial("_requestPathBase", item.Path)" target="_blank" title="@item.Name">
-                                <div class="img-fluid">
+                                <div class="d-flex flex-column img-fluid">
                                     <img class="rounded" src="@Html.Partial("_requestPathBase", item.Path)" alt="img-1" height="120">
+                                    <small class="px-2">@item.Name</small>
                                 </div>
                             </a>
                             break;

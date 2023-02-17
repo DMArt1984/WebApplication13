@@ -697,8 +697,8 @@
             MyFilter();
 
             // Перемещение: Дополнение к фильтру
-            $('#collapseOne').prepend($('#dateform'));
-            $('#dateform').show();
+            $('#collapseOne').prepend($('#fullform'));
+            $('#fullform').show();
 
             // dtsp-titleRow
             // $('.dtsp-titleRow').prepend($('#myfilter2')); //
@@ -716,8 +716,8 @@
             //}
 
             // Установить значения на диапазон
-            FirstLastForColumn('Дата', 'date1', 'date2');
-            FirstLastForColumn('Возраст', 'age1', 'age2');
+            FirstLastForColumn('Дата', 'date');
+            FirstLastForColumn('Возраст', 'age');
 
 
         });
@@ -900,6 +900,15 @@
                 var last = items[items.length - 1];
                 $('#' + idFirst).val(first);
                 $('#' + idLast).val(last);
+            }
+        }
+        function FirstLastForColumn(nameCol, id) {
+            var items = GetItemsFilter(nameCol);
+            if (items.length > 0) {
+                var first = items[0];
+                var last = items[items.length - 1];
+                $('#' + id + 'a').val(first);
+                $('#' + id + 'b').val(last);
             }
         }
 

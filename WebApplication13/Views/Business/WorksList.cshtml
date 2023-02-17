@@ -22,6 +22,13 @@
 <!-- получение локального времени -->
 <script src="~/assets/dm/localtime.js"></script>
 
+<!-- Дополнение к фильтру -->
+@Html.Partial("_forFilter", new List<ConditionFilter>() {
+    new ConditionFilter { title = "Начало обслуживания", typeVal = "date", nameCol = "Начало", idVal = "date1", condition = "between"},
+    new ConditionFilter { title = "Выполнено обслуживание", typeVal = "date", nameCol = "Выполнено", idVal = "date2", condition = "between"}
+})
+
+
 <!-- Карточка-->
 <div class="card">
 
@@ -137,6 +144,9 @@
 @section Scripts {
     @Html.Partial("_DTable_Scripts")
 
+    <!-- myFilter js -->
+    <script src="~/assets/dm/filter.js"></script>
+
     <script>
         $(document).ready(function () {
             var table = $('#dtable').DataTable({
@@ -203,11 +213,11 @@
                         searchPanes: {
                             show: true
                         },
-                        targets: [1,3,5,6]
+                        targets: [1, 3, 5, 6]
                     }
                 ],
 
-                
+
             });
 
             // Перемещаем элементы таблицы в div
@@ -233,6 +243,13 @@
 
             // Кнопка Фильтр к элементу filter
             $('#dtable_filter').append($('#butCollapse'));
+
+            // Перемещение: Дополнение к фильтру
+            $('#collapseOne').prepend($('#fullform'));
+            $('#fullform').show();
+            // Установить значения на диапазон
+            FirstLastForColumn('Начало', 'date1');
+            FirstLastForColumn('Выполнено', 'date2');
         });
 
     </script>

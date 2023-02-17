@@ -21,6 +21,17 @@ function FirstLastForColumn(nameCol, idFirst, idLast) {
     }
 }
 
+// Установить первое и последнее значение для фильтра
+function FirstLastForColumn(nameCol, id) {
+    var items = GetItemsFilter(nameCol);
+    if (items.length > 0) {
+        var first = items[0];
+        var last = items[items.length - 1];
+        $('#' + id + 'a').val(first);
+        $('#' + id + 'b').val(last);
+    }
+}
+
 // Список условий
 function ArrayConditions() {
     return ['empty', 'notempty', 'equals', 'notequals', 'gt', 'gte', 'lt', 'lte', 'contains', 'notcontains', 'between', 'notbetween'];
