@@ -5,35 +5,33 @@ using System.Threading.Tasks;
 
 namespace FactPortal.Models
 {
-    public enum typeQ
+    public enum typeQueryValue // тип переменной
     {
-        Condition = 0,
-        Formula = 1
+        Condition = 0, // условие
+        Formula = 1 // формула
     }
-    public enum typeC
+    public enum typeOperator // оператор
     {
-        OR = 0,
-        AND = 1
+        OR = 0, // или
+        AND = 1 // и
     }
-    public class QueryColumnCondition
+    public class QueryCondition // Условие
     {
-        public int Id { get; set; }
-        public string table { get; set; }
-        public string column { get; set; }
-        public string condition { get; set; }
-        public string value1 { get; set; }
-        public string value2 { get; set; }
+        public int Id { get; set; } // ID
+        public string group { get; set; } // объект, таблица (объекты, пользователи и т.п.), ...
+        public string element { get; set; } // свойство объекта, столбец (название, дата и т.п.), ...
+        public string condition { get; set; } // условие: 'равно', 'не равно', 'больше', 'больше или равно', ...
+        public string value1 { get; set; } // константа 1 для условия
+        public string value2 { get; set; } // константа 2 для условия
     }
-
-    public class QueryFormula
+    public class QueryFormula // Формула
     {
-        public int Id { get; set; }
-        public typeQ typeLeft { get; set; }
-        public int IdLeft { get; set; }
-        public typeC And { get; set; }
-        public typeQ typeRight { get; set; }
-        public int IdRight { get; set; }
-
+        public int Id { get; set; } // ID
+        public typeQueryValue typeLeft { get; set; } // тип переменной слева: условие или формула
+        public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
+        public typeOperator And { get; set; } // оператор: AND, OR
+        public typeQueryValue typeRight { get; set; } // тип переменной справа: условие или формула
+        public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
 
     public class QueryColumn
