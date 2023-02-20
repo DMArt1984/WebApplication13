@@ -1,0 +1,23 @@
+﻿@model string
+
+<div>HELLO</div>
+
+<!-- red info modal content -->
+<div id="myModalInfo" class="" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+                <div class="modal-header bg-dark">
+                    <h5 class="modal-title text-white" id="myModalInfoLabel">Внимание</h5>
+                </div>
+                <div class="modal-body">
+                    <p>@Model</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" onclick="$('#myModalInfo').hide();">OK</button>
+                </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

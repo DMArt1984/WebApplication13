@@ -5,6 +5,53 @@ using System.Threading.Tasks;
 
 namespace FactPortal.Models
 {
+    public enum typeQ
+    {
+        Condition = 0,
+        Formula = 1
+    }
+    public enum typeC
+    {
+        OR = 0,
+        AND = 1
+    }
+    public class QueryColumnCondition
+    {
+        public int Id { get; set; }
+        public string table { get; set; }
+        public string column { get; set; }
+        public string condition { get; set; }
+        public string value1 { get; set; }
+        public string value2 { get; set; }
+    }
+
+    public class QueryFormula
+    {
+        public int Id { get; set; }
+        public typeQ typeLeft { get; set; }
+        public int IdLeft { get; set; }
+        public typeC And { get; set; }
+        public typeQ typeRight { get; set; }
+        public int IdRight { get; set; }
+
+    }
+
+    public class QueryColumn
+    {
+        public int Id { get; set; }
+        public string table { get; set; }
+        public string column { get; set; }
+        public string useTitle { get; set; }
+    }
+
+    public class QueryReport
+    {
+        public int Id { get; set; }
+
+    }
+
+    // ==================================================================================
+
     public enum RepColType
     {
         User = 10,

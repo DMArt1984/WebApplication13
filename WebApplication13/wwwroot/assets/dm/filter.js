@@ -7,6 +7,14 @@ function UseFilter(nameCol, id1, id2, condition) {
     var items = ItemsFilter(filter);
 
     var arraySelect = ConditionsItems(items, condition, date1, date2);
+    //console.log(arraySelect);
+    if (arraySelect == null || arraySelect.length == 0) {
+        //console.log('>');
+        $('#noFilters').show();
+        //console.log('>');
+    } else {
+        $('#noFilters').hide();
+    }
     FilterOnlySelect(filter, arraySelect);
 }
 
