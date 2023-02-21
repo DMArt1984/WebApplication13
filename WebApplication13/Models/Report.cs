@@ -15,16 +15,22 @@ namespace FactPortal.Models
         OR = 0, // или
         AND = 1 // и
     }
-    public class QueryCondition // Условие
+
+    public class QueryColumn // Колонка
     {
         public int Id { get; set; } // ID
         public string group { get; set; } // объект, таблица (объекты, пользователи и т.п.), ...
         public string element { get; set; } // свойство объекта, столбец (название, дата и т.п.), ...
+    }
+    public class QueryConditionInfo // Условие
+    {
+        public int Id { get; set; } // ID
+        public QueryColumn column { get; set; } // Колонка
         public string condition { get; set; } // условие: 'равно', 'не равно', 'больше', 'больше или равно', ...
         public string value1 { get; set; } // константа 1 для условия
         public string value2 { get; set; } // константа 2 для условия
     }
-    public class QueryFormula // Формула
+    public class QueryFormulaInfo // Формула
     {
         public int Id { get; set; } // ID
         public typeQueryValue typeLeft { get; set; } // тип переменной слева: условие или формула
@@ -33,20 +39,28 @@ namespace FactPortal.Models
         public typeQueryValue typeRight { get; set; } // тип переменной справа: условие или формула
         public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
-
-    public class QueryColumn
+    public class QueryViewInfo // Вид
     {
-        public int Id { get; set; }
-        public string table { get; set; }
-        public string column { get; set; }
-        public string useTitle { get; set; }
+        public int Id { get; set; } // ID
+        public QueryFormulaInfo formula { get; set; } // Формула
+        public List<List<QueryColumn>> columns { get; set; } // Колонки по группам
     }
 
-    public class QueryReport
-    {
-        public int Id { get; set; }
+    // ===========================================================
 
-    }
+    //public class QueryColumn
+    //{
+    //    public int Id { get; set; }
+    //    public string table { get; set; }
+    //    public string column { get; set; }
+    //    public string useTitle { get; set; }
+    //}
+
+    //public class QueryReport
+    //{
+    //    public int Id { get; set; }
+
+    //}
 
     // ==================================================================================
 
