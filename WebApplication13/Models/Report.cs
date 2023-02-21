@@ -22,6 +22,14 @@ namespace FactPortal.Models
         public string group { get; set; } // объект, таблица (объекты, пользователи и т.п.), ...
         public string element { get; set; } // свойство объекта, столбец (название, дата и т.п.), ...
     }
+    public class QueryCondition // Условие [DB]
+    {
+        public int Id { get; set; } // ID
+        public int IdColumn { get; set; } // ID колонки
+        public string condition { get; set; } // условие: 'равно', 'не равно', 'больше', 'больше или равно', ...
+        public string value1 { get; set; } // константа 1 для условия
+        public string value2 { get; set; } // константа 2 для условия
+    }
     public class QueryConditionInfo // Условие
     {
         public int Id { get; set; } // ID
@@ -29,6 +37,16 @@ namespace FactPortal.Models
         public string condition { get; set; } // условие: 'равно', 'не равно', 'больше', 'больше или равно', ...
         public string value1 { get; set; } // константа 1 для условия
         public string value2 { get; set; } // константа 2 для условия
+    }
+
+    public class QueryFormula // Формула [DB]
+    {
+        public int Id { get; set; } // ID
+        public bool typeLeft { get; set; } // тип переменной слева: условие или формула
+        public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
+        public bool And { get; set; } // оператор: AND, OR
+        public bool typeRight { get; set; } // тип переменной справа: условие или формула
+        public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
     public class QueryFormulaInfo // Формула
     {
@@ -39,6 +57,13 @@ namespace FactPortal.Models
         public typeQueryValue typeRight { get; set; } // тип переменной справа: условие или формула
         public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
+
+    public class QueryView // Вид [DB]
+    {
+        public int Id { get; set; } // ID
+        public int IdFormula { get; set; } // ID формулы
+        public string IdColumns { get; set; } // Колонки по группам (например: 1;2;3 > 4;5 > 9) в строке
+    }
     public class QueryViewInfo // Вид
     {
         public int Id { get; set; } // ID
@@ -46,21 +71,6 @@ namespace FactPortal.Models
         public List<List<QueryColumn>> columns { get; set; } // Колонки по группам
     }
 
-    // ===========================================================
-
-    //public class QueryColumn
-    //{
-    //    public int Id { get; set; }
-    //    public string table { get; set; }
-    //    public string column { get; set; }
-    //    public string useTitle { get; set; }
-    //}
-
-    //public class QueryReport
-    //{
-    //    public int Id { get; set; }
-
-    //}
 
     // ==================================================================================
 
