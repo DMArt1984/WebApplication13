@@ -12,15 +12,26 @@ namespace FactPortal.Data
     public class BusinessContext:DbContext
     {
         public DbSet<myEvent> BEvents { get; set; } // События
+
         public DbSet<ServiceObject> ServiceObjects { get; set; } // Объекты обслуживания
         public DbSet<ObjectClaim> Claims { get; set; } // Свойства объектов
         public DbSet<Work> Works { get; set; } // Обслуживание объектов
         public DbSet<Alert> Alerts { get; set; } // Уведомления по объектам
         public DbSet<Step> Steps { get; set; } // Шаги обслуживания
         public DbSet<WorkStep> WorkSteps { get; set; } // Выполнение шагов обслуживания
+
         public DbSet<Level> Levels { get; set; } // Позиции объектов
+
         public DbSet<myFiles> Files { get; set; } // Пути к файлам
+
         public DbSet<myDictionary> Dic { get; set; } // Словарь
+
+        // Отчеты
+        public DbSet<QueryColumn> RepColumn { get; set; } // Колонка
+        public DbSet<QueryCondition> RepCondition { get; set; } // Условие
+        public DbSet<QueryFormula> RepFormula { get; set;} // Формула
+        public DbSet<QueryView> RepView { get; set; } // Представление
+
         
 
         private readonly IConfiguration Configuration;

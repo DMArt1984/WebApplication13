@@ -5,16 +5,76 @@ using System.Threading.Tasks;
 
 namespace FactPortal.Models
 {
-    public enum typeQueryValue // тип переменной
+    public enum QueryLeftRight // тип переменной
     {
         Condition = 0, // условие
         Formula = 1 // формула
     }
-    public enum typeOperator // оператор
+    public enum OperatorLeftRight // оператор
     {
         OR = 0, // или
         AND = 1 // и
     }
+
+    public enum repGroup // группа
+    {
+        SO, // Объект
+        Work, // Обслуживание
+        Step, // Шаг
+        User, // Сотрудник
+        File // Файл
+    }
+
+    public enum repSO // группа: Объект
+    {
+        ID,
+        Title,
+        Code,
+        Description,
+        LastWorkDT
+    }
+
+    public enum repWork // группа: Обслуживание
+    {
+        ID,
+        StartDT,
+        EndDT,
+        Steps,
+        ReadySteps,
+        Status
+    }
+
+    public enum repStep // группа: Шаг
+    {
+        ID,
+        Title,
+        Description,
+        StartDT,
+        EndDT,
+        Status
+    }
+
+    public enum repUser // группа: Сотрудник
+    {
+        ID,
+        Name,
+        Email,
+        Phone,
+        Role,
+        Job,
+        CountWorks
+    }
+
+    public enum repFile // группа: Файл
+    {
+        ID,
+        Name,
+        Description,
+        Type
+    }
+
+
+    // ========================================================================================
 
     public class QueryColumn // Колонка
     {
@@ -44,17 +104,17 @@ namespace FactPortal.Models
         public int Id { get; set; } // ID
         public bool typeLeft { get; set; } // тип переменной слева: условие или формула
         public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
-        public bool And { get; set; } // оператор: AND, OR
+        public bool AndOr { get; set; } // оператор: AND, OR
         public bool typeRight { get; set; } // тип переменной справа: условие или формула
         public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
     public class QueryFormulaInfo // Формула
     {
         public int Id { get; set; } // ID
-        public typeQueryValue typeLeft { get; set; } // тип переменной слева: условие или формула
+        public QueryLeftRight typeLeft { get; set; } // тип переменной слева: условие или формула
         public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
-        public typeOperator And { get; set; } // оператор: AND, OR
-        public typeQueryValue typeRight { get; set; } // тип переменной справа: условие или формула
+        public OperatorLeftRight AndOr { get; set; } // оператор: AND, OR
+        public QueryLeftRight typeRight { get; set; } // тип переменной справа: условие или формула
         public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
 
