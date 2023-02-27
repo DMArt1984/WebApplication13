@@ -2639,6 +2639,12 @@ namespace FactPortal.Controllers
         [Breadcrumb("ViewData.Title")]
         public IActionResult report1()
         {
+            // Тест добавления в базу данных для отчета
+            var x1 = RepAddColumn(RepGroup.SO, "Info3");
+            var x2 = RepAddCondition(1, RepCondition.contains, "99");
+            var x3 = RepAddFormula(QueryLeftRight.Formula, 1, OperatorLeftRight.OR, QueryLeftRight.Condition, 2);
+
+
             RepTable RTbig = new RepTable(
                 "", 
                 new string[] {
@@ -2756,6 +2762,53 @@ namespace FactPortal.Controllers
         public IActionResult Error_catch(ErrorCatch ec)
         {
             return View(ec);
+        }
+
+        // ==========================================================
+
+        // Добавить колонку
+        public int? RepAddColumn(RepGroup group, string element )
+        {
+            QueryColumn qcl = new QueryColumn { group = group.ToString(), element = element };
+            _business.RepColumn.Add(qcl);
+            _business.SaveChanges();
+            return _business.RepColumn.ToList().Last()?.Id;
+        }
+
+        // Добавить условие
+        public int? RepAddCondition(int IdColumn, RepCondition condition, string value1 = "", string value2 = "")
+        {
+            if (_business.RepColumn.FirstOrDefault(x => x.Id == IdColumn) == null)
+                return null;
+            QueryCondition qcn = new QueryCondition { IdColumn = IdColumn, condition = condition.ToString(), value1 = value1, value2 = value2 };
+            _business.RepCondition.Add(qcn);
+            _business.SaveChanges();
+            return _business.RepCondition.ToList().Last()?.Id;
+        }
+
+        // Добавить формулу
+        public int? RepAddFormula(QueryLeftRight typeLeft, int IdLeft, OperatorLeftRight AndOr, QueryLeftRight typeRight, int IdRight)
+        {
+            if (LeftRightOK(typeLeft, IdLeft) && LeftRightOK(typeRight, IdRight))
+            {
+                QueryFormula qf = new QueryFormula { AndOr = AndOr == OperatorLeftRight.AND , IdLeft = IdLeft, IdRight = IdRight, typeLeft = typeLeft == QueryLeftRight.Formula, typeRight = typeRight == QueryLeftRight.Formula };
+                _business.RepFormula.Add(qf);
+                _business.SaveChanges();
+                return _business.RepFormula.ToList().Last()?.Id;
+            }
+            return null;
+        }
+
+        // Действительна ли ссылка на значение
+        public bool LeftRightOK(QueryLeftRight type, int Id)
+        {
+            if (type == QueryLeftRight.Condition)
+                return _business.RepCondition.FirstOrDefault(x => x.Id == Id) != null;
+
+            if (type == QueryLeftRight.Formula)
+                return _business.RepFormula.FirstOrDefault(x => x.Id == Id) != null;
+
+            return false;
         }
 
     }

@@ -16,7 +16,23 @@ namespace FactPortal.Models
         AND = 1 // и
     }
 
-    public enum repGroup // группа
+    public enum RepCondition // условие
+    {
+        empty, 
+        notempty, 
+        equals, 
+        notequals, 
+        gt, 
+        gte, 
+        lt, 
+        lte, 
+        contains, 
+        notcontains, 
+        between, 
+        notbetween
+    }
+
+    public enum RepGroup // группа
     {
         SO, // Объект
         Work, // Обслуживание
@@ -25,7 +41,7 @@ namespace FactPortal.Models
         File // Файл
     }
 
-    public enum repSO // группа: Объект
+    public enum RepSO // группа: Объект
     {
         ID,
         Title,
@@ -34,7 +50,7 @@ namespace FactPortal.Models
         LastWorkDT
     }
 
-    public enum repWork // группа: Обслуживание
+    public enum RepWork // группа: Обслуживание
     {
         ID,
         StartDT,
@@ -44,17 +60,18 @@ namespace FactPortal.Models
         Status
     }
 
-    public enum repStep // группа: Шаг
+    public enum RepStep // группа: Шаг
     {
         ID,
         Title,
         Description,
         StartDT,
         EndDT,
-        Status
+        Status,
+        HasFiles
     }
 
-    public enum repUser // группа: Сотрудник
+    public enum RepUser // группа: Сотрудник
     {
         ID,
         Name,
@@ -65,7 +82,7 @@ namespace FactPortal.Models
         CountWorks
     }
 
-    public enum repFile // группа: Файл
+    public enum RepFile // группа: Файл
     {
         ID,
         Name,
