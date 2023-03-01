@@ -1,0 +1,224 @@
+﻿
+@{
+    ViewData["Title"] = "reportMaster";
+}
+
+<h1>reportMaster</h1>
+
+@section Scripts {
+    
+
+    <script type="text/javascript">
+
+        getColumns(0);
+        getConditions(0);
+        getFormuls(0);
+        getViews(0);
+        console.log('OK');
+
+        // Загрузить список колонок
+        async function getColumns(Id) {
+            let formData = new FormData();
+            formData.append("Id", 0);;
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsGetColumns`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    //console.log(data);
+                    //console.log(data.result);
+                    console.log(data.columns);
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status "+ jqXHR.status)
+                    //alert("etAllResponseHeaders() "+ jqXHR.getAllResponseHeaders())
+                    //alert("jqXHR.responseText "+ jqXHR.responseText)
+                    //alert("textStatus " + textStatus)
+                    //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                    
+                },
+                complete: function () {
+                    
+                },
+                timeout: 60000
+            });
+
+        }
+
+        // Загрузить список условий
+        async function getConditions(Id) {
+            let formData = new FormData();
+            formData.append("Id", 0);;
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsGetConditions`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    //console.log(data);
+                    //console.log(data.result);
+                    console.log(data.conditions);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                    //alert("etAllResponseHeaders() "+ jqXHR.getAllResponseHeaders())
+                    //alert("jqXHR.responseText "+ jqXHR.responseText)
+                    //alert("textStatus " + textStatus)
+                    //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+
+        // Загрузить список формул
+        async function getFormuls(Id) {
+            let formData = new FormData();
+            formData.append("Id", 0);;
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsGetFormuls`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    //console.log(data);
+                    //console.log(data.result);
+                    console.log(data.formuls);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                    //alert("etAllResponseHeaders() "+ jqXHR.getAllResponseHeaders())
+                    //alert("jqXHR.responseText "+ jqXHR.responseText)
+                    //alert("textStatus " + textStatus)
+                    //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+
+        // Загрузить список представлений
+        async function getViews(Id) {
+            let formData = new FormData();
+            formData.append("Id", 0);;
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsGetViews`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    //console.log(data);
+                    //console.log(data.result);
+                    console.log(data.views);
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                    //alert("etAllResponseHeaders() "+ jqXHR.getAllResponseHeaders())
+                    //alert("jqXHR.responseText "+ jqXHR.responseText)
+                    //alert("textStatus " + textStatus)
+                    //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+
+    </script>
+}

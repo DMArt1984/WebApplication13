@@ -2637,14 +2637,22 @@ namespace FactPortal.Controllers
 
         [HttpGet]
         [Breadcrumb("ViewData.Title")]
-        public IActionResult report1()
+        public IActionResult reportMaster()
         {
             // Тест добавления в базу данных для отчета
-            var x1 = RepAddColumn(RepGroup.SO, "Info3");
-            var x2 = RepAddCondition(1, RepCondition.contains, "99");
-            var x3 = RepAddFormula(QueryLeftRight.Formula, 1, OperatorLeftRight.OR, QueryLeftRight.Condition, 2);
+            //var x1 = RepAddColumn(RepGroup.SO, "Info3");
+            //var x2 = RepAddCondition(1, RepCondition.contains, "99");
+            //var x3 = RepAddFormula(QueryLeftRight.Formula, 1, OperatorLeftRight.OR, QueryLeftRight.Condition, 2);
+
+            return View();
+        }
 
 
+        [HttpGet]
+        [Breadcrumb("ViewData.Title")]
+        public IActionResult report1()
+        {
+            
             RepTable RTbig = new RepTable(
                 "", 
                 new string[] {
@@ -2755,6 +2763,8 @@ namespace FactPortal.Controllers
             });
         }
 
+        
+
         // ================================================================================================================================
         // Обработка ошибок
 
@@ -2764,7 +2774,7 @@ namespace FactPortal.Controllers
             return View(ec);
         }
 
-        // ==========================================================
+        // ====== ОТЧЕТЫ ====================================================
 
         // Добавить колонку
         public int? RepAddColumn(RepGroup group, string element )
@@ -2773,6 +2783,18 @@ namespace FactPortal.Controllers
             _business.RepColumn.Add(qcl);
             _business.SaveChanges();
             return _business.RepColumn.ToList().Last()?.Id;
+        }
+
+        // Удалить колонку
+        public bool RepDelColumn(int Id)
+        {
+            var column = _business.RepColumn.FirstOrDefault(x => x.Id == Id && Id > 0);
+            if (column == null)
+                return false;
+
+            _business.RepColumn.Remove(column);
+            _business.SaveChanges();
+            return true;
         }
 
         // Добавить условие
@@ -2784,6 +2806,18 @@ namespace FactPortal.Controllers
             _business.RepCondition.Add(qcn);
             _business.SaveChanges();
             return _business.RepCondition.ToList().Last()?.Id;
+        }
+
+        // Удалить условие
+        public bool RepDelCondition(int Id)
+        {
+            var condition = _business.RepCondition.FirstOrDefault(x => x.Id == Id && Id > 0);
+            if (condition == null)
+                return false;
+
+            _business.RepCondition.Remove(condition);
+            _business.SaveChanges();
+            return true;
         }
 
         // Добавить формулу
@@ -2799,7 +2833,48 @@ namespace FactPortal.Controllers
             return null;
         }
 
-        // Действительна ли ссылка на значение
+        // Удалить формулу
+        public bool RepDelFormula(int Id)
+        {
+            var formula = _business.RepFormula.FirstOrDefault(x => x.Id == Id && Id > 0);
+            if (formula == null)
+                return false;
+
+            _business.RepFormula.Remove(formula);
+            _business.SaveChanges();
+            return true;
+        }
+
+        // Добавить представление
+        public int? RepAddView(int IdFormula, string IdsColumns)
+        {
+            if (String.IsNullOrWhiteSpace(IdsColumns))
+                return null;
+            
+            if (_business.RepFormula.FirstOrDefault(x => x.Id == IdFormula) == null)
+                return null;
+
+            // нужна ли проверка содержимого IdsColumns ?
+
+            QueryView qv = new QueryView { IdFormula = IdFormula, IdsColumns = IdsColumns };
+            _business.RepView.Add(qv);
+            _business.SaveChanges();
+            return _business.RepView.ToList().Last()?.Id;
+        }
+
+        // Удалить представление
+        public bool RepDelView(int Id)
+        {
+            var view = _business.RepView.FirstOrDefault(x => x.Id == Id && Id > 0);
+            if (view == null)
+                return false;
+
+            _business.RepView.Remove(view);
+            _business.SaveChanges();
+            return true;
+        }
+
+        // Действительна ли ссылка на значение?
         public bool LeftRightOK(QueryLeftRight type, int Id)
         {
             if (type == QueryLeftRight.Condition)
@@ -2810,6 +2885,122 @@ namespace FactPortal.Controllers
 
             return false;
         }
+
+        // ===== JSON JS ==================================================================
+        // --- Получить список колонок
+        public JsonResult JsGetColumns(int Id = 0)
+        {
+            var columns = (Id == 0) ? _business.RepColumn : _business.RepColumn.Where(x => x.Id == Id);
+            var json = new JsonResult(new { result = 0, columns = columns.ToList() });
+            return json;
+        }
+
+        // Добавить колонку
+        public JsonResult JsAddColumn(string nameGroup, string element)
+        {
+            bool correct = Enum.TryParse(nameGroup, out RepGroup group);
+            if (correct == false)
+                return new JsonResult(new { result = -11, message = "Группа не найдена" });
+
+            var Id = RepAddColumn(group, element);
+            return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });
+        }
+
+        // Удалить колонку
+        public JsonResult JsDelColumn(int Id = 0)
+        {
+            if (RepDelColumn(Id) == false)
+                return new JsonResult(new { result = -10, message = "Колонка не найдена" });
+            
+            return new JsonResult(new { result = 0, Id = Id });
+        }
+
+
+        // --- Получить список условий
+        public JsonResult JsGetConditions(int Id = 0)
+        {
+            var conditions = (Id == 0) ? _business.RepCondition : _business.RepCondition.Where(x => x.Id == Id);
+            var json = new JsonResult(new { result = 0, conditions = conditions.ToList() });
+            return json;
+        }
+        
+        // Добавить условие
+        public JsonResult JsAddConditions(int IdColumn, string nameCondition, string value1 = "", string value2 = "")
+        {
+            bool correct = Enum.TryParse(nameCondition, out RepCondition condition);
+            if (correct == false)
+                return new JsonResult(new { result = -21, message = "Оператор условия не найден" });
+
+            var Id = RepAddCondition(IdColumn, condition, value1, value2);
+            return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });
+        }
+
+        // Удалить условие
+        public JsonResult JsDelConditions(int Id = 0)
+        {
+            if (RepDelCondition(Id) == false)
+                return new JsonResult(new { result = -20, message = "Условие не найдено" });
+
+            return new JsonResult(new { result = 0, Id = Id });
+        }
+
+        // --- Получить список формул
+        public JsonResult JsGetFormuls(int Id = 0)
+        {
+            var formuls = (Id == 0) ? _business.RepFormula : _business.RepFormula.Where(x => x.Id == Id);
+            var json = new JsonResult(new { result = 0, formuls = formuls.ToList() });
+            return json;
+        }
+
+        // Добавить формулу
+        public JsonResult JsAddFormula(string nameTypeLeft, int IdLeft, string nameAndOr, string nameTypeRight, int IdRight)
+        {
+            bool correct1 = Enum.TryParse(nameTypeLeft, out QueryLeftRight typeLeft);
+            bool correct2 = Enum.TryParse(nameTypeRight, out QueryLeftRight typeRight);
+            if (correct1 == false || correct2 == false)
+                return new JsonResult(new { result = -31, message = "Тип значения не найден" });
+
+            bool correct3 = Enum.TryParse(nameAndOr, out OperatorLeftRight AndOr);
+            if (correct3 == false)
+                return new JsonResult(new { result = -32, message = "Оператор объединения не найден" });
+
+            var Id = RepAddFormula(typeLeft, IdLeft, AndOr, typeRight, IdRight);
+            return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });
+        }
+
+        // Удалить формулу
+        public JsonResult JsDelFormula(int Id = 0)
+        {
+            if (RepDelFormula(Id) == false)
+                return new JsonResult(new { result = -30, message = "Формула не найдена" });
+
+            return new JsonResult(new { result = 0, Id = Id });
+        }
+
+        // --- Получить список представлений
+        public JsonResult JsGetViews(int Id = 0)
+        {
+            var views = (Id == 0) ? _business.RepView : _business.RepView.Where(x => x.Id == Id);
+            var json = new JsonResult(new { result = 0, views = views.ToList() });
+            return json;
+        }
+
+        // Добавить представление
+        public JsonResult JsAddView(int IdFormula, string IdsColumns)
+        {
+            var Id = RepAddView(IdFormula, IdsColumns);
+            return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });
+        }
+
+        // Удалить представление
+        public JsonResult JsDelView(int Id = 0)
+        {
+            if (RepDelView(Id) == false)
+                return new JsonResult(new { result = -30, message = "Представление не найдено" });
+
+            return new JsonResult(new { result = 0, Id = Id });
+        }
+
 
     }
 }
