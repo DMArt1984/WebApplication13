@@ -74,7 +74,51 @@
         </div>
         <div class="tab-pane" id="custom-profile" role="tabpanel">
             <p class="mb-0">
-                Еще ничего нет...
+                <!-- Условия -->
+                <div class="card">
+                    <div class="card-header">
+                        Условия
+                    </div>
+                    <div id="BoardConditions" class="card-body">
+
+                    </div>
+                    <div class="card-footer text-muted">
+                        <form class="row row-cols-lg-auto g-3 align-items-center">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">ID колонки</div>
+                                    <input type="text" class="form-control" id="NewConditionIdCol" placeholder="ID колонки">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Условие</div>
+                                    <input type="text" class="form-control" id="NewConditionUse" placeholder="Условие">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Константа 1</div>
+                                    <input type="text" class="form-control" id="NewConditionValue1" placeholder="Константа 1">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Константа 2</div>
+                                    <input type="text" class="form-control" id="NewConditionValue2" placeholder="Константа 2">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary" onclick="addCondition();">Добавить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!---->
             </p>
         </div>
         <div class="tab-pane" id="custom-messages" role="tabpanel">
@@ -157,6 +201,107 @@
             });
 
         }
+        // Добавить колонку
+        function addColumn() {
+            var group = $('#NewColumnGroup').val();
+            var element = $('#NewColumnElement').val();
+            console.log(group, element);
+
+            // JsAddColumn(string nameGroup, string element)
+            let formData = new FormData();
+            formData.append("nameGroup", group);
+            formData.append("element", element);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsAddColumn`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getColumns(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+        // Удалить колонку
+        function delColumn(Id) {
+            console.log(Id);
+
+            // JsDelColumn(int Id = 0)
+            let formData = new FormData();
+            formData.append("Id", Id);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsDelColumn`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getColumns(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
 
         // Загрузить список условий
         async function getConditions(Id) {
@@ -183,6 +328,7 @@
                     //console.log(data);
                     //console.log(data.result);
                     console.log(data.conditions);
+                    DrawConditions(data.conditions);
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -192,6 +338,110 @@
                     //alert("jqXHR.responseText "+ jqXHR.responseText)
                     //alert("textStatus " + textStatus)
                     //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+        // Добавить условие
+        function addCondition() {
+            var IdColumn = $('#NewConditionIdCol').val();
+            var nameCondition = $('#NewConditionUse').val();
+            var value1 = $('#NewConditionValue1').val();
+            var value2 = $('#NewConditionValue2').val();
+
+            // JsAddCondition(int IdColumn, string nameCondition, string value1 = "", string value2 = "")
+            let formData = new FormData();
+            formData.append("IdColumn", IdColumn);
+            formData.append("nameCondition", nameCondition);
+            formData.append("value1", value1);
+            formData.append("value2", value2);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsAddCondition`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getConditions(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+        // Удалить условие
+        function delCondition(Id) {
+            console.log(Id);
+
+            // JsDelColumn(int Id = 0)
+            let formData = new FormData();
+            formData.append("Id", Id);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsDelCondition`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getConditions(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
                 },
                 async: true,
                 data: formData,
@@ -310,108 +560,6 @@
             });
 
         }
-        // --------------
-
-        function addColumn() {
-            var group = $('#NewColumnGroup').val();
-            var element = $('#NewColumnElement').val();
-            console.log(group, element);
-
-            // JsAddColumn(string nameGroup, string element)
-            let formData = new FormData();
-            formData.append("nameGroup", group);
-            formData.append("element", element);
-
-            $.ajax({
-                type: "POST",
-                url: `${GetPathBase()}/Business/JsAddColumn`,
-                xhr: function () {
-                    var myXhr = $.ajaxSettings.xhr();
-                    if (myXhr.upload) {
-                        myXhr.upload.onprogress = function (evt) {
-                            if (evt.lengthComputable) {
-                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
-                            }
-                        };
-                    }
-                    return myXhr;
-                },
-                success: function (data) {
-                    // your callback here
-                    if (data.Id == null) {
-                        alert(data.message);
-                    }
-                    getColumns(0);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // handle error
-                    alert("jqXHR.status " + jqXHR.status)
-                },
-                async: true,
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                beforeSend: function () {
-
-                },
-                complete: function () {
-
-                },
-                timeout: 60000
-            });
-
-        }
-
-        function delColumn(Id) {
-            console.log(Id);
-
-            // JsDelColumn(int Id = 0)
-            let formData = new FormData();
-            formData.append("Id", Id);
-
-            $.ajax({
-                type: "POST",
-                url: `${GetPathBase()}/Business/JsDelColumn`,
-                xhr: function () {
-                    var myXhr = $.ajaxSettings.xhr();
-                    if (myXhr.upload) {
-                        myXhr.upload.onprogress = function (evt) {
-                            if (evt.lengthComputable) {
-                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
-                            }
-                        };
-                    }
-                    return myXhr;
-                },
-                success: function (data) {
-                    // your callback here
-                    if (data.Id == null) {
-                        alert(data.message);
-                    }
-                    getColumns(0);
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                    // handle error
-                    alert("jqXHR.status " + jqXHR.status)
-                },
-                async: true,
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                beforeSend: function () {
-
-                },
-                complete: function () {
-
-                },
-                timeout: 60000
-            });
-
-        }
 
         // --------------
         //Сортировка по Id для массива
@@ -464,6 +612,27 @@
 
         }
 
+        // Построить список условий
+        function DrawConditions(conditions) {
+            conditions.sort(SortById);
+
+            var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
+            var $thead = $('<thead class="bg-primary text-white"/>');
+            $thead.append('<tr><td> ID </td><td> ID колонки </td><td> Условие </td><td> Константа 1 </td><td> Константа 2 </td><td> Команды </td></tr>');
+            var $tbody = $('<tbody/>');
+
+            $.each(conditions, function (index, value) {
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.IdColumn + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+            });
+
+            $tbl.append($thead);
+            $tbl.append($tbody);
+
+            $("#BoardConditions").empty();
+            $('#BoardConditions').append($tbl);
+
+            console.log('Table OK');
+        }
 
     </script>
 }

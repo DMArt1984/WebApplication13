@@ -2925,7 +2925,7 @@ namespace FactPortal.Controllers
         }
         
         // Добавить условие
-        public JsonResult JsAddConditions(int IdColumn, string nameCondition, string value1 = "", string value2 = "")
+        public JsonResult JsAddCondition(int IdColumn, string nameCondition, string value1 = "", string value2 = "")
         {
             bool correct = Enum.TryParse(nameCondition, out RepCondition condition);
             if (correct == false)
@@ -2936,7 +2936,7 @@ namespace FactPortal.Controllers
         }
 
         // Удалить условие
-        public JsonResult JsDelConditions(int Id = 0)
+        public JsonResult JsDelCondition(int Id = 0)
         {
             if (RepDelCondition(Id) == false)
                 return new JsonResult(new { result = -20, message = "Условие не найдено" });
