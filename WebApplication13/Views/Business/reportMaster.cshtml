@@ -132,7 +132,7 @@
                     //console.log(data.result);
                     console.log(data.columns);
                     DrawColumns(data.columns);
-                    
+
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // handle error
@@ -148,10 +148,10 @@
                 contentType: false,
                 processData: false,
                 beforeSend: function () {
-                    
+
                 },
                 complete: function () {
-                    
+
                 },
                 timeout: 60000
             });
@@ -364,6 +364,55 @@
 
         }
 
+        function delColumn(Id) {
+            console.log(Id);
+
+            // JsDelColumn(int Id = 0)
+            let formData = new FormData();
+            formData.append("Id", Id);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsDelColumn`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getColumns(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+
         // --------------
         //Сортировка по Id для массива
         function SortById(a, b) {
@@ -400,7 +449,7 @@
                 //tr.appendChild(td2);
                 //tr.appendChild(td3);
                 //table.appendChild(tr);
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.group + '</td><td>' + value.element + '</td><td>...</td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.group + '</td><td>' + value.element + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delColumn('+value.Id+')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
             });
 
