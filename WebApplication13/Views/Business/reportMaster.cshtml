@@ -5,6 +5,95 @@
 
 <h1>reportMaster</h1>
 
+
+<div class="card-body">
+    <h4 class="card-title">Описание 1</h4>
+    <p class="card-title-desc">Описание 2</p>
+
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs nav-justified nav-tabs-custom" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#custom-home" role="tab" aria-selected="true">
+                <i class="dripicons-home me-1 align-middle"></i> <span class="d-none d-md-inline-block">Колонки</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#custom-profile" role="tab" aria-selected="false">
+                <i class="dripicons-user me-1 align-middle"></i> <span class="d-none d-md-inline-block">Условия</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#custom-messages" role="tab" aria-selected="false">
+                <i class="dripicons-mail me-1 align-middle"></i> <span class="d-none d-md-inline-block">Формулы</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#custom-settings" role="tab" aria-selected="false">
+                <i class="dripicons-gear me-1 align-middle"></i> <span class="d-none d-md-inline-block">Представления</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content p-3">
+        <div class="tab-pane active" id="custom-home" role="tabpanel">
+            <p class="mb-0">
+                <!-- Колонки -->
+                <div class="card">
+                    <div class="card-header">
+                        Колонки
+                    </div>
+                    <div id="BoardColumns" class="card-body">
+
+                    </div>
+                    <div class="card-footer text-muted">
+                        <form class="row row-cols-lg-auto g-3 align-items-center">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Группа</div>
+                                    <input type="text" class="form-control" id="NewColumnGroup" placeholder="Название группы">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Параметр</div>
+                                    <input type="text" class="form-control" id="NewColumnElement" placeholder="Название параметра">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary" onclick="addColumn();">Добавить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!---->
+                
+            </p>
+        </div>
+        <div class="tab-pane" id="custom-profile" role="tabpanel">
+            <p class="mb-0">
+                Еще ничего нет...
+            </p>
+        </div>
+        <div class="tab-pane" id="custom-messages" role="tabpanel">
+            <p class="mb-0">
+                Еще ничего нет...
+            </p>
+        </div>
+        <div class="tab-pane" id="custom-settings" role="tabpanel">
+            <p class="mb-0">
+                Еще ничего нет...
+            </p>
+        </div>
+    </div>
+
+</div>
+
+
+
+
 @section Scripts {
     
 
@@ -16,6 +105,7 @@
         getViews(0);
         console.log('OK');
 
+        // --------------
         // Загрузить список колонок
         async function getColumns(Id) {
             let formData = new FormData();
@@ -41,6 +131,7 @@
                     //console.log(data);
                     //console.log(data.result);
                     console.log(data.columns);
+                    DrawColumns(data.columns);
                     
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -219,6 +310,65 @@
             });
 
         }
+        // --------------
+
+        function addColumn() {
+            var group = $('#NewColumnGroup').val();
+            var element = $('#NewColumnElement').val();
+            console.log(group, element);
+        }
+
+        // --------------
+        //Сортировка по Id для массива
+        function SortById(a, b) {
+            var aId = a.Id;
+            var bId = b.Id;
+            return ((aId < bId) ? -1 : ((aId > bId) ? 1 : 0));
+        }
+
+        // --------------
+        // Построить список колонок
+        function DrawColumns(columns) {
+            columns.sort(SortById);
+
+            //var table = document.createElement('table');
+            var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
+            var $thead = $('<thead class="bg-primary text-white"/>');
+            $thead.append('<tr><td> ID </td><td> Группа </td><td> Параметр </td><td> Команды </td></tr>');
+            var $tbody = $('<tbody/>');
+
+            $.each(columns, function (index, value) {
+                //console.log(index, value.Id, value.element, value.group);
+
+                //var tr = document.createElement('tr');
+                //var td1 = document.createElement('td');
+                //var td2 = document.createElement('td');
+                //var td3 = document.createElement('td');
+                //var text1 = document.createTextNode(value.Id);
+                //var text2 = document.createTextNode(value.element);
+                //var text3 = document.createTextNode(value.group);
+                //td1.appendChild(text1);
+                //td2.appendChild(text2);
+                //td3.appendChild(text3);
+                //tr.appendChild(td1);
+                //tr.appendChild(td2);
+                //tr.appendChild(td3);
+                //table.appendChild(tr);
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.group + '</td><td>' + value.element + '</td><td>...</td></tr>');
+
+            });
+
+            $tbl.append($thead);
+            $tbl.append($tbody);
+
+            $("#BoardColumns").empty();
+            //$('#Board').append(table);
+            $('#BoardColumns').append($tbl);
+
+            console.log('Table OK');
+
+        }
+
 
     </script>
 }

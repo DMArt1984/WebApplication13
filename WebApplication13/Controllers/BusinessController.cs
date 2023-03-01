@@ -2856,7 +2856,7 @@ namespace FactPortal.Controllers
 
             // нужна ли проверка содержимого IdsColumns ?
 
-            QueryView qv = new QueryView { IdFormula = IdFormula, IdsColumns = IdsColumns };
+            QueryView qv = new QueryView { IdFormula = IdFormula, IdColumns = IdsColumns };
             _business.RepView.Add(qv);
             _business.SaveChanges();
             return _business.RepView.ToList().Last()?.Id;

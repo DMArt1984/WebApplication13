@@ -139,7 +139,7 @@ namespace FactPortal.Models
     {
         public int Id { get; set; } // ID
         public int IdFormula { get; set; } // ID формулы
-        public string IdsColumns { get; set; } // Колонки по группам (например: 1;2;3 > 4;5 > 9) в строке
+        public string IdColumns { get; set; } // Колонки по группам (например: 1;2;3 > 4;5 > 9) в строке
     }
     public class QueryViewInfo // Вид
     {
