@@ -509,6 +509,113 @@
             });
 
         }
+        // Добавить формулу
+        function addFormula() {
+            var typeLeft = $('#NewFormulaType1').val();
+            var IdLeft = $('#NewFormulaId1').val();
+            var AndOr = $('#NewFormulaOperator').val();
+            var typeRight = $('#NewFormulaType2').val();
+            var IdRight = $('#NewFormulaId2').val();
+
+            // JsAddFormula(string nameTypeLeft, int IdLeft, string nameAndOr, string nameTypeRight, int IdRight)
+            let formData = new FormData();
+            formData.append("typeLeft", typeLeft);
+            formData.append("IdLeft", IdLeft);
+            formData.append("AndOr", AndOr);
+            formData.append("typeRight", typeRight);
+            formData.append("IdRight", IdRight);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsAddFormula`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getFormuls(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+        // Удалить формулу
+        function delFormula(Id) {
+            console.log(Id);
+
+            // JsDelColumn(int Id = 0)
+            let formData = new FormData();
+            formData.append("Id", Id);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsDelFormula`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getFormuls(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+
 
         // Загрузить список представлений
         async function getViews(Id) {
@@ -561,7 +668,7 @@
 
         }
 
-        // --------------
+        // --------------------------------------------------------------------------------
         //Сортировка по Id для массива
         function SortById(a, b) {
             var aId = a.Id;
@@ -569,7 +676,7 @@
             return ((aId < bId) ? -1 : ((aId > bId) ? 1 : 0));
         }
 
-        // --------------
+        // --------------------------------------------------------------------------------
         // Построить список колонок
         function DrawColumns(columns) {
             columns.sort(SortById);
@@ -630,6 +737,28 @@
 
             $("#BoardConditions").empty();
             $('#BoardConditions').append($tbl);
+
+            console.log('Table OK');
+        }
+
+        // Построить список формул
+        function DrawFormuls(formuls) {
+            formuls.sort(SortById);
+
+            var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
+            var $thead = $('<thead class="bg-primary text-white"/>');
+            $thead.append('<tr><td> ID </td><td> Тип слева </td><td> ID слева </td><td> Оператор </td><td> Тип справа </td><td> ID справа </td><td> Команды </td></tr>');
+            var $tbody = $('<tbody/>');
+
+            $.each(formuls, function (index, value) {
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.Idleft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+            });
+
+            $tbl.append($thead);
+            $tbl.append($tbody);
+
+            $("#BoardFormuls").empty();
+            $('#BoardFormuls').append($tbl);
 
             console.log('Table OK');
         }
