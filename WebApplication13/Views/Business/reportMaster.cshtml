@@ -17,6 +17,12 @@
     {
         TextCondition.Add(new SelectListItem { Value = title, Text = title });
     }
+
+    List<SelectListItem> TextGroup = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepGroup)))
+    {
+        TextGroup.Add(new SelectListItem { Value = title, Text = title });
+    }
 }
 
 <h1>reportMaster</h1>
@@ -67,7 +73,8 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Группа</div>
-                                    <input type="text" class="form-control" id="NewColumnGroup" placeholder="Название группы">
+                                    @*<input type="text" class="form-control" id="NewColumnGroup" placeholder="Название группы">*@
+                                    <select id="NewColumnGroup" class="form-select" name="Group" value="0" asp-items="TextGroup"></select>
                                 </div>
                             </div>
 
