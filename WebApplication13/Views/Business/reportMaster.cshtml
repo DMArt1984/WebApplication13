@@ -1,6 +1,22 @@
 ﻿
 @{
     ViewData["Title"] = "reportMaster";
+
+    // ------- Списки -------
+
+    List<SelectListItem> TextAndOr = new List<SelectListItem>();
+    TextAndOr.Add(new SelectListItem { Value = "false", Text = "ИЛИ" });
+    TextAndOr.Add(new SelectListItem { Value = "true", Text = "И" });
+
+    List<SelectListItem> TextLeftRight = new List<SelectListItem>();
+    TextLeftRight.Add(new SelectListItem { Value = "false", Text = "Условие" });
+    TextLeftRight.Add(new SelectListItem { Value = "true", Text = "Формула" });
+
+    List<SelectListItem> TextCondition = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepCondition)))
+    {
+        TextCondition.Add(new SelectListItem { Value = title, Text = title });
+    }
 }
 
 <h1>reportMaster</h1>
@@ -93,7 +109,8 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Условие</div>
-                                    <input type="text" class="form-control" id="NewConditionUse" placeholder="Условие">
+                                    @*<input type="text" class="form-control" id="NewConditionUse" placeholder="Условие">*@
+                                    <select id="NewConditionUse" class="form-select" name="Condition" value="0" asp-items="TextCondition"></select>
                                 </div>
                             </div>
 
@@ -135,7 +152,8 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Тип слева</div>
-                                    <input type="text" class="form-control" id="NewFormulaType1" placeholder="Тип слева">
+                                    @*<input type="text" class="form-control" id="NewFormulaType1" placeholder="Тип слева">*@
+                                    <select id="NewFormulaType1" class="form-select" name="Type1" value="0" asp-items="TextLeftRight"></select>
                                 </div>
                             </div>
 
@@ -149,14 +167,16 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Оператор</div>
-                                    <input type="text" class="form-control" id="NewFormulaOperator" placeholder="Оператор">
+                                    @*<input type="text" class="form-control" id="NewFormulaOperator" placeholder="Оператор">*@
+                                    <select id="NewFormulaOperator" class="form-select" name="Operator" value="0" asp-items="TextAndOr" ></select>
                                 </div>
                             </div>
 
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Тип справа</div>
-                                    <input type="text" class="form-control" id="NewFormulaType2" placeholder="Тип справа">
+                                    @*<input type="text" class="form-control" id="NewFormulaType2" placeholder="Тип справа">*@
+                                    <select id="NewFormulaType2" class="form-select" name="Type2" value="0" asp-items="TextLeftRight"></select>
                                 </div>
                             </div>
 
