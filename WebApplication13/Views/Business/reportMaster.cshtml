@@ -23,6 +23,37 @@
     {
         TextGroup.Add(new SelectListItem { Value = title, Text = title });
     }
+
+    List<SelectListItem> TextSO = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepSO)))
+    {
+        TextSO.Add(new SelectListItem { Value = title, Text = title });
+    }
+
+    List<SelectListItem> TextWork = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepWork)))
+    {
+        TextWork.Add(new SelectListItem { Value = title, Text = title });
+    }
+
+    List<SelectListItem> TextStep = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepStep)))
+    {
+        TextStep.Add(new SelectListItem { Value = title, Text = title });
+    }
+
+    List<SelectListItem> TextUser = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepUser)))
+    {
+        TextUser.Add(new SelectListItem { Value = title, Text = title });
+    }
+
+    List<SelectListItem> TextFile = new List<SelectListItem>();
+    foreach (string title in Enum.GetNames(typeof(RepFile)))
+    {
+        TextFile.Add(new SelectListItem { Value = title, Text = title });
+    }
+
 }
 
 <h1>reportMaster</h1>
@@ -74,7 +105,7 @@
                                 <div class="input-group">
                                     <div class="input-group-text">Группа</div>
                                     @*<input type="text" class="form-control" id="NewColumnGroup" placeholder="Название группы">*@
-                                    <select id="NewColumnGroup" class="form-select" name="Group" value="0" asp-items="TextGroup"></select>
+                                    <select id="NewColumnGroup" class="form-select" name="Group" value="0" asp-items="TextGroup" onchange="changeGroup();"></select>
                                 </div>
                             </div>
 
@@ -82,6 +113,11 @@
                                 <div class="input-group">
                                     <div class="input-group-text">Параметр</div>
                                     <input type="text" class="form-control" id="NewColumnElement" placeholder="Название параметра">
+                                    <select id="NewColumnSO" class="form-select" name="GroupSO" value="0" asp-items="TextSO" onchange="setColumnElement($('#NewColumnSO').val());"></select>
+                                    <select id="NewColumnWork" class="form-select" name="GroupWork" value="0" asp-items="TextWork" onchange="setColumnElement($('#NewColumnWork').val());"></select>
+                                    <select id="NewColumnStep" class="form-select" name="GroupStep" value="0" asp-items="TextStep" onchange="setColumnElement($('#NewColumnStep').val());"></select>
+                                    <select id="NewColumnUser" class="form-select" name="GroupUser" value="0" asp-items="TextUser" onchange="setColumnElement($('#NewColumnUser').val());"></select>
+                                    <select id="NewColumnFile" class="form-select" name="GroupFile" value="0" asp-items="TextFile" onchange="setColumnElement($('#NewColumnFile').val());"></select>
                                 </div>
                             </div>
 
@@ -254,6 +290,8 @@
         getConditions(0);
         getFormuls(0);
         getViews(0);
+
+        changeGroup();
         console.log('OK');
 
         // --------------
@@ -1009,6 +1047,26 @@
 
             console.log('Table OK');
 
+        }
+
+        // ---------------------------------------------
+
+        function changeGroup() {
+            var group = $('#NewColumnGroup').val();
+            $('#NewColumnElement').hide();
+            $('#NewColumnSO').hide();
+            $('#NewColumnWork').hide();
+            $('#NewColumnStep').hide();
+            $('#NewColumnUser').hide();
+            $('#NewColumnFile').hide();
+
+            $('#NewColumn' + group).show();
+            setColumnElement($('#NewColumn' + group).val());
+            console.log('changeGroup()');
+        }
+
+        function setColumnElement(value) {
+            $('#NewColumnElement').val(value);
         }
 
     </script>
