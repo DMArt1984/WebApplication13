@@ -972,7 +972,16 @@
             $thead.append('<tr><td> ID </td><td> ID колонки </td><td> Условие </td><td> Константа 1 </td><td> Константа 2 </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
 
+            
+
             $.each(conditions, function (index, value) {
+                if (value.value1 == null) {
+                    value.value1 = "";
+                }
+
+                if (value.value2 == null) {
+                    value.value2 = "";
+                }
                 $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.IdColumn + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
 
@@ -995,7 +1004,7 @@
             var $tbody = $('<tbody/>');
 
             $.each(formuls, function (index, value) {
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.IdLeft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + BoolToQueryLeftRight(value.typeLeft) + '</td><td>' + value.IdLeft + '</td><td>' + BoolToOperatorLeftRight(value.AndOr) + '</td><td>' + BoolToQueryLeftRight(value.typeRight) + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
 
             $tbl.append($thead);
@@ -1049,8 +1058,27 @@
 
         }
 
+        // ----------------------------------------
+
+        function BoolToQueryLeftRight(value) {
+            if (value) {
+                return "Формула";
+            } else {
+                return "Условие";
+            }
+        }
+
+        function BoolToOperatorLeftRight(value) {
+            if (value) {
+                return "И";
+            } else {
+                return "ИЛИ";
+            }
+        }
+
         // ---------------------------------------------
 
+        // Отображение списка параметров для выбранной группы
         function changeGroup() {
             var group = $('#NewColumnGroup').val();
             $('#NewColumnElement').hide();
@@ -1065,6 +1093,7 @@
             console.log('changeGroup()');
         }
 
+        // Установить значение параметра
         function setColumnElement(value) {
             $('#NewColumnElement').val(value);
         }

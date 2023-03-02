@@ -2779,6 +2779,9 @@ namespace FactPortal.Controllers
         // Добавить колонку
         public int? RepAddColumn(RepGroup group, string element )
         {
+            if (_business.RepColumn.FirstOrDefault(x => x.group == group.ToString() && x.element == element) != null)
+                return null;
+
             QueryColumn qcl = new QueryColumn { group = group.ToString(), element = element };
             _business.RepColumn.Add(qcl);
             _business.SaveChanges();
@@ -2802,6 +2805,7 @@ namespace FactPortal.Controllers
         {
             if (_business.RepColumn.FirstOrDefault(x => x.Id == IdColumn) == null)
                 return null;
+
             QueryCondition qcn = new QueryCondition { IdColumn = IdColumn, condition = condition.ToString(), value1 = value1, value2 = value2 };
             _business.RepCondition.Add(qcn);
             _business.SaveChanges();
