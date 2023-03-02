@@ -2953,16 +2953,20 @@ namespace FactPortal.Controllers
         }
 
         // Добавить формулу
-        public JsonResult JsAddFormula(string nameTypeLeft, int IdLeft, string nameAndOr, string nameTypeRight, int IdRight)
+        public JsonResult JsAddFormula(bool boolLeft, int IdLeft, bool boolAndOr, bool boolRight, int IdRight)
         {
-            bool correct1 = Enum.TryParse(nameTypeLeft, out QueryLeftRight typeLeft);
-            bool correct2 = Enum.TryParse(nameTypeRight, out QueryLeftRight typeRight);
-            if (correct1 == false || correct2 == false)
-                return new JsonResult(new { result = -31, message = "Тип значения не найден" });
+            //bool correct1 = Enum.TryParse(nameTypeLeft, out QueryLeftRight typeLeft);
+            //bool correct2 = Enum.TryParse(nameTypeRight, out QueryLeftRight typeRight);
+            //if (correct1 == false || correct2 == false)
+            //    return new JsonResult(new { result = -31, message = "Тип значения не найден" });
 
-            bool correct3 = Enum.TryParse(nameAndOr, out OperatorLeftRight AndOr);
-            if (correct3 == false)
-                return new JsonResult(new { result = -32, message = "Оператор объединения не найден" });
+            //bool correct3 = Enum.TryParse(nameAndOr, out OperatorLeftRight AndOr);
+            //if (correct3 == false)
+            //    return new JsonResult(new { result = -32, message = "Оператор объединения не найден" });
+
+            QueryLeftRight typeLeft = boolLeft ? QueryLeftRight.Formula : QueryLeftRight.Condition;
+            QueryLeftRight typeRight = boolRight ? QueryLeftRight.Formula : QueryLeftRight.Condition;
+            OperatorLeftRight AndOr = boolAndOr ? OperatorLeftRight.AND : OperatorLeftRight.OR;
 
             var Id = RepAddFormula(typeLeft, IdLeft, AndOr, typeRight, IdRight);
             return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });

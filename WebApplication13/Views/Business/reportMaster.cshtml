@@ -14,22 +14,22 @@
     <ul class="nav nav-tabs nav-justified nav-tabs-custom" role="tablist">
         <li class="nav-item">
             <a class="nav-link active" data-bs-toggle="tab" href="#custom-home" role="tab" aria-selected="true">
-                <i class="dripicons-home me-1 align-middle"></i> <span class="d-none d-md-inline-block">Колонки</span>
+                <i class="fas fa-th-list me-1 align-middle"></i> <span class="d-none d-md-inline-block">Колонки</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#custom-profile" role="tab" aria-selected="false">
-                <i class="dripicons-user me-1 align-middle"></i> <span class="d-none d-md-inline-block">Условия</span>
+                <i class="fas fa-filter me-1 align-middle"></i> <span class="d-none d-md-inline-block">Условия</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#custom-messages" role="tab" aria-selected="false">
-                <i class="dripicons-mail me-1 align-middle"></i> <span class="d-none d-md-inline-block">Формулы</span>
+                <i class="fas fa-pause me-1 align-middle"></i> <span class="d-none d-md-inline-block">Формулы</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#custom-settings" role="tab" aria-selected="false">
-                <i class="dripicons-gear me-1 align-middle"></i> <span class="d-none d-md-inline-block">Представления</span>
+                <i class="far fa-object-group me-1 align-middle"></i> <span class="d-none d-md-inline-block">Представления</span>
             </a>
         </li>
     </ul>
@@ -40,9 +40,9 @@
             <p class="mb-0">
                 <!-- Колонки -->
                 <div class="card">
-                    <div class="card-header">
+                    @*<div class="card-header">
                         Колонки
-                    </div>
+                    </div>*@
                     <div id="BoardColumns" class="card-body">
 
                     </div>
@@ -68,17 +68,16 @@
                         </form>
                     </div>
                 </div>
-                <!---->
-                
+                <!----> 
             </p>
         </div>
         <div class="tab-pane" id="custom-profile" role="tabpanel">
             <p class="mb-0">
                 <!-- Условия -->
                 <div class="card">
-                    <div class="card-header">
+                    @*<div class="card-header">
                         Условия
-                    </div>
+                    </div>*@
                     <div id="BoardConditions" class="card-body">
 
                     </div>
@@ -123,12 +122,93 @@
         </div>
         <div class="tab-pane" id="custom-messages" role="tabpanel">
             <p class="mb-0">
-                Еще ничего нет...
+                <!-- Формула -->
+                <div class="card">
+                    @*<div class="card-header">
+                        Формула
+                    </div>*@
+                    <div id="BoardFormuls" class="card-body">
+
+                    </div>
+                    <div class="card-footer text-muted">
+                        <form class="row row-cols-lg-auto g-3 align-items-center">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Тип слева</div>
+                                    <input type="text" class="form-control" id="NewFormulaType1" placeholder="Тип слева">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">ID слева</div>
+                                    <input type="text" class="form-control" id="NewFormulaId1" placeholder="ID слева">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Оператор</div>
+                                    <input type="text" class="form-control" id="NewFormulaOperator" placeholder="Оператор">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Тип справа</div>
+                                    <input type="text" class="form-control" id="NewFormulaType2" placeholder="Тип справа">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">ID справа</div>
+                                    <input type="text" class="form-control" id="NewFormulaId2" placeholder="ID справа">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary" onclick="addFormula();">Добавить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!---->
             </p>
         </div>
         <div class="tab-pane" id="custom-settings" role="tabpanel">
             <p class="mb-0">
-                Еще ничего нет...
+                <!-- Представления -->
+                <div class="card">
+                    @*<div class="card-header">
+                        Представления
+                    </div>*@
+                    <div id="BoardViews" class="card-body">
+
+                    </div>
+                    <div class="card-footer text-muted">
+                        <form class="row row-cols-lg-auto g-3 align-items-center">
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">ID формулы</div>
+                                    <input type="text" class="form-control" id="NewViewFormula" placeholder="ID формулы">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Колонки</div>
+                                    <input type="text" class="form-control" id="NewViewColumns" placeholder="Колонки">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <button type="button" class="btn btn-primary" onclick="addView();">Добавить</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!---->
             </p>
         </div>
     </div>
@@ -484,7 +564,7 @@
                     //console.log(data);
                     //console.log(data.result);
                     console.log(data.formuls);
-
+                    DrawFormuls(data.formuls);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // handle error
@@ -511,18 +591,18 @@
         }
         // Добавить формулу
         function addFormula() {
-            var typeLeft = $('#NewFormulaType1').val();
+            var boolLeft = $('#NewFormulaType1').val();
             var IdLeft = $('#NewFormulaId1').val();
-            var AndOr = $('#NewFormulaOperator').val();
-            var typeRight = $('#NewFormulaType2').val();
+            var boolAndOr = $('#NewFormulaOperator').val();
+            var boolRight = $('#NewFormulaType2').val();
             var IdRight = $('#NewFormulaId2').val();
 
-            // JsAddFormula(string nameTypeLeft, int IdLeft, string nameAndOr, string nameTypeRight, int IdRight)
+            // JsAddFormula(bool boolLeft, int IdLeft, bool boolAndOr, bool boolRight, int IdRight)
             let formData = new FormData();
-            formData.append("typeLeft", typeLeft);
+            formData.append("boolLeft", boolLeft);
             formData.append("IdLeft", IdLeft);
-            formData.append("AndOr", AndOr);
-            formData.append("typeRight", typeRight);
+            formData.append("boolAndOr", boolAndOr);
+            formData.append("boolRight", boolRight);
             formData.append("IdRight", IdRight);
 
             $.ajax({
@@ -616,7 +696,6 @@
 
         }
 
-
         // Загрузить список представлений
         async function getViews(Id) {
             let formData = new FormData();
@@ -642,7 +721,7 @@
                     //console.log(data);
                     //console.log(data.result);
                     console.log(data.views);
-
+                    DrawViews(data.views);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // handle error
@@ -651,6 +730,106 @@
                     //alert("jqXHR.responseText "+ jqXHR.responseText)
                     //alert("textStatus " + textStatus)
                     //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+        // Добавить представление
+        function addView() {
+            var IdFormula = $('#NewViewFormula').val();
+            var IdsColumns = $('#NewViewColumns').val();
+
+            // JsonResult JsAddView(int IdFormula, string IdsColumns)
+            let formData = new FormData();
+            formData.append("IdFormula", IdFormula);
+            formData.append("IdsColumns", IdsColumns);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsAddView`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getViews(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+
+        }
+        // Удалить представление
+        function delView(Id) {
+            console.log(Id);
+
+            // JsDelColumn(int Id = 0)
+            let formData = new FormData();
+            formData.append("Id", Id);
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsDelView`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    if (data.Id == null) {
+                        alert(data.message);
+                    }
+                    getViews(0);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
                 },
                 async: true,
                 data: formData,
@@ -751,7 +930,7 @@
             var $tbody = $('<tbody/>');
 
             $.each(formuls, function (index, value) {
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.Idleft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.IdLeft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
 
             $tbl.append($thead);
@@ -761,6 +940,48 @@
             $('#BoardFormuls').append($tbl);
 
             console.log('Table OK');
+        }
+
+        // Построить список представлений
+        function DrawViews(views) {
+            views.sort(SortById);
+
+            //var table = document.createElement('table');
+            var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
+            var $thead = $('<thead class="bg-primary text-white"/>');
+            $thead.append('<tr><td> ID </td><td> ID формулы </td><td> Колонки </td><td> Команды </td></tr>');
+            var $tbody = $('<tbody/>');
+            
+            $.each(views, function (index, value) {
+                //console.log(index, value.Id, value.element, value.group);
+
+                //var tr = document.createElement('tr');
+                //var td1 = document.createElement('td');
+                //var td2 = document.createElement('td');
+                //var td3 = document.createElement('td');
+                //var text1 = document.createTextNode(value.Id);
+                //var text2 = document.createTextNode(value.element);
+                //var text3 = document.createTextNode(value.group);
+                //td1.appendChild(text1);
+                //td2.appendChild(text2);
+                //td3.appendChild(text3);
+                //tr.appendChild(td1);
+                //tr.appendChild(td2);
+                //tr.appendChild(td3);
+                //table.appendChild(tr);
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.IdFormula + '</td><td>' + value.IdColumns + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delView(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+
+            });
+
+            $tbl.append($thead);
+            $tbl.append($tbody);
+
+            $("#BoardViews").empty();
+            //$('#Board').append(table);
+            $('#BoardViews').append($tbl);
+
+            console.log('Table OK');
+
         }
 
     </script>
