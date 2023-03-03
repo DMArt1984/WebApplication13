@@ -207,41 +207,41 @@
                                 <div class="input-group">
                                     <div class="input-group-text">Тип слева</div>
                                     @*<input type="text" class="form-control" id="NewFormulaType1" placeholder="Тип слева">*@
-                                    <select id="NewFormulaType1" class="form-select" name="Type1" value="0" asp-items="TextLeftRight"></select>
+                                    <select id="NewFormulaType1" class="form-select" name="Type1" value="0" asp-items="TextLeftRight" onchange="changeLeftAndRight();"></select>
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="colformulaId1" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">ID слева</div>
                                     <input type="text" class="form-control" id="NewFormulaId1" placeholder="ID слева">
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="coloperator" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Оператор</div>
                                     @*<input type="text" class="form-control" id="NewFormulaOperator" placeholder="Оператор">*@
-                                    <select id="NewFormulaOperator" class="form-select" name="Operator" value="0" asp-items="TextAndOr" ></select>
+                                    <select id="NewFormulaOperator" class="form-select" name="Operator" value="0" asp-items="TextAndOr" onchange="changeLeftAndRight();"></select>
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="colformulaType2" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Тип справа</div>
                                     @*<input type="text" class="form-control" id="NewFormulaType2" placeholder="Тип справа">*@
-                                    <select id="NewFormulaType2" class="form-select" name="Type2" value="0" asp-items="TextLeftRight"></select>
+                                    <select id="NewFormulaType2" class="form-select" name="Type2" value="0" asp-items="TextLeftRight" onchange="changeLeftAndRight();"></select>
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="colformulaId2" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">ID справа</div>
                                     <input type="text" class="form-control" id="NewFormulaId2" placeholder="ID справа">
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="colformulaBut" class="col-12">
                                 <button type="button" class="btn btn-primary" onclick="addFormula();">Добавить</button>
                             </div>
                         </form>
@@ -304,6 +304,7 @@
 
         changeGroup();
         changeUseCondition();
+        changeLeftAndRight();
 
         console.log('OK');
 
@@ -1165,6 +1166,41 @@
                 default:
                     $('#' + id1).hide();
                     $('#' + id2).hide();
+                    break;
+            }
+        }
+
+        //...
+        function changeLeftAndRight() {
+            var type1 = $('#NewFormulaType1').val();
+            var type2 = $('#NewFormulaType2').val();
+            var operator = $('#NewFormulaOperator').val();
+
+            switch (type1) {
+                case 'Condition':
+                case 'Formula':
+                    $('#colformulaId1').show();
+                    $('#coloperator').show();
+                    if (operator != 'END') {
+                        $('#colformulaType2').show();
+                        if (type2 != 'None') {
+                            $('#colformulaId2').show();
+                        } else {
+                            $('#colformulaId2').hide();
+                        }
+                    } else {
+                        $('#colformulaType2').hide();
+                        $('#colformulaId2').hide();
+                    }
+                    $('#colformulaBut').show();
+                    break;
+
+                default:
+                    $('#colformulaId1').hide();
+                    $('#coloperator').hide();
+                    $('#colformulaType2').hide();
+                    $('#colformulaId2').hide();
+                    $('#colformulaBut').hide();
                     break;
             }
         }
