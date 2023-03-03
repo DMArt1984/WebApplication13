@@ -7,13 +7,15 @@ namespace FactPortal.Models
 {
     public enum QueryLeftRight // тип переменной
     {
-        Condition = 0, // условие
-        Formula = 1 // формула
+        None = 0, // ничего
+        Condition = 1, // условие
+        Formula = 2 // формула
     }
     public enum OperatorLeftRight // оператор
     {
-        OR = 0, // или
-        AND = 1 // и
+        END = 0, // ничего
+        OR = 1, // или
+        AND = 2 // и
     }
 
     public enum RepCondition // условие
@@ -119,10 +121,10 @@ namespace FactPortal.Models
     public class QueryFormula // Формула [DB]
     {
         public int Id { get; set; } // ID
-        public bool typeLeft { get; set; } // тип переменной слева: условие или формула
+        public string typeLeft { get; set; } // тип переменной слева: условие или формула
         public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
-        public bool AndOr { get; set; } // оператор: AND, OR
-        public bool typeRight { get; set; } // тип переменной справа: условие или формула
+        public string AndOr { get; set; } // оператор: AND, OR
+        public string typeRight { get; set; } // тип переменной справа: условие или формула
         public int IdRight { get; set; } // ID переменной справа (0 - если пусто)
     }
     public class QueryFormulaInfo // Формула

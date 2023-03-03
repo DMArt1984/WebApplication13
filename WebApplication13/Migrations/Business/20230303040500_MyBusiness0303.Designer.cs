@@ -9,8 +9,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FactPortal.Migrations.Business
 {
     [DbContext(typeof(BusinessContext))]
-    [Migration("20230221094050_MyBusiness2302")]
-    partial class MyBusiness2302
+    [Migration("20230303040500_MyBusiness0303")]
+    partial class MyBusiness0303
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -142,8 +142,8 @@ namespace FactPortal.Migrations.Business
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<bool>("AndOr")
-                        .HasColumnType("boolean");
+                    b.Property<string>("AndOr")
+                        .HasColumnType("text");
 
                     b.Property<int>("IdLeft")
                         .HasColumnType("integer");
@@ -151,11 +151,11 @@ namespace FactPortal.Migrations.Business
                     b.Property<int>("IdRight")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("typeLeft")
-                        .HasColumnType("boolean");
+                    b.Property<string>("typeLeft")
+                        .HasColumnType("text");
 
-                    b.Property<bool>("typeRight")
-                        .HasColumnType("boolean");
+                    b.Property<string>("typeRight")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

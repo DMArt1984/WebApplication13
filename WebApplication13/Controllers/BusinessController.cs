@@ -2827,9 +2827,9 @@ namespace FactPortal.Controllers
         // Добавить формулу
         public int? RepAddFormula(QueryLeftRight typeLeft, int IdLeft, OperatorLeftRight AndOr, QueryLeftRight typeRight, int IdRight)
         {
-            if (LeftRightOK(typeLeft, IdLeft) && LeftRightOK(typeRight, IdRight))
+            if (LeftRightOK(typeLeft, IdLeft) && (AndOr == OperatorLeftRight.END || LeftRightOK(typeRight, IdRight)))
             {
-                QueryFormula qf = new QueryFormula { AndOr = AndOr == OperatorLeftRight.AND , IdLeft = IdLeft, IdRight = IdRight, typeLeft = typeLeft == QueryLeftRight.Formula, typeRight = typeRight == QueryLeftRight.Formula };
+                QueryFormula qf = new QueryFormula { AndOr = AndOr.ToString() , IdLeft = IdLeft, IdRight = IdRight, typeLeft = typeLeft.ToString(), typeRight = typeRight.ToString() };
                 _business.RepFormula.Add(qf);
                 _business.SaveChanges();
                 return _business.RepFormula.ToList().Last()?.Id;
@@ -2881,6 +2881,9 @@ namespace FactPortal.Controllers
         // Действительна ли ссылка на значение?
         public bool LeftRightOK(QueryLeftRight type, int Id)
         {
+            if (type == QueryLeftRight.None)
+                return true;
+
             if (type == QueryLeftRight.Condition)
                 return _business.RepCondition.FirstOrDefault(x => x.Id == Id) != null;
 
@@ -2957,20 +2960,16 @@ namespace FactPortal.Controllers
         }
 
         // Добавить формулу
-        public JsonResult JsAddFormula(bool boolLeft, int IdLeft, bool boolAndOr, bool boolRight, int IdRight)
+        public JsonResult JsAddFormula(string nameLeft, int IdLeft, string nameAndOr, string nameRight, int IdRight)
         {
-            //bool correct1 = Enum.TryParse(nameTypeLeft, out QueryLeftRight typeLeft);
-            //bool correct2 = Enum.TryParse(nameTypeRight, out QueryLeftRight typeRight);
-            //if (correct1 == false || correct2 == false)
-            //    return new JsonResult(new { result = -31, message = "Тип значения не найден" });
+            bool correct1 = Enum.TryParse(nameLeft, out QueryLeftRight typeLeft);
+            bool correct2 = Enum.TryParse(nameRight, out QueryLeftRight typeRight);
+            if (correct1 == false || correct2 == false)
+                return new JsonResult(new { result = -31, message = "Тип значения не найден" });
 
-            //bool correct3 = Enum.TryParse(nameAndOr, out OperatorLeftRight AndOr);
-            //if (correct3 == false)
-            //    return new JsonResult(new { result = -32, message = "Оператор объединения не найден" });
-
-            QueryLeftRight typeLeft = boolLeft ? QueryLeftRight.Formula : QueryLeftRight.Condition;
-            QueryLeftRight typeRight = boolRight ? QueryLeftRight.Formula : QueryLeftRight.Condition;
-            OperatorLeftRight AndOr = boolAndOr ? OperatorLeftRight.AND : OperatorLeftRight.OR;
+            bool correct3 = Enum.TryParse(nameAndOr, out OperatorLeftRight AndOr);
+            if (correct3 == false)
+                return new JsonResult(new { result = -32, message = "Оператор объединения не найден" });
 
             var Id = RepAddFormula(typeLeft, IdLeft, AndOr, typeRight, IdRight);
             return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });

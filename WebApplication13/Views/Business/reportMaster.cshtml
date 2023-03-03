@@ -5,12 +5,16 @@
     // ------- Списки -------
 
     List<SelectListItem> TextAndOr = new List<SelectListItem>();
-    TextAndOr.Add(new SelectListItem { Value = "false", Text = "ИЛИ" });
-    TextAndOr.Add(new SelectListItem { Value = "true", Text = "И" });
+    foreach (string title in Enum.GetNames(typeof(OperatorLeftRight)))
+    {
+        TextAndOr.Add(new SelectListItem { Value = title, Text = title });
+    }
 
     List<SelectListItem> TextLeftRight = new List<SelectListItem>();
-    TextLeftRight.Add(new SelectListItem { Value = "false", Text = "Условие" });
-    TextLeftRight.Add(new SelectListItem { Value = "true", Text = "Формула" });
+    foreach (string title in Enum.GetNames(typeof(QueryLeftRight)))
+    {
+        TextLeftRight.Add(new SelectListItem { Value = title, Text = title });
+    }
 
     List<SelectListItem> TextCondition = new List<SelectListItem>();
     foreach (string title in Enum.GetNames(typeof(RepCondition)))
@@ -656,18 +660,18 @@
         }
         // Добавить формулу
         function addFormula() {
-            var boolLeft = $('#NewFormulaType1').val();
+            var nameLeft = $('#NewFormulaType1').val();
             var IdLeft = $('#NewFormulaId1').val();
-            var boolAndOr = $('#NewFormulaOperator').val();
-            var boolRight = $('#NewFormulaType2').val();
+            var nameAndOr = $('#NewFormulaOperator').val();
+            var nameRight = $('#NewFormulaType2').val();
             var IdRight = $('#NewFormulaId2').val();
 
-            // JsAddFormula(bool boolLeft, int IdLeft, bool boolAndOr, bool boolRight, int IdRight)
+            // JsonResult JsAddFormula(string nameLeft, int IdLeft, string nameAndOr, string nameRight, int IdRight)
             let formData = new FormData();
-            formData.append("boolLeft", boolLeft);
+            formData.append("nameLeft", nameLeft);
             formData.append("IdLeft", IdLeft);
-            formData.append("boolAndOr", boolAndOr);
-            formData.append("boolRight", boolRight);
+            formData.append("nameAndOr", nameAndOr);
+            formData.append("nameRight", nameRight);
             formData.append("IdRight", IdRight);
 
             $.ajax({
@@ -1004,7 +1008,7 @@
             var $tbody = $('<tbody/>');
 
             $.each(formuls, function (index, value) {
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + BoolToQueryLeftRight(value.typeLeft) + '</td><td>' + value.IdLeft + '</td><td>' + BoolToOperatorLeftRight(value.AndOr) + '</td><td>' + BoolToQueryLeftRight(value.typeRight) + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.IdLeft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
 
             $tbl.append($thead);
