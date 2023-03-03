@@ -146,10 +146,17 @@
                     </div>
                     <div class="card-footer text-muted">
                         <form class="row row-cols-lg-auto g-3 align-items-center">
-                            <div class="col-12">
+                            <div class="col-12 d-none">
                                 <div class="input-group">
                                     <div class="input-group-text">ID колонки</div>
                                     <input type="text" class="form-control" id="NewConditionIdCol" placeholder="ID колонки">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Колонка</div>
+                                    <select id="NewConditionCol" class="form-select" name="ConditionCol" value="0" onchange="changeElementCondition();"></select>
                                 </div>
                             </div>
 
@@ -296,6 +303,7 @@
         getViews(0);
 
         changeGroup();
+
         console.log('OK');
 
         // --------------
@@ -923,17 +931,31 @@
             var bId = b.Id;
             return ((aId < bId) ? -1 : ((aId > bId) ? 1 : 0));
         }
+        function SortByGroup(a, b) {
+            var aId = a.group;
+            var bId = b.group;
+            return ((aId < bId) ? -1 : ((aId > bId) ? 1 : 0));
+        }
+        function SortByElement(a, b) {
+            var aId = a.element;
+            var bId = b.element;
+            return ((aId < bId) ? -1 : ((aId > bId) ? 1 : 0));
+        }
 
         // --------------------------------------------------------------------------------
         // Построить список колонок
         function DrawColumns(columns) {
-            columns.sort(SortById);
+            columns.sort(SortByElement);
+            columns.sort(SortByGroup);
 
             //var table = document.createElement('table');
             var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
             var $thead = $('<thead class="bg-primary text-white"/>');
             $thead.append('<tr><td> ID </td><td> Группа </td><td> Параметр </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
+
+            var values = [];
+            var names = [];
 
             $.each(columns, function (index, value) {
                 //console.log(index, value.Id, value.element, value.group);
@@ -954,6 +976,9 @@
                 //table.appendChild(tr);
                 $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.group + '</td><td>' + value.element + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delColumn('+value.Id+')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
+                values.push(value.Id);
+                names.push(value.Id + ': ' + value.group + ' . ' + value.element);
+
             });
 
             $tbl.append($thead);
@@ -962,6 +987,9 @@
             $("#BoardColumns").empty();
             //$('#Board').append(table);
             $('#BoardColumns').append($tbl);
+
+            recreateSelect('NewConditionCol', values, names);
+            changeElementCondition();
 
             console.log('Table OK');
 
@@ -1093,13 +1121,40 @@
             $('#NewColumnFile').hide();
 
             $('#NewColumn' + group).show();
-            setColumnElement($('#NewColumn' + group).val());
+            //setColumnElement($('#NewColumn' + group).val());
+            setTagValue('NewColumnElement', $('#NewColumn' + group).val());
             console.log('changeGroup()');
+        }
+
+        //...
+        function changeElementCondition() {
+            setTagValue('NewConditionIdCol', $('#NewConditionCol').val());
+        }
+
+        // Установить значение для любого тега
+        function setTagValue(IdTag, value) {
+            $('#'+IdTag).val(value);
         }
 
         // Установить значение параметра
         function setColumnElement(value) {
             $('#NewColumnElement').val(value);
+        }
+
+        // Переопределить список <select/>
+        function recreateSelect(IdSelect, values, names) {
+            console.log(IdSelect);
+            $('#'+IdSelect).empty();
+
+            if (names == null)
+                names = values;
+
+            if (names.length >= values.length) {
+                for (let i = 0; i < values.length; ++i) {
+                    $('#'+IdSelect).append(new Option(names[i], values[i]));
+                }
+            }
+            
         }
 
     </script>
