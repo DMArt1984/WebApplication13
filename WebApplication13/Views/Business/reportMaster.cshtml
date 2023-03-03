@@ -164,18 +164,18 @@
                                 <div class="input-group">
                                     <div class="input-group-text">Условие</div>
                                     @*<input type="text" class="form-control" id="NewConditionUse" placeholder="Условие">*@
-                                    <select id="NewConditionUse" class="form-select" name="Condition" value="0" asp-items="TextCondition"></select>
+                                    <select id="NewConditionUse" class="form-select" name="Condition" value="0" asp-items="TextCondition" onchange="changeUseCondition();"></select>
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="conval1" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Константа 1</div>
                                     <input type="text" class="form-control" id="NewConditionValue1" placeholder="Константа 1">
                                 </div>
                             </div>
 
-                            <div class="col-12">
+                            <div id="conval2" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Константа 2</div>
                                     <input type="text" class="form-control" id="NewConditionValue2" placeholder="Константа 2">
@@ -303,6 +303,7 @@
         getViews(0);
 
         changeGroup();
+        changeUseCondition();
 
         console.log('OK');
 
@@ -1130,6 +1131,45 @@
         function changeElementCondition() {
             setTagValue('NewConditionIdCol', $('#NewConditionCol').val());
         }
+
+        //...
+        function changeUseCondition() {
+            var ifname = $('#NewConditionUse').val();
+            var id1 = 'conval1';
+            var id2 = 'conval2';
+            switch (ifname) {
+                case 'empty':
+                case 'notempty':
+                    $('#' + id1).hide();
+                    $('#' + id2).hide();
+                    break;
+
+                case 'equals':
+                case 'notequals':
+                case 'gt':
+                case 'gte':
+                case 'lt':
+                case 'lte':
+                case 'contains':
+                case 'notcontains':
+                    $('#' + id1).show();
+                    $('#' + id2).hide();
+                    break;
+
+                case 'between':
+                case 'notbetween':
+                    $('#' + id1).show();
+                    $('#' + id2).show();
+                    break;
+
+                default:
+                    $('#' + id1).hide();
+                    $('#' + id2).hide();
+                    break;
+            }
+        }
+
+        // -------------------------------------------------
 
         // Установить значение для любого тега
         function setTagValue(IdTag, value) {
