@@ -297,6 +297,9 @@
 
     <script type="text/javascript">
 
+        var col_values = [];
+        var col_names = [];
+
         getColumns(0);
         getConditions(0);
         getFormuls(0);
@@ -305,6 +308,9 @@
         changeGroup();
         changeUseCondition();
         changeLeftAndRight();
+
+
+        get_colName(0, 'NewConditionCol'); // test
 
         console.log('OK');
 
@@ -323,7 +329,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -333,7 +339,7 @@
                     // your callback here
                     //console.log(data);
                     //console.log(data.result);
-                    console.log(data.columns);
+                    //console.log(data.columns);
                     DrawColumns(data.columns);
 
                 },
@@ -364,7 +370,7 @@
         function addColumn() {
             var group = $('#NewColumnGroup').val();
             var element = $('#NewColumnElement').val();
-            console.log(group, element);
+            //console.log(group, element);
 
             // JsAddColumn(string nameGroup, string element)
             let formData = new FormData();
@@ -380,7 +386,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -414,7 +420,7 @@
         }
         // Удалить колонку
         function delColumn(Id) {
-            console.log(Id);
+            //console.log(Id);
 
             // JsDelColumn(int Id = 0)
             let formData = new FormData();
@@ -429,7 +435,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -476,7 +482,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -486,7 +492,7 @@
                     // your callback here
                     //console.log(data);
                     //console.log(data.result);
-                    console.log(data.conditions);
+                    //console.log(data.conditions);
                     DrawConditions(data.conditions);
 
                 },
@@ -536,7 +542,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -570,7 +576,7 @@
         }
         // Удалить условие
         function delCondition(Id) {
-            console.log(Id);
+            //console.log(Id);
 
             // JsDelColumn(int Id = 0)
             let formData = new FormData();
@@ -585,7 +591,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -632,7 +638,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -642,7 +648,7 @@
                     // your callback here
                     //console.log(data);
                     //console.log(data.result);
-                    console.log(data.formuls);
+                    //console.log(data.formuls);
                     DrawFormuls(data.formuls);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -693,7 +699,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -727,7 +733,7 @@
         }
         // Удалить формулу
         function delFormula(Id) {
-            console.log(Id);
+            //console.log(Id);
 
             // JsDelColumn(int Id = 0)
             let formData = new FormData();
@@ -742,7 +748,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -789,7 +795,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -799,7 +805,7 @@
                     // your callback here
                     //console.log(data);
                     //console.log(data.result);
-                    console.log(data.views);
+                    //console.log(data.views);
                     DrawViews(data.views);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -844,7 +850,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -878,7 +884,7 @@
         }
         // Удалить представление
         function delView(Id) {
-            console.log(Id);
+            //console.log(Id);
 
             // JsDelColumn(int Id = 0)
             let formData = new FormData();
@@ -893,7 +899,7 @@
                         myXhr.upload.onprogress = function (evt) {
                             if (evt.lengthComputable) {
                                 var percentComplete = parseInt((evt.loaded / evt.total) * 100);
-                                console.log("Загрузка: " + percentComplete + "% выполнено")
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
                             }
                         };
                     }
@@ -945,6 +951,39 @@
         }
 
         // --------------------------------------------------------------------------------
+        
+
+        // Получить значение по ID
+        function get_colName(Id) {
+            console.log('>>-> ', col_names);
+            var index = col_values.indexOf(Id);
+            if (index >= 0 && col_names.length > index) {
+                return col_names[index];
+            }
+            return Id;
+        }
+
+        // Получить text по value для SELECT
+        //function get_colName(value, IdSelect) {
+        //    sel = $('#' + IdSelect);
+        //    //console.log(value, IdSelect, sel);
+        //    var len = $('#' + IdSelect+' option').length;
+        //    console.log(len);
+        //    for (let i = 0; i < len; i++) {
+        //        //if (sel.options[i].val() == value) {
+        //        //console.log(sel.options[i].text);
+        //            //return sel.options[i].text;
+        //        //}
+        //    }
+        //    $('#' + IdSelect + ' option').each(function () {
+        //        console.log(this.text+'>');
+        //    });
+        //    //console.log('get_colName ERR(');
+        //    return value;
+        //}
+
+        // --------------------------------------------------------------------------------
+
         // Построить список колонок
         function DrawColumns(columns) {
             columns.sort(SortByElement);
@@ -956,8 +995,8 @@
             $thead.append('<tr><td> ID </td><td> Группа </td><td> Параметр </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
 
-            var values = [];
-            var names = [];
+            values = [];
+            names = [];
 
             $.each(columns, function (index, value) {
                 //console.log(index, value.Id, value.element, value.group);
@@ -982,6 +1021,9 @@
                 names.push(value.Id + ': ' + value.group + ' . ' + value.element);
 
             });
+
+            col_values = values;
+            col_names = names;
 
             $tbl.append($thead);
             $tbl.append($tbody);
@@ -1016,7 +1058,7 @@
                 if (value.value2 == null) {
                     value.value2 = "";
                 }
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.IdColumn + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_colName(value.IdColumn) + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
 
             $tbl.append($thead);
