@@ -297,9 +297,17 @@
 
     <script type="text/javascript">
 
+        // Колонки
         var col_values = [];
         var col_names = [];
+        var col_list = [];
 
+        // Условия
+        var cnd_values = [];
+        var cnd_names = [];
+        var cnd_list = [];
+
+        // Поехали
         getColumns(0);
         //getConditions(0);
         //getFormuls(0);
@@ -954,12 +962,41 @@
 
         // Получить значение по ID
         function get_colName(Id) {
-            //console.log('>>-> ', col_names);
-            var index = col_values.indexOf(Id);
-            if (index >= 0 && col_names.length > index) {
-                return col_names[index];
+            //var index = col_values.indexOf(Id);
+            //if (index >= 0 && col_names.length > index) {
+            //    return col_names[index];
+            //}
+            //return Id;
+            return getValueListB(Id, col_values, col_names);
+        }
+
+        // Получить значение из списка Б, по ключу из списка А
+        function getValueListB(valueProp, listA, listB) {
+            var index = listA.indexOf(valueProp);
+            if (index >= 0 && listB.length > index) {
+                return listB[index];
+            }
+            return valueProp;
+        }
+
+        // Получить текстовое описание объекта (Колонка) через поиск по его ID
+        function get_textColumn(Id) {
+            var item = col_list.find(obj => {
+                return obj.Id === Id
+            })
+            if (item != null) {
+                //return item.Id +') '+ item.group +'.'+item.element;
+                return combine_textColumn(item.Id, item.group, item.element);
             }
             return Id;
+        }
+
+        function combine_textColumn(Id, group, element) {
+            return Id + ': ' + group + '.' + element;
+        }
+
+        function combine_textCondition(Id, IdColumn, cond, value1, value2) {
+            return Id + ': ' + get_colName(IdColumn) + ' ' + cond + ' ('+value1+','+value2+')';
         }
 
         // Получить text по value для SELECT
@@ -998,8 +1035,6 @@
             names = [];
 
             $.each(columns, function (index, value) {
-                //console.log(index, value.Id, value.element, value.group);
-
                 //var tr = document.createElement('tr');
                 //var td1 = document.createElement('td');
                 //var td2 = document.createElement('td');
@@ -1017,10 +1052,11 @@
                 $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.group + '</td><td>' + value.element + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delColumn('+value.Id+')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
                 values.push(value.Id);
-                names.push(value.Id + ': ' + value.group + ' . ' + value.element);
+                names.push(combine_textColumn(value.Id, value.group, value.element));
 
             });
 
+            col_list = columns;
             col_values = values;
             col_names = names;
 
@@ -1045,6 +1081,9 @@
             $thead.append('<tr><td> ID </td><td> ID колонки </td><td> Условие </td><td> Константа 1 </td><td> Константа 2 </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
 
+            values = [];
+            names = [];
+
             $.each(conditions, function (index, value) {
                 if (value.value1 == null) {
                     value.value1 = "";
@@ -1054,7 +1093,14 @@
                     value.value2 = "";
                 }
                 $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_colName(value.IdColumn) + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+
+                values.push(value.Id);
+                names.push(combine_textCondition(value.Id, value.IdColumn, value.condition, value.value1, value.value2));
             });
+
+            cnd_list = conditions;
+            cnd_values = values;
+            cnd_names = names;
 
             $tbl.append($thead);
             $tbl.append($tbody);
