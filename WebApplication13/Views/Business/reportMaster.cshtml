@@ -301,16 +301,13 @@
         var col_names = [];
 
         getColumns(0);
-        getConditions(0);
-        getFormuls(0);
-        getViews(0);
+        //getConditions(0);
+        //getFormuls(0);
+        //getViews(0);
 
-        changeGroup();
-        changeUseCondition();
-        changeLeftAndRight();
-
-
-        get_colName(0, 'NewConditionCol'); // test
+        //changeGroup();
+        //changeUseCondition();
+        //changeLeftAndRight();
 
         console.log('OK');
 
@@ -341,6 +338,7 @@
                     //console.log(data.result);
                     //console.log(data.columns);
                     DrawColumns(data.columns);
+                    getConditions(0); // далее...
 
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -494,7 +492,7 @@
                     //console.log(data.result);
                     //console.log(data.conditions);
                     DrawConditions(data.conditions);
-
+                    getFormuls(0); // далее...
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // handle error
@@ -650,6 +648,7 @@
                     //console.log(data.result);
                     //console.log(data.formuls);
                     DrawFormuls(data.formuls);
+                    getViews(0);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     // handle error
@@ -955,7 +954,7 @@
 
         // Получить значение по ID
         function get_colName(Id) {
-            console.log('>>-> ', col_names);
+            //console.log('>>-> ', col_names);
             var index = col_values.indexOf(Id);
             if (index >= 0 && col_names.length > index) {
                 return col_names[index];
@@ -1029,14 +1028,12 @@
             $tbl.append($tbody);
 
             $("#BoardColumns").empty();
-            //$('#Board').append(table);
             $('#BoardColumns').append($tbl);
 
+            // +++
             recreateSelect('NewConditionCol', values, names);
             changeElementCondition();
-
-            console.log('Table OK');
-
+            changeGroup();
         }
 
         // Построить список условий
@@ -1047,8 +1044,6 @@
             var $thead = $('<thead class="bg-primary text-white"/>');
             $thead.append('<tr><td> ID </td><td> ID колонки </td><td> Условие </td><td> Константа 1 </td><td> Константа 2 </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
-
-            
 
             $.each(conditions, function (index, value) {
                 if (value.value1 == null) {
@@ -1067,7 +1062,8 @@
             $("#BoardConditions").empty();
             $('#BoardConditions').append($tbl);
 
-            console.log('Table OK');
+            //+++
+            changeUseCondition();
         }
 
         // Построить список формул
@@ -1089,7 +1085,8 @@
             $("#BoardFormuls").empty();
             $('#BoardFormuls').append($tbl);
 
-            console.log('Table OK');
+            // +++
+            changeLeftAndRight();
         }
 
         // Построить список представлений
@@ -1165,9 +1162,7 @@
             $('#NewColumnFile').hide();
 
             $('#NewColumn' + group).show();
-            //setColumnElement($('#NewColumn' + group).val());
             setTagValue('NewColumnElement', $('#NewColumn' + group).val());
-            console.log('changeGroup()');
         }
 
         //...
