@@ -2,18 +2,48 @@
 @{
     ViewData["Title"] = "reportMaster";
 
+    string BoolToQueryLeftRight(string value)
+    {
+        if (value == QueryLeftRight.Formula.ToString())
+        {
+            return "Выборка";
+        }
+        else if (value == QueryLeftRight.Condition.ToString())
+        {
+            return "Фильтр";
+        } else
+        {
+            return "Нет";
+        }
+    }
+
+    string BoolToOperatorLeftRight(string  value)
+    {
+        if (value == OperatorLeftRight.AND.ToString())
+        {
+            return "И";
+        }
+        else if (value == OperatorLeftRight.OR.ToString())
+        {
+            return "ИЛИ";
+        } else
+        {
+            return "-";
+        }
+    }
+
     // ------- Списки -------
 
     List<SelectListItem> TextAndOr = new List<SelectListItem>();
     foreach (string title in Enum.GetNames(typeof(OperatorLeftRight)))
     {
-        TextAndOr.Add(new SelectListItem { Value = title, Text = title });
+        TextAndOr.Add(new SelectListItem { Value = title, Text = BoolToOperatorLeftRight(title) });
     }
 
     List<SelectListItem> TextLeftRight = new List<SelectListItem>();
     foreach (string title in Enum.GetNames(typeof(QueryLeftRight)))
     {
-        TextLeftRight.Add(new SelectListItem { Value = title, Text = title });
+        TextLeftRight.Add(new SelectListItem { Value = title, Text = BoolToQueryLeftRight(title) });
     }
 
     List<SelectListItem> TextCondition = new List<SelectListItem>();
@@ -76,12 +106,12 @@
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#custom-profile" role="tab" aria-selected="false">
-                <i class="fas fa-filter me-1 align-middle"></i> <span class="d-none d-md-inline-block">Условия</span>
+                <i class="fas fa-filter me-1 align-middle"></i> <span class="d-none d-md-inline-block">Фильтры</span>
             </a>
         </li>
         <li class="nav-item">
             <a class="nav-link" data-bs-toggle="tab" href="#custom-messages" role="tab" aria-selected="false">
-                <i class="fas fa-pause me-1 align-middle"></i> <span class="d-none d-md-inline-block">Формулы</span>
+                <i class="fas fa-pause me-1 align-middle"></i> <span class="d-none d-md-inline-block">Выборки</span>
             </a>
         </li>
         <li class="nav-item">
@@ -136,10 +166,10 @@
         </div>
         <div class="tab-pane" id="custom-profile" role="tabpanel">
             <p class="mb-0">
-                <!-- Условия -->
+                <!-- Условия (Фильтры) -->
                 <div class="card">
                     @*<div class="card-header">
-                        Условия
+                        Условия (Фильтры)
                     </div>*@
                     <div id="BoardConditions" class="card-body">
 
@@ -193,10 +223,10 @@
         </div>
         <div class="tab-pane" id="custom-messages" role="tabpanel">
             <p class="mb-0">
-                <!-- Формула -->
+                <!-- Формула (Выборка) -->
                 <div class="card">
                     @*<div class="card-header">
-                        Формула
+                        Формула (Выборка)
                     </div>*@
                     <div id="BoardFormuls" class="card-body">
 
@@ -213,7 +243,7 @@
 
                             <div id="colformulaId1" class="col-12">
                                 <div class="input-group">
-                                    <div class="input-group-text">ID слева</div>
+                                    <div class="input-group-text">Слева</div>
                                     <input type="text" class="form-control d-none" id="NewFormulaId1" placeholder="ID слева">
                                     <select id="LeftFromCondition" class="form-select" name="LeftFromCondition" value="0" onchange="changeLeftCondition()"></select>
                                     <select id="LeftFromFormula" class="form-select" name="LeftFromFormula" value="0" onchange="changeLeftFormula()"></select>
@@ -238,7 +268,7 @@
 
                             <div id="colformulaId2" class="col-12">
                                 <div class="input-group">
-                                    <div class="input-group-text">ID справа</div>
+                                    <div class="input-group-text">Справа</div>
                                     <input type="text" class="form-control d-none" id="NewFormulaId2" placeholder="ID справа">
                                     <select id="RightFromCondition" class="form-select" name="RightFromCondition" value="0" onchange="changeRightCondition()"></select>
                                     <select id="RightFromFormula" class="form-select" name="RightFromFormula" value="0" onchange="changeRightFormula()"></select>
@@ -268,8 +298,9 @@
                         <form class="row row-cols-lg-auto g-3 align-items-center">
                             <div class="col-12">
                                 <div class="input-group">
-                                    <div class="input-group-text">ID формулы</div>
-                                    <input type="text" class="form-control" id="NewViewFormula" placeholder="ID формулы">
+                                    <div class="input-group-text">Выборка</div>
+                                    <input type="text" class="form-control d-none" id="NewViewFormula" placeholder="ID формулы">
+                                    <select id="TextViewFormula" class="form-select" name="TextViewFormula" value="0" onchange="changeViewFormula();"></select>
                                 </div>
                             </div>
 
@@ -306,12 +337,12 @@
         var col_names = [];
         var col_list = [];
 
-        // Условия
+        // Условия (фильтры)
         var cnd_values = [];
         var cnd_names = [];
         var cnd_list = [];
 
-        // Формулы
+        // Формулы (выборки)
         var frm_values = [];
         var frm_names = [];
         var frm_list = [];
@@ -1033,10 +1064,23 @@
             return Id;
         }
 
+        // ...
+        function get_textFormula(Id) {
+            var item = frm_list.find(obj => {
+                return obj.Id === Id
+            })
+            if (item != null) {
+                return combine_textFormula(item.Id, item.typeLeft, item.IdLeft, item.AndOr, item.typeRight, item.IdRight);
+            }
+            return Id;
+        }
+
+        // ...
         function combine_textColumn(Id, group, element) {
             return Id + ': ' + group + '.' + element;
         }
 
+        // ...
         function combine_textCondition(Id, IdColumn, cond, value1, value2) {
             var txt = '';
             if (value1 != "") {
@@ -1209,6 +1253,7 @@
             changeLeftAndRight();
             recreateSelect('LeftFromFormula', values, names);
             recreateSelect('RightFromFormula', values, names);
+            recreateSelect('TextViewFormula', values, names);
         }
 
         // Построить список представлений
@@ -1218,7 +1263,7 @@
             //var table = document.createElement('table');
             var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
             var $thead = $('<thead class="bg-primary text-white"/>');
-            $thead.append('<tr><td> ID </td><td> ID формулы </td><td> Колонки </td><td> Команды </td></tr>');
+            $thead.append('<tr><td> ID </td><td> ID выборки </td><td> Колонки </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
             
             $.each(views, function (index, value) {
@@ -1238,7 +1283,7 @@
                 //tr.appendChild(td2);
                 //tr.appendChild(td3);
                 //table.appendChild(tr);
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.IdFormula + '</td><td>' + value.IdColumns + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delView(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_textFormula(value.IdFormula) + '</td><td>' + value.IdColumns + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delView(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
             });
 
@@ -1249,6 +1294,9 @@
             //$('#Board').append(table);
             $('#BoardViews').append($tbl);
 
+            // +++
+            changeViewFormula();
+
             console.log('Table OK');
 
         }
@@ -1257,9 +1305,9 @@
 
         function BoolToQueryLeftRight(value) {
             if (value) {
-                return "Формула";
+                return "Выборка";
             } else {
-                return "Условие";
+                return "Фильтр";
             }
         }
 
@@ -1340,6 +1388,10 @@
         }
         function changeRightCondition() {
             setTagValue('NewFormulaId2', $('#RightFromCondition').val());
+        }
+
+        function changeViewFormula() {
+            setTagValue('NewViewFormula', $('#TextViewFormula').val());
         }
 
         //...
