@@ -215,6 +215,8 @@
                                 <div class="input-group">
                                     <div class="input-group-text">ID слева</div>
                                     <input type="text" class="form-control" id="NewFormulaId1" placeholder="ID слева">
+                                    <select id="LeftFromCondition" class="form-select" name="LeftFromCondition" value="0" onchange=""></select>
+                                    <select id="LeftFromFormula" class="form-select" name="LeftFromFormula" value="0" onchange=""></select>
                                 </div>
                             </div>
 
@@ -238,6 +240,8 @@
                                 <div class="input-group">
                                     <div class="input-group-text">ID справа</div>
                                     <input type="text" class="form-control" id="NewFormulaId2" placeholder="ID справа">
+                                    <select id="RightFromCondition" class="form-select" name="RightFromCondition" value="0" onchange=""></select>
+                                    <select id="RightFromFormula" class="form-select" name="RightFromFormula" value="0" onchange=""></select>
                                 </div>
                             </div>
 
@@ -306,6 +310,11 @@
         var cnd_values = [];
         var cnd_names = [];
         var cnd_list = [];
+
+        // Формулы
+        var frm_values = [];
+        var frm_names = [];
+        var frm_list = [];
 
         // Поехали
         getColumns(0);
@@ -958,7 +967,40 @@
         }
 
         // --------------------------------------------------------------------------------
-        
+
+        // Перевод условий
+        function conditionToRUS(ifname) {
+            switch (ifname) {
+                case 'empty':
+                    return 'пусто';
+                case 'notempty':
+                    return 'не пусто';
+                case 'equals':
+                    return '=';
+                case 'notequals':
+                    return '<>';
+                case 'gt':
+                    return '>';
+                case 'gte':
+                    return '>=';
+                case 'lt':
+                    return '<';
+                case 'lte':
+                    return '<=';
+                case 'contains':
+                    return 'содержит';
+                case 'notcontains':
+                    return 'не содержит';
+                case 'between':
+                    return 'между';
+                case 'notbetween':
+                    return 'вне';
+                default:
+                    return ifname;
+            }
+        }
+
+        // --------------------------------------------------------------------------------
 
         // Получить значение по ID
         function get_colName(Id) {
@@ -996,7 +1038,18 @@
         }
 
         function combine_textCondition(Id, IdColumn, cond, value1, value2) {
-            return Id + ': ' + get_colName(IdColumn) + ' ' + cond + ' ('+value1+','+value2+')';
+            var txt = '';
+            if (value1 != "") {
+                txt = txt + value1;
+                if (value2 != "") {
+                    txt = '[' + txt + ';' + value2 + ']';
+                }
+            }
+            return Id + ': ' + get_colName(IdColumn) + ' ' + conditionToRUS(cond) + ' ' + txt;
+        }
+
+        function combine_textFormula(Id, typeLeft, IdLeft, AndOr, typeRight, IdRight) {
+            return Id + ': ' + typeLeft + '-' + IdLeft + ' ' + AndOr + ' ' + typeRight + '-' + IdRight;
         }
 
         // Получить text по value для SELECT
@@ -1092,7 +1145,7 @@
                 if (value.value2 == null) {
                     value.value2 = "";
                 }
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_colName(value.IdColumn) + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_colName(value.IdColumn) + '</td><td>' + conditionToRUS(value.condition) + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
                 values.push(value.Id);
                 names.push(combine_textCondition(value.Id, value.IdColumn, value.condition, value.value1, value.value2));
@@ -1110,6 +1163,8 @@
 
             //+++
             changeUseCondition();
+            recreateSelect('LeftFromCondition', values, names);
+            recreateSelect('RightFromCondition', values, names);
         }
 
         // Построить список формул
@@ -1254,10 +1309,28 @@
         }
 
         //...
+        function FCdisplay(LR, value) {
+            if (value == 'Condition') {
+                $('#' + LR + 'FromCondition').show();
+                $('#' + LR + 'FromFormula').hide();
+            }
+            else if (value == 'Formula') {
+                $('#' + LR + 'FromCondition').hide();
+                $('#' + LR + 'FromFormula').show();
+            } else {
+                $('#' + LR + 'FromCondition').hide();
+                $('#' + LR + 'FromFormula').hide();
+            }
+        }
+
+        //...
         function changeLeftAndRight() {
             var type1 = $('#NewFormulaType1').val();
             var type2 = $('#NewFormulaType2').val();
             var operator = $('#NewFormulaOperator').val();
+
+            FCdisplay('Left', type1);
+            FCdisplay('Right', type2);
 
             switch (type1) {
                 case 'Condition':
@@ -1315,6 +1388,8 @@
             }
             
         }
+
+        
 
     </script>
 }
