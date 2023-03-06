@@ -214,9 +214,9 @@
                             <div id="colformulaId1" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">ID слева</div>
-                                    <input type="text" class="form-control" id="NewFormulaId1" placeholder="ID слева">
-                                    <select id="LeftFromCondition" class="form-select" name="LeftFromCondition" value="0" onchange=""></select>
-                                    <select id="LeftFromFormula" class="form-select" name="LeftFromFormula" value="0" onchange=""></select>
+                                    <input type="text" class="form-control d-none" id="NewFormulaId1" placeholder="ID слева">
+                                    <select id="LeftFromCondition" class="form-select" name="LeftFromCondition" value="0" onchange="changeLeftCondition()"></select>
+                                    <select id="LeftFromFormula" class="form-select" name="LeftFromFormula" value="0" onchange="changeLeftFormula()"></select>
                                 </div>
                             </div>
 
@@ -239,9 +239,9 @@
                             <div id="colformulaId2" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">ID справа</div>
-                                    <input type="text" class="form-control" id="NewFormulaId2" placeholder="ID справа">
-                                    <select id="RightFromCondition" class="form-select" name="RightFromCondition" value="0" onchange=""></select>
-                                    <select id="RightFromFormula" class="form-select" name="RightFromFormula" value="0" onchange=""></select>
+                                    <input type="text" class="form-control d-none" id="NewFormulaId2" placeholder="ID справа">
+                                    <select id="RightFromCondition" class="form-select" name="RightFromCondition" value="0" onchange="changeRightCondition()"></select>
+                                    <select id="RightFromFormula" class="form-select" name="RightFromFormula" value="0" onchange="changeRightFormula()"></select>
                                 </div>
                             </div>
 
@@ -1049,7 +1049,14 @@
         }
 
         function combine_textFormula(Id, typeLeft, IdLeft, AndOr, typeRight, IdRight) {
-            return Id + ': ' + typeLeft + '-' + IdLeft + ' ' + AndOr + ' ' + typeRight + '-' + IdRight;
+            var txt = Id + ': ';
+            if (typeLeft != 'None') {
+                txt = txt + typeLeft + '-' + IdLeft;
+                if (AndOr != 'END' && typeRight != 'None') {
+                    txt = txt + ' ' + AndOr + ' ' + typeRight + '-' + IdRight;
+                }
+            }
+            return txt;
         }
 
         // Получить text по value для SELECT
@@ -1145,7 +1152,7 @@
                 if (value.value2 == null) {
                     value.value2 = "";
                 }
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_colName(value.IdColumn) + '</td><td>' + conditionToRUS(value.condition) + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_colName(value.IdColumn) + '</td><td>' + value.condition + '</td><td>' + value.value1 + '</td><td>' + value.value2 + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delCondition(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
                 values.push(value.Id);
                 names.push(combine_textCondition(value.Id, value.IdColumn, value.condition, value.value1, value.value2));
@@ -1176,6 +1183,18 @@
             $thead.append('<tr><td> ID </td><td> Тип слева </td><td> ID слева </td><td> Оператор </td><td> Тип справа </td><td> ID справа </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
 
+            values = [];
+            names = [];
+
+            $.each(formuls, function (index, value) {
+                values.push(value.Id);
+                names.push(combine_textFormula(value.Id, value.typeLeft, value.IdLeft, value.AndOr, value.typeRight, value.IdRight));
+            });
+
+            frm_list = formuls;
+            frm_values = values;
+            frm_names = names;
+
             $.each(formuls, function (index, value) {
                 $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.IdLeft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
@@ -1188,6 +1207,8 @@
 
             // +++
             changeLeftAndRight();
+            recreateSelect('LeftFromFormula', values, names);
+            recreateSelect('RightFromFormula', values, names);
         }
 
         // Построить список представлений
@@ -1308,6 +1329,19 @@
             }
         }
 
+        function changeLeftFormula() {
+            setTagValue('NewFormulaId1', $('#LeftFromFormula').val());
+        }
+        function changeLeftCondition() {
+            setTagValue('NewFormulaId1', $('#LeftFromCondition').val());
+        }
+        function changeRightFormula() {
+            setTagValue('NewFormulaId2', $('#RightFromFormula').val());
+        }
+        function changeRightCondition() {
+            setTagValue('NewFormulaId2', $('#RightFromCondition').val());
+        }
+
         //...
         function FCdisplay(LR, value) {
             if (value == 'Condition') {
@@ -1331,6 +1365,20 @@
 
             FCdisplay('Left', type1);
             FCdisplay('Right', type2);
+
+            if (type1 == 'Condition') {
+                changeLeftCondition();
+            }
+            else if (type1 == 'Formula') {
+                changeLeftFormula();
+            }
+
+            if (type2 == 'Condition') {
+                changeRightCondition();
+            }
+            else if (type2 == 'Formula') {
+                changeRightFormula();
+            }
 
             switch (type1) {
                 case 'Condition':
