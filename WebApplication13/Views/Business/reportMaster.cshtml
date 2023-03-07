@@ -307,6 +307,7 @@
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Колонки</div>
+                                    <select id="AddViewColumns" class="form-select" name="AddViewColumns" value="0" onchange="changeViewColumns();"></select>
                                     <input type="text" class="form-control" id="NewViewColumns" placeholder="Колонки">
                                 </div>
                             </div>
@@ -1172,6 +1173,9 @@
 
             // +++
             recreateSelect('NewConditionCol', values, names);
+            var vx = [0];
+            var nx = ['>'];
+            recreateSelect('AddViewColumns', vx.concat(values), nx.concat(names));
             changeElementCondition();
             changeGroup();
         }
@@ -1216,6 +1220,7 @@
             changeUseCondition();
             recreateSelect('LeftFromCondition', values, names);
             recreateSelect('RightFromCondition', values, names);
+            
         }
 
         // Построить список формул
@@ -1392,6 +1397,21 @@
 
         function changeViewFormula() {
             setTagValue('NewViewFormula', $('#TextViewFormula').val());
+        }
+
+        function changeViewColumns() {
+            var tx = '';
+            var prev = $('#NewViewColumns').val();
+            var add = $('#AddViewColumns').val();
+            if (add == 0) {
+                add = '>';
+            }
+            if (prev != '') {
+                tx = tx + ' ';
+            }
+  
+            tx = tx + add;
+            setTagValue('NewViewColumns', prev + tx);
         }
 
         //...
