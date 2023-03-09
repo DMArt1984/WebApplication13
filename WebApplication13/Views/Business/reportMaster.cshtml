@@ -325,6 +325,55 @@
 
 </div>
 
+<div class="row">
+    <label for="exampleDataList" class="col-md-2 col-form-label">Datalists</label>
+    <div class="col-md-10">
+        <input class="form-control" list="datalistOptions1" id="exampleDataList" placeholder="Type to search...">
+        <datalist id="datalistOptions1">
+            <option value="San Francisco 1">
+            </option>
+            <option value="New York 2">
+            </option>
+            <option value="Seattle 3">
+            </option>
+            <option value="Los Angeles 4">
+            </option>
+            <option value="Chicago 5">
+            </option>
+            <option value="San Francisco 6">
+            </option>
+            <option value="New York 7">
+            </option>
+            <option value="Seattle 8">
+            </option>
+            <option value="Los Angeles 9">
+            </option>
+            <option value="Chicago 10">
+            </option>
+            <option value="San Francisco 11">
+            </option>
+            <option value="New York 12">
+            </option>
+            <option value="Seattle 13">
+            </option>
+            <option value="Los Angeles 14">
+            </option>
+            <option value="Chicago 15">
+            </option>
+            <option value="San Francisco 16">
+            </option>
+            <option value="New York 17">
+            </option>
+            <option value="Seattle 18">
+            </option>
+            <option value="Los Angeles 19">
+            </option>
+            <option value="Chicago 20">
+            </option>
+        </datalist>
+    </div>
+</div>
+
 
 
 
@@ -335,6 +384,7 @@
 
         // Подстановки
         var substitutions = null;
+        var sublist = [];
 
         // Колонки
         var col_values = [];
@@ -362,6 +412,8 @@
         //changeUseCondition();
         //changeLeftAndRight();
 
+        //recreateDatalist('datalistOptions1', [1,2,3,4,5,6,7,8,9])
+
         console.log('OK');
 
         // --------------
@@ -388,7 +440,11 @@
                 success: function (data) {
                     // your callback here
                     substitutions = data.it;
-                    console.log(substitutions);
+                    //console.log(substitutions);
+
+                    //var x = getUniqueList('SO', 'Title'); // тест
+                    //console.log(x);
+
                     getColumns(0); // далее...
 
                 },
@@ -1193,6 +1249,7 @@
 
             values = [];
             names = [];
+            sublist = [];
 
             $.each(columns, function (index, value) {
                 //var tr = document.createElement('tr');
@@ -1214,7 +1271,11 @@
                 values.push(value.Id);
                 names.push(combine_textColumn(value.Id, value.group, value.element));
 
+                sublist.push(getUniqueList(value.group, value.element));
+
             });
+
+            console.log(sublist); // тест
 
             col_list = columns;
             col_values = values;
@@ -1363,6 +1424,19 @@
 
         // ----------------------------------------
 
+        // Получить список уникальных значений для выбора
+        function getUniqueList(group, element) {
+            var myList = [];
+            try {
+                myList = substitutions[group][element];
+            } catch (err) {
+
+            }
+            return myList;
+        }
+
+        // ----------------------------------------
+
         function BoolToQueryLeftRight(value) {
             if (value) {
                 return "Выборка";
@@ -1397,7 +1471,11 @@
 
         //...
         function changeElementCondition() {
-            setTagValue('NewConditionIdCol', $('#NewConditionCol').val());
+            var index = $('#NewConditionCol').val();
+            setTagValue('NewConditionIdCol', index);
+            // подстановки
+            console.log('changeElementCondition');
+            console.log(index);
         }
 
         //...
@@ -1561,10 +1639,17 @@
                     $('#'+IdSelect).append(new Option(names[i], values[i]));
                 }
             }
-            
         }
 
-        
+        // Переопределить список <list/>
+        function recreateDatalist(IdSelect, values) {
+            console.log(IdSelect);
+            $('#' + IdSelect).empty();
+
+            for (let i = 0; i < values.length; ++i) {
+                $('#' + IdSelect).append(new Option(values[i]));
+            }
+        }
 
     </script>
 }
