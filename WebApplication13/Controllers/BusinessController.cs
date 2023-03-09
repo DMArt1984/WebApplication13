@@ -2644,6 +2644,9 @@ namespace FactPortal.Controllers
             //var x2 = RepAddCondition(1, RepCondition.contains, "99");
             //var x3 = RepAddFormula(QueryLeftRight.Formula, 1, OperatorLeftRight.OR, QueryLeftRight.Condition, 2);
 
+            GetUniqueElements("hello", "good");
+
+
             return View();
         }
 
@@ -2891,6 +2894,45 @@ namespace FactPortal.Controllers
                 return _business.RepFormula.FirstOrDefault(x => x.Id == Id) != null;
 
             return false;
+        }
+
+        public List<string> GetUniqueElements(string group, string element)
+        {
+            //RepGroup egroup = (RepGroup)Enum.Parse(typeof(RepGroup), group);
+            //bool result = Enum.TryParse(typeof(RepGroup), group, out (RepGroup)egroup);
+
+            switch (group)
+            {
+                case nameof(RepGroup.SO):
+                    switch(element)
+                    {
+                        case nameof(RepSO.ID):
+                            return _business.ServiceObjects.Select(x => x.Id.ToString()).Distinct().ToList();
+                            break;
+                        case nameof(RepSO.Title):
+                            break;
+                        case nameof(RepSO.Code):
+                            break;
+                        case nameof(RepSO.Description):
+                            break;
+                        case nameof(RepSO.LastWorkDT):
+                            break;
+                    }
+                    break;
+                case nameof(RepGroup.Work):
+                    break;
+                case nameof(RepGroup.Step):
+                    break;
+                case nameof(RepGroup.User):
+                    break;
+                case nameof(RepGroup.File):
+                    break;
+
+            }
+
+
+            return new List<string>();
+            
         }
 
         // ===== JSON JS ==================================================================
