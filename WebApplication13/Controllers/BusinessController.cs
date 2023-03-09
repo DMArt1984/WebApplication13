@@ -2644,7 +2644,7 @@ namespace FactPortal.Controllers
             //var x2 = RepAddCondition(1, RepCondition.contains, "99");
             //var x3 = RepAddFormula(QueryLeftRight.Formula, 1, OperatorLeftRight.OR, QueryLeftRight.Condition, 2);
 
-            GetUniqueElements("hello", "good");
+            //var x4 = JsonSubstitutions();
 
 
             return View();
@@ -2901,15 +2901,18 @@ namespace FactPortal.Controllers
             //RepGroup egroup = (RepGroup)Enum.Parse(typeof(RepGroup), group);
             //bool result = Enum.TryParse(typeof(RepGroup), group, out (RepGroup)egroup);
 
+            List<string> result = new List<string>();
+
             switch (group)
             {
                 case nameof(RepGroup.SO):
                     switch(element)
                     {
                         case nameof(RepSO.ID):
-                            return _business.ServiceObjects.Select(x => x.Id.ToString()).Distinct().ToList();
+                            result = _business.ServiceObjects.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepSO.Title):
+                            result = _business.ServiceObjects.Select(x => x.ObjectTitle).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepSO.Code):
                             break;
@@ -2920,22 +2923,142 @@ namespace FactPortal.Controllers
                     }
                     break;
                 case nameof(RepGroup.Work):
+                    switch (element)
+                    {
+                        case nameof(RepWork.ID):
+                            result = _business.Works.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepWork.Status):
+                            break;
+                        case nameof(RepWork.ReadySteps):
+                            break;
+                        case nameof(RepWork.StartDT):
+                            break;
+                        case nameof(RepWork.EndDT):
+                            break;
+                        case nameof(RepWork.Steps):
+                            break;
+                    }
                     break;
                 case nameof(RepGroup.Step):
+                    switch (element)
+                    {
+                        case nameof(RepStep.ID):
+                            result = _business.Steps.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepStep.Title):
+                            result = _business.Steps.Select(x => x.Title).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepStep.Description):
+                            result = _business.Steps.Select(x => x.Description).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepStep.Status):
+                            break;
+                        case nameof(RepStep.StartDT):
+                            break;
+                        case nameof(RepStep.EndDT):
+                            break;
+                        case nameof(RepStep.HasFiles):
+                            break;
+                    }
                     break;
                 case nameof(RepGroup.User):
+                    switch (element)
+                    {
+                        case nameof(RepUser.ID):
+                            result = _context.Users.Select(x => x.Id).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepUser.Name):
+                            result = _context.Users.Select(x => x.FullName).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepUser.Email):
+                            result = _context.Users.Select(x => x.Email).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepUser.Job):
+                            break;
+                        case nameof(RepUser.Phone):
+                            result = _context.Users.Select(x => x.PhoneNumber).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepUser.CountWorks):
+                            break;
+                    }
                     break;
                 case nameof(RepGroup.File):
+                    switch (element)
+                    {
+                        case nameof(RepFile.ID):
+                            result = _business.Files.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepFile.Name):
+                            result = _business.Files.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepFile.Type):
+                            result = _business.Files.Select(x => x.Description).Distinct().OrderBy(x => x).ToList();
+                            break;
+                        case nameof(RepFile.Description):
+                            break;
+                    }
                     break;
-
             }
-
-
-            return new List<string>();
-            
+            return result;
         }
 
         // ===== JSON JS ==================================================================
+
+        // Получить подстановки для элементов групп
+        public JsonResult JsonSubstitutions()
+        {
+            return new JsonResult(new
+            {
+                result = 0,
+                it = new
+                {
+                    SO = new
+                    {
+                        ID = GetUniqueElements("SO", "ID"),
+                        Title = GetUniqueElements("SO", "Title"),
+                        Code = GetUniqueElements("SO", "Code"),
+                        Description = GetUniqueElements("SO", "Description"),
+                        LastWorkDT = GetUniqueElements("SO", "LastWorkDT")
+                    },
+                    Work = new
+                    {
+                        ID = GetUniqueElements("Work", "ID"),
+                        Status = GetUniqueElements("Work", "Status"),
+                        ReadySteps = GetUniqueElements("Work", "ReadySteps"),
+                        StartDT = GetUniqueElements("Work", "StartDT"),
+                        EndDT = GetUniqueElements("Work", "EndDT"),
+                        Steps = GetUniqueElements("Work", "Steps")
+                    },
+                    Step = new
+                    {
+                        ID = GetUniqueElements("Step", "ID"),
+                        Title = GetUniqueElements("Step", "Title"),
+                        Description = GetUniqueElements("Step", "Description"),
+                        Status = GetUniqueElements("Step", "Status"),
+                        StartDT = GetUniqueElements("Step", "StartDT"),
+                        EndDT = GetUniqueElements("Step", "EndDT"),
+                        HasFiles = GetUniqueElements("Step", "HasFiles")
+                    },
+                    User = new
+                    {
+                        ID = GetUniqueElements("User", "ID"),
+                        Name = GetUniqueElements("User", "Name"),
+                        Email = GetUniqueElements("User", "Email"),
+                        Job = GetUniqueElements("User", "Phone"),
+                        CountWorks = GetUniqueElements("User", "CountWorks")
+                    },
+                    File = new
+                    {
+                        ID = GetUniqueElements("File", "ID"),
+                        Name = GetUniqueElements("File", "Name"),
+                        Type = GetUniqueElements("File", "Type"),
+                        Description = GetUniqueElements("File", "Description")
+                    }
+                }
+            });
+        }
+
         // --- Получить список колонок
         public JsonResult JsGetColumns(int Id = 0)
         {
@@ -3050,6 +3173,7 @@ namespace FactPortal.Controllers
             return new JsonResult(new { result = 0, Id = Id });
         }
 
+        
 
     }
 }

@@ -333,6 +333,9 @@
 
     <script type="text/javascript">
 
+        // Подстановки
+        var substitutions = null;
+
         // Колонки
         var col_values = [];
         var col_names = [];
@@ -349,7 +352,8 @@
         var frm_list = [];
 
         // Поехали
-        getColumns(0);
+        getSubstitutions();
+        //getColumns(0);
         //getConditions(0);
         //getFormuls(0);
         //getViews(0);
@@ -361,6 +365,57 @@
         console.log('OK');
 
         // --------------
+
+        // Получить подстановки для элементов групп
+        async function getSubstitutions() {
+            let formData = new FormData();
+
+            $.ajax({
+                type: "POST",
+                url: `${GetPathBase()}/Business/JsonSubstitutions`,
+                xhr: function () {
+                    var myXhr = $.ajaxSettings.xhr();
+                    if (myXhr.upload) {
+                        myXhr.upload.onprogress = function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = parseInt((evt.loaded / evt.total) * 100);
+                                //console.log("Загрузка: " + percentComplete + "% выполнено")
+                            }
+                        };
+                    }
+                    return myXhr;
+                },
+                success: function (data) {
+                    // your callback here
+                    substitutions = data.it;
+                    console.log(substitutions);
+                    getColumns(0); // далее...
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    // handle error
+                    alert("jqXHR.status " + jqXHR.status)
+                    //alert("etAllResponseHeaders() "+ jqXHR.getAllResponseHeaders())
+                    //alert("jqXHR.responseText "+ jqXHR.responseText)
+                    //alert("textStatus " + textStatus)
+                    //alert("errorThrown " + errorThrown)
+                },
+                async: true,
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+
+                },
+                complete: function () {
+
+                },
+                timeout: 60000
+            });
+        }
+
+        // ----------------
         // Загрузить список колонок
         async function getColumns(Id) {
             let formData = new FormData();
