@@ -1157,8 +1157,10 @@
 
         // Получить значение из списка Б, по ключу из списка А
         function getValueListB(valueProp, listA, listB) {
+            console.log(valueProp, listA, listB);
             var index = listA.indexOf(valueProp);
-            if (index >= 0 && listB.length > index) {
+            console.log('index=', index);
+            if (index > 0 && listB.length > index) {
                 return listB[index];
             }
             return valueProp;
@@ -1270,12 +1272,11 @@
 
                 values.push(value.Id);
                 names.push(combine_textColumn(value.Id, value.group, value.element));
-
                 sublist.push(getUniqueList(value.group, value.element));
 
             });
 
-            console.log(sublist); // тест
+            //console.log(sublist); // тест
 
             col_list = columns;
             col_values = values;
@@ -1471,11 +1472,16 @@
 
         //...
         function changeElementCondition() {
-            var index = $('#NewConditionCol').val();
-            setTagValue('NewConditionIdCol', index);
+            var ID = $('#NewConditionCol').val();
+            setTagValue('NewConditionIdCol', ID);
             // подстановки
-            console.log('changeElementCondition');
-            console.log(index);
+            //console.log('changeElementCondition');
+            //console.log(ID);
+            //console.log(col_values);
+            //console.log(sublist);
+            var dlist = getValueListB(parseInt(ID, 10), col_values, sublist);
+            console.log(dlist);
+            recreateDatalist('datalistOptions1', dlist);
         }
 
         //...
