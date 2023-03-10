@@ -237,7 +237,16 @@ namespace FactPortal.Models
         public List<myFiles> FileLinks { get; set; } // Файлы (10;11;12)
         public string StatusRus()
         {
-            switch (Status)
+            return StatusText.WorkStepInfo(Status); 
+        }
+
+    }
+
+    static public class StatusText
+    {
+        static public string WorkStepInfo(int value)
+        {
+            switch (value)
             {
                 case 0:
                     return "ожидание";
@@ -256,10 +265,25 @@ namespace FactPortal.Models
                 case 9:
                     return "выполнено";
                 default:
-                    return $"#{Status.ToString()}";
+                    return $"#{value.ToString()}";
             }
         }
+
+        static public List<string> AllWorkStepInfo()
+        {
+            List<string> mylist = new List<string>();
+            mylist.Add(WorkStepInfo(0));
+            mylist.Add(WorkStepInfo(1));
+            mylist.Add(WorkStepInfo(2));
+            mylist.Add(WorkStepInfo(3));
+            mylist.Add(WorkStepInfo(11));
+            mylist.Add(WorkStepInfo(5));
+            mylist.Add(WorkStepInfo(8));
+            mylist.Add(WorkStepInfo(9));
+            return mylist.OrderBy(x => x).ToList();
+        }
     }
+
 
     
 }

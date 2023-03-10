@@ -2935,6 +2935,7 @@ namespace FactPortal.Controllers
                             result = _business.Works.Select(x => x.Id).OrderBy(x => x).Select(x => x.ToString()).ToList();
                             break;
                         case nameof(RepWork.Status):
+                            result = new List<string>() { "ожидание", "пауза", "работа", "выполнено" };
                             break;
                         case nameof(RepWork.ReadySteps):
                             break;
@@ -2959,6 +2960,7 @@ namespace FactPortal.Controllers
                             result = _business.Steps.Select(x => x.Description).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepStep.Status):
+                            result = StatusText.AllWorkStepInfo();
                             break;
                         case nameof(RepStep.StartDT):
                             break;
