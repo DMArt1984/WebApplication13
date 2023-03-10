@@ -2909,16 +2909,22 @@ namespace FactPortal.Controllers
                     switch(element)
                     {
                         case nameof(RepSO.ID):
-                            result = _business.ServiceObjects.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            result = _business.ServiceObjects.Select(x => x.Id).OrderBy(x => x).Select(x => x.ToString()).ToList();
                             break;
                         case nameof(RepSO.Title):
                             result = _business.ServiceObjects.Select(x => x.ObjectTitle).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepSO.Code):
+                            result = _business.ServiceObjects.Select(x => x.ObjectCode).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepSO.Description):
+                            result = _business.ServiceObjects.Select(x => x.Description).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepSO.LastWorkDT):
+                            break;
+                        case nameof(RepSO.Position):
+                            //var Ids = _business.Claims.Where(x => x.ClaimType == "position").Select(x => x.ClaimValue);
+                            result = _business.Levels.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();
                             break;
                     }
                     break;
@@ -2926,7 +2932,7 @@ namespace FactPortal.Controllers
                     switch (element)
                     {
                         case nameof(RepWork.ID):
-                            result = _business.Works.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            result = _business.Works.Select(x => x.Id).OrderBy(x => x).Select(x => x.ToString()).ToList();
                             break;
                         case nameof(RepWork.Status):
                             break;
@@ -2944,7 +2950,7 @@ namespace FactPortal.Controllers
                     switch (element)
                     {
                         case nameof(RepStep.ID):
-                            result = _business.Steps.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            result = _business.Steps.Select(x => x.Id).OrderBy(x => x).Select(x => x.ToString()).ToList();
                             break;
                         case nameof(RepStep.Title):
                             result = _business.Steps.Select(x => x.Title).Distinct().OrderBy(x => x).ToList();
@@ -2966,7 +2972,7 @@ namespace FactPortal.Controllers
                     switch (element)
                     {
                         case nameof(RepUser.ID):
-                            result = _context.Users.Select(x => x.Id).Distinct().OrderBy(x => x).ToList();
+                            result = _context.Users.Select(x => x.Id).OrderBy(x => x).ToList();
                             break;
                         case nameof(RepUser.Name):
                             result = _context.Users.Select(x => x.FullName).Distinct().OrderBy(x => x).ToList();
@@ -2975,6 +2981,7 @@ namespace FactPortal.Controllers
                             result = _context.Users.Select(x => x.Email).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepUser.Job):
+                            result = _context.UserClaims.Where(x => x.ClaimType.ToLower() == "job").Select(x => x.ClaimValue).Distinct().OrderBy(x => x).ToList();
                             break;
                         case nameof(RepUser.Phone):
                             result = _context.Users.Select(x => x.PhoneNumber).Distinct().OrderBy(x => x).ToList();
@@ -2987,7 +2994,7 @@ namespace FactPortal.Controllers
                     switch (element)
                     {
                         case nameof(RepFile.ID):
-                            result = _business.Files.Select(x => x.Id.ToString()).Distinct().OrderBy(x => x).ToList();
+                            result = _business.Files.Select(x => x.Id).OrderBy(x => x).Select(x => x.ToString()).ToList();
                             break;
                         case nameof(RepFile.Name):
                             result = _business.Files.Select(x => x.Name).Distinct().OrderBy(x => x).ToList();
@@ -3019,7 +3026,8 @@ namespace FactPortal.Controllers
                         Title = GetUniqueElements("SO", "Title"),
                         Code = GetUniqueElements("SO", "Code"),
                         Description = GetUniqueElements("SO", "Description"),
-                        LastWorkDT = GetUniqueElements("SO", "LastWorkDT")
+                        LastWorkDT = GetUniqueElements("SO", "LastWorkDT"),
+                        Position = GetUniqueElements("SO", "Position")
                     },
                     Work = new
                     {
@@ -3045,7 +3053,8 @@ namespace FactPortal.Controllers
                         ID = GetUniqueElements("User", "ID"),
                         Name = GetUniqueElements("User", "Name"),
                         Email = GetUniqueElements("User", "Email"),
-                        Job = GetUniqueElements("User", "Phone"),
+                        Job = GetUniqueElements("User", "Job"),
+                        Phone = GetUniqueElements("User", "Phone"),
                         CountWorks = GetUniqueElements("User", "CountWorks")
                     },
                     File = new

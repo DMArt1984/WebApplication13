@@ -49,7 +49,8 @@ namespace FactPortal.Models
         Title,
         Code,
         Description,
-        LastWorkDT
+        LastWorkDT,
+        Position
     }
 
     public enum RepWork // группа: Обслуживание

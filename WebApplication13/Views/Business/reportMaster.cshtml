@@ -201,7 +201,8 @@
                             <div id="conval1" class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Константа 1</div>
-                                    <input type="text" class="form-control" id="NewConditionValue1" placeholder="Константа 1">
+                                    <input type="text" class="form-control" id="NewConditionValue1" list="datalistValue1" placeholder="Константа 1">
+                                    <datalist id="datalistValue1"></datalist>
                                 </div>
                             </div>
 
@@ -324,57 +325,6 @@
     </div>
 
 </div>
-
-<div class="row">
-    <label for="exampleDataList" class="col-md-2 col-form-label">Datalists</label>
-    <div class="col-md-10">
-        <input class="form-control" list="datalistOptions1" id="exampleDataList" placeholder="Type to search...">
-        <datalist id="datalistOptions1">
-            <option value="San Francisco 1">
-            </option>
-            <option value="New York 2">
-            </option>
-            <option value="Seattle 3">
-            </option>
-            <option value="Los Angeles 4">
-            </option>
-            <option value="Chicago 5">
-            </option>
-            <option value="San Francisco 6">
-            </option>
-            <option value="New York 7">
-            </option>
-            <option value="Seattle 8">
-            </option>
-            <option value="Los Angeles 9">
-            </option>
-            <option value="Chicago 10">
-            </option>
-            <option value="San Francisco 11">
-            </option>
-            <option value="New York 12">
-            </option>
-            <option value="Seattle 13">
-            </option>
-            <option value="Los Angeles 14">
-            </option>
-            <option value="Chicago 15">
-            </option>
-            <option value="San Francisco 16">
-            </option>
-            <option value="New York 17">
-            </option>
-            <option value="Seattle 18">
-            </option>
-            <option value="Los Angeles 19">
-            </option>
-            <option value="Chicago 20">
-            </option>
-        </datalist>
-    </div>
-</div>
-
-
 
 
 @section Scripts {
@@ -1479,9 +1429,13 @@
             //console.log(ID);
             //console.log(col_values);
             //console.log(sublist);
+
+            setTagValue("NewConditionValue1", "");
+            setTagValue("NewConditionValue2", "");
+
             var dlist = getValueListB(parseInt(ID, 10), col_values, sublist);
             console.log(dlist);
-            recreateDatalist('datalistOptions1', dlist);
+            recreateDatalist('datalistValue1', dlist);
         }
 
         //...
