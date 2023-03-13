@@ -20,6 +20,8 @@ namespace FactPortal.Models
         public string FullName { get; set; } // Полное имя
         public byte[] Photo { get; set; } // Фото
 
+        public int IdCompany { get; set; } // ID Компании
+
         public string getRoleName(string role) // название роли в тексте
         {
             switch (role.ToLower())
