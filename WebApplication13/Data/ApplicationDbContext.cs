@@ -21,6 +21,8 @@ namespace FactPortal.Data
             Configuration = configuration;
         }
 
+        public DbSet<Company> Company { get; set; } // Компания (и база данных)
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // Динамическая строка подключения в этой версии пока не нужна!
@@ -54,6 +56,9 @@ namespace FactPortal.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Company>().ToTable("Company");
+
             builder.HasDefaultSchema("Identity");
             builder.Entity<ApplicationUser>(entity =>
             {

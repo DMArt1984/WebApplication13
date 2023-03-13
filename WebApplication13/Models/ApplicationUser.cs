@@ -67,4 +67,11 @@ namespace FactPortal.Models
         }
 
     }
+
+    public class Company
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } // Название компании
+        public string dataBaseName { get; set; } // Имя базы данных
+    }
 }
