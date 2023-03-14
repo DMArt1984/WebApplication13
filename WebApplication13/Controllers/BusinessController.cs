@@ -50,6 +50,8 @@ namespace FactPortal.Controllers
                 var works = _business.Works.ToList(); // обслуживания
                 var positions = Bank.GetDicPos(_business.Levels);
 
+                
+
                 List<ServiceObjectShort> SObjectOUT = SObjects.Select(x => new ServiceObjectShort
                 {
                     Id = Bank.inf_ListMinus(SO_Ids, x.Id),

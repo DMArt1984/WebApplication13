@@ -11,6 +11,7 @@ using FactPortal.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FactPortal.Models
 {
@@ -20,7 +21,13 @@ namespace FactPortal.Models
         public string FullName { get; set; } // Полное имя
         public byte[] Photo { get; set; } // Фото
 
-        public int IdCompany { get; set; } // ID Компании
+
+        //[ForeignKey("Company")] //явно указываем что это ключ для записи в таблице Company,
+        //но здесь это не надо т.к. название уже определяет Company+Id
+        public int CompanyId { get; set; } // ID Компании
+
+        public virtual Company Company { get; set; }
+
 
         public string getRoleName(string role) // название роли в тексте
         {
@@ -73,5 +80,7 @@ namespace FactPortal.Models
         public int Id { get; set; }
         public string Title { get; set; } // Название компании
         public string dataBaseName { get; set; } // Имя базы данных
+
+        public virtual ICollection<ApplicationUser> Users { get; set; } // Пользователи
     }
 }
