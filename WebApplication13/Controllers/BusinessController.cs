@@ -2830,11 +2830,11 @@ namespace FactPortal.Controllers
         }
 
         // Добавить формулу
-        public int? RepAddFormula(QueryLeftRight typeLeft, int IdLeft, OperatorLeftRight AndOr, QueryLeftRight typeRight, int IdRight)
+        public int? RepAddFormula(QueryLeftRight typeLeft, int IdLeft, OperatorLeftRight AndOr, QueryLeftRight typeRight, int IdRight, string Title = "")
         {
             if (LeftRightOK(typeLeft, IdLeft) && (AndOr == OperatorLeftRight.END || LeftRightOK(typeRight, IdRight)))
             {
-                QueryFormula qf = new QueryFormula { AndOr = AndOr.ToString() , IdLeft = IdLeft, IdRight = IdRight, typeLeft = typeLeft.ToString(), typeRight = typeRight.ToString() };
+                QueryFormula qf = new QueryFormula { AndOr = AndOr.ToString() , IdLeft = IdLeft, IdRight = IdRight, typeLeft = typeLeft.ToString(), typeRight = typeRight.ToString(), Title = Title };
                 _business.RepFormula.Add(qf);
                 _business.SaveChanges();
                 return _business.RepFormula.ToList().Last()?.Id;
@@ -2855,7 +2855,7 @@ namespace FactPortal.Controllers
         }
 
         // Добавить представление
-        public int? RepAddView(int IdFormula, string IdsColumns)
+        public int? RepAddView(int IdFormula, string IdsColumns, string Title = "", string Orders = "")
         {
             if (String.IsNullOrWhiteSpace(IdsColumns))
                 return null;
@@ -2865,7 +2865,7 @@ namespace FactPortal.Controllers
 
             // нужна ли проверка содержимого IdsColumns ?
 
-            QueryView qv = new QueryView { IdFormula = IdFormula, IdColumns = IdsColumns };
+            QueryView qv = new QueryView { IdFormula = IdFormula, IdColumns = IdsColumns, Title = Title, Orders = Orders };
             _business.RepView.Add(qv);
             _business.SaveChanges();
             return _business.RepView.ToList().Last()?.Id;
@@ -3138,7 +3138,7 @@ namespace FactPortal.Controllers
         }
 
         // Добавить формулу
-        public JsonResult JsAddFormula(string nameLeft, int IdLeft, string nameAndOr, string nameRight, int IdRight)
+        public JsonResult JsAddFormula(string nameLeft, int IdLeft, string nameAndOr, string nameRight, int IdRight, string title)
         {
             bool correct1 = Enum.TryParse(nameLeft, out QueryLeftRight typeLeft);
             bool correct2 = Enum.TryParse(nameRight, out QueryLeftRight typeRight);
@@ -3149,7 +3149,7 @@ namespace FactPortal.Controllers
             if (correct3 == false)
                 return new JsonResult(new { result = -32, message = "Оператор объединения не найден" });
 
-            var Id = RepAddFormula(typeLeft, IdLeft, AndOr, typeRight, IdRight);
+            var Id = RepAddFormula(typeLeft, IdLeft, AndOr, typeRight, IdRight, title);
             return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });
         }
 
@@ -3171,9 +3171,9 @@ namespace FactPortal.Controllers
         }
 
         // Добавить представление
-        public JsonResult JsAddView(int IdFormula, string IdsColumns)
+        public JsonResult JsAddView(int IdFormula, string IdsColumns, string title, string orders)
         {
-            var Id = RepAddView(IdFormula, IdsColumns);
+            var Id = RepAddView(IdFormula, IdsColumns, title, orders);
             return new JsonResult(new { result = 0, Id = Id, message = (Id > 0) ? "" : "Ошибка добавления" });
         }
 

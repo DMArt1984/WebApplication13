@@ -234,6 +234,7 @@
                     </div>
                     <div class="card-footer text-muted">
                         <form class="row row-cols-lg-auto g-3 align-items-center">
+
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Тип слева</div>
@@ -276,6 +277,13 @@
                                 </div>
                             </div>
 
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Название</div>
+                                    <input type="text" class="form-control" id="NewFormulaTitle" placeholder="Название (не обязательно)">
+                                </div>
+                            </div>
+
                             <div id="colformulaBut" class="col-12">
                                 <button type="button" class="btn btn-primary" onclick="addFormula();">Добавить</button>
                             </div>
@@ -297,6 +305,14 @@
                     </div>
                     <div class="card-footer text-muted">
                         <form class="row row-cols-lg-auto g-3 align-items-center">
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Название</div>
+                                    <input type="text" class="form-control" id="NewViewTitle" placeholder="Название (не обязательно)">
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <div class="input-group">
                                     <div class="input-group-text">Выборка</div>
@@ -310,6 +326,13 @@
                                     <div class="input-group-text">Колонки</div>
                                     <select id="AddViewColumns" class="form-select" name="AddViewColumns" value="0" onchange="changeViewColumns();"></select>
                                     <input type="text" class="form-control" id="NewViewColumns" placeholder="Колонки">
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="input-group">
+                                    <div class="input-group-text">Сортировка</div>
+                                    <input type="text" class="form-control" id="NewViewOrders" placeholder="Сортировка (не обязательно)">
                                 </div>
                             </div>
 
@@ -790,6 +813,7 @@
             var nameAndOr = $('#NewFormulaOperator').val();
             var nameRight = $('#NewFormulaType2').val();
             var IdRight = $('#NewFormulaId2').val();
+            var title = $('#NewFormulaTitle').val();
 
             // JsonResult JsAddFormula(string nameLeft, int IdLeft, string nameAndOr, string nameRight, int IdRight)
             let formData = new FormData();
@@ -798,6 +822,7 @@
             formData.append("nameAndOr", nameAndOr);
             formData.append("nameRight", nameRight);
             formData.append("IdRight", IdRight);
+            formData.append("title", title);
 
             $.ajax({
                 type: "POST",
@@ -944,11 +969,15 @@
         function addView() {
             var IdFormula = $('#NewViewFormula').val();
             var IdsColumns = $('#NewViewColumns').val();
+            var title = $('#NewViewTitle').val();
+            var orders = $('#NewViewOrders').val();
 
             // JsonResult JsAddView(int IdFormula, string IdsColumns)
             let formData = new FormData();
             formData.append("IdFormula", IdFormula);
             formData.append("IdsColumns", IdsColumns);
+            formData.append("title", title);
+            formData.append("orders", orders);
 
             $.ajax({
                 type: "POST",
@@ -1134,7 +1163,7 @@
                 return obj.Id === Id
             })
             if (item != null) {
-                return combine_textFormula(item.Id, item.typeLeft, item.IdLeft, item.AndOr, item.typeRight, item.IdRight);
+                return combine_textFormula(item.Id, TextOrUndefined(item.Title), item.typeLeft, item.IdLeft, item.AndOr, item.typeRight, item.IdRight);
             }
             return Id;
         }
@@ -1156,15 +1185,25 @@
             return Id + ': ' + get_colName(IdColumn) + ' ' + conditionToRUS(cond) + ' ' + txt;
         }
 
-        function combine_textFormula(Id, typeLeft, IdLeft, AndOr, typeRight, IdRight) {
+        function combine_textFormula(Id, title, typeLeft, IdLeft, AndOr, typeRight, IdRight) {
             var txt = Id + ': ';
-            if (typeLeft != 'None') {
-                txt = txt + typeLeft + '-' + IdLeft;
-                if (AndOr != 'END' && typeRight != 'None') {
-                    txt = txt + ' ' + AndOr + ' ' + typeRight + '-' + IdRight;
+            if (title != "") {
+                txt = txt + title;
+            } else {
+                if (typeLeft != 'None') {
+                    txt = txt + typeLeft + '-' + IdLeft;
+                    if (AndOr != 'END' && typeRight != 'None') {
+                        txt = txt + ' ' + AndOr + ' ' + typeRight + '-' + IdRight;
+                    }
                 }
             }
             return txt;
+        }
+
+        function TextOrUndefined(value) {
+            if (value == undefined)
+                return "";
+            return value;
         }
 
         // Получить text по value для SELECT
@@ -1296,7 +1335,7 @@
 
             var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
             var $thead = $('<thead class="bg-primary text-white"/>');
-            $thead.append('<tr><td> ID </td><td> Тип слева </td><td> ID слева </td><td> Оператор </td><td> Тип справа </td><td> ID справа </td><td> Команды </td></tr>');
+            $thead.append('<tr><td> ID </td><td> Название </td><td> Тип слева </td><td> ID слева </td><td> Оператор </td><td> Тип справа </td><td> ID справа </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
 
             values = [];
@@ -1304,7 +1343,7 @@
 
             $.each(formuls, function (index, value) {
                 values.push(value.Id);
-                names.push(combine_textFormula(value.Id, value.typeLeft, value.IdLeft, value.AndOr, value.typeRight, value.IdRight));
+                names.push(combine_textFormula(value.Id, TextOrUndefined(value.Title), value.typeLeft, value.IdLeft, value.AndOr, value.typeRight, value.IdRight));
             });
 
             frm_list = formuls;
@@ -1312,7 +1351,7 @@
             frm_names = names;
 
             $.each(formuls, function (index, value) {
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + value.typeLeft + '</td><td>' + value.IdLeft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + TextOrUndefined(value.Title) + '</td><td>' + value.typeLeft + '</td><td>' + value.IdLeft + '</td><td>' + value.AndOr + '</td><td>' + value.typeRight + '</td><td>' + value.IdRight + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delFormula(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
             });
 
             $tbl.append($thead);
@@ -1335,7 +1374,7 @@
             //var table = document.createElement('table');
             var $tbl = $('<table class="table table-sm table-striped mb-0 table-bordered" style="border-collapse: collapse; border-spacing: 0px; width: 100%;"/>');
             var $thead = $('<thead class="bg-primary text-white"/>');
-            $thead.append('<tr><td> ID </td><td> ID выборки </td><td> Колонки </td><td> Команды </td></tr>');
+            $thead.append('<tr><td> ID </td><td> Название </td><td> ID выборки </td><td> Колонки </td><td> Сортировка </td><td> Команды </td></tr>');
             var $tbody = $('<tbody/>');
             
             $.each(views, function (index, value) {
@@ -1355,7 +1394,7 @@
                 //tr.appendChild(td2);
                 //tr.appendChild(td3);
                 //table.appendChild(tr);
-                $tbody.append('<tr><td>' + value.Id + '</td><td>' + get_textFormula(value.IdFormula) + '</td><td>' + value.IdColumns + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delView(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
+                $tbody.append('<tr><td>' + value.Id + '</td><td>' + TextOrUndefined(value.Title) + '</td><td>' + get_textFormula(value.IdFormula) + '</td><td>' + value.IdColumns + '</td><td>' + TextOrUndefined(value.Orders) + '</td><td> <a class="btn btn-outline-primary btn-sm edit mx-1" title="Удалить" data-bs-toggle="modal" data-bs-target="#myModalDel" onclick="delView(' + value.Id + ')"><i class="fas fa-times fa-lg"></i></a> </td></tr>');
 
             });
 

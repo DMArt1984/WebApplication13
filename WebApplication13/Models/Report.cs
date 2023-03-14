@@ -122,6 +122,7 @@ namespace FactPortal.Models
     public class QueryFormula // Формула [DB]
     {
         public int Id { get; set; } // ID
+        public string Title { get; set; } // Название
         public string typeLeft { get; set; } // тип переменной слева: условие или формула
         public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
         public string AndOr { get; set; } // оператор: AND, OR
@@ -131,6 +132,7 @@ namespace FactPortal.Models
     public class QueryFormulaInfo // Формула
     {
         public int Id { get; set; } // ID
+        public string Title { get; set; } // Название
         public QueryLeftRight typeLeft { get; set; } // тип переменной слева: условие или формула
         public int IdLeft { get; set; } // ID переменной слева (0 - если пусто)
         public OperatorLeftRight AndOr { get; set; } // оператор: AND, OR
@@ -141,12 +143,17 @@ namespace FactPortal.Models
     public class QueryView // Вид [DB]
     {
         public int Id { get; set; } // ID
+
+        public string Title { get; set; } // Название
         public int IdFormula { get; set; } // ID формулы
         public string IdColumns { get; set; } // Колонки по группам (например: 1;2;3 > 4;5 > 9) в строке
+        public string Orders { get; set; } // Сортировки (3;2;1)
     }
     public class QueryViewInfo // Вид
     {
         public int Id { get; set; } // ID
+
+        public string Title { get; set; } // Название
         public QueryFormulaInfo formula { get; set; } // Формула
         public List<List<QueryColumn>> columns { get; set; } // Колонки по группам
     }
