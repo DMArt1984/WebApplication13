@@ -53,7 +53,12 @@ namespace FactPortal.Controllers
                 TextDateTime temp1 = new TextDateTime("2020.11.12 15:16");
                 TextDateTime temp2 = new TextDateTime("2022-01-07T08:09", 0, DTFormat.Calendar);
 
-                var usersByCompany = _context.Company.Include(x => x.Users).ToList();
+                // ленивая загрузка(lazy loading)
+                //var usersByCompany = _context.Company;
+                //var ubc = usersByCompany.Select(x => x.Users);
+
+                // прямая загрузки (eager loading).
+                var usersByCompany2 = _context.Company.Include(x => x.Users).ToList();
 
                 var (year, month, day, hour, minute, second) = temp2;
                 //var X = TEMP1.Equals(new TextDateTime("2020.11.12 15:17"));
