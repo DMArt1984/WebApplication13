@@ -58,7 +58,7 @@ namespace FactPortal.Controllers
                 //var ubc = usersByCompany.Select(x => x.Users);
 
                 // прямая загрузки (eager loading).
-                var usersByCompany2 = _context.Company.Include(x => x.Users).ToList();
+                var usersByCompany3 = _context.Company.Include(x => x.Users).ToList();
 
                 var (year, month, day, hour, minute, second) = temp2;
                 //var X = TEMP1.Equals(new TextDateTime("2020.11.12 15:17"));
